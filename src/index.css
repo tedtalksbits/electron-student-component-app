@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+@layer base {
+  /* body {
+    @apply bg-gray-100 dark:bg-black text-gray-900 dark:text-gray-100;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold dark:text-white text-gray-900;
+  } */
+
+  *,
+  ::before,
+  ::after {
+    @apply dark:border-white/5 border-black/5;
+  }
+}
+
+@layer components {
+  button {
+    @apply inline-block px-4 py-2 rounded-lg shadow-sm text-sm font-medium focus:outline-none bg-white dark:bg-white/10 text-gray-900 dark:text-gray-100 outline-none focus:dark:ring-white/10 focus:ring-1 focus:ring-offset-1;
+  }
+  input,
+  textarea {
+    @apply block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none dark:bg-white/10 text-gray-900 dark:text-gray-100 p-2;
+  }
+  .btn-primary {
+    @apply bg-sky-500 hover:bg-opacity-70 hover:ring-opacity-80 bg-opacity-25 ring-1 ring-opacity-40 ring-sky-500 text-white transition-colors duration-200;
+  }
+  .btn-secondary {
+    @apply bg-gray-500 hover:bg-opacity-70 hover:ring-opacity-80 bg-opacity-25 ring-1 ring-opacity-40 ring-gray-500 text-white transition-colors duration-200;
+  }
+  .btn-tertiary {
+    @apply bg-gray-100 hover:bg-opacity-70 hover:ring-opacity-80 bg-opacity-25 ring-1 ring-opacity-40 ring-gray-100 text-gray-900 transition-colors duration-200;
+  }
+  .btn-danger {
+    @apply bg-red-500 hover:bg-opacity-70 hover:ring-opacity-80 bg-opacity-25 ring-1 ring-opacity-40 ring-red-500 text-white transition-colors duration-200;
+  }
+  .btn-success {
+    @apply bg-green-500 hover:bg-opacity-70 hover:ring-opacity-80 bg-opacity-25 ring-1 ring-opacity-40 ring-green-500 text-white transition-colors duration-200;
+  }
+  .btn-warning {
+    @apply bg-yellow-500 hover:bg-opacity-70 hover:ring-opacity-80 bg-opacity-25 ring-1 ring-opacity-40 ring-yellow-500 text-white transition-colors duration-200;
+  }
+  .btn-info {
+    @apply bg-blue-500 hover:bg-opacity-70 hover:ring-opacity-80 bg-opacity-25 ring-1 ring-opacity-40 ring-blue-500 text-white transition-colors duration-200;
+  }
+  .btn-light {
+    @apply bg-black dark:bg-white hover:bg-opacity-30 dark:bg-opacity-10 bg-opacity-10 ring-1 ring-opacity-30 ring-black/5 dark:ring-white/10 dark:text-white transition-colors duration-200;
+  }
+  .card {
+    @apply bg-gray-50 dark:bg-white/5 rounded-lg shadow-lg p-2 dark:text-gray-100 text-gray-900 border flex flex-col;
+  }
+
+  dialog {
+    @apply bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-4 dark:text-gray-100 text-gray-900 w-full max-w-3xl;
+  }
+  dialog::backdrop {
+    @apply bg-black/75 backdrop-blur-sm;
+  }
+
+  code {
+    @apply p-1 text-sm font-mono;
+  }
+
+  .text-constraint {
+    @apply overflow-x-hidden whitespace-nowrap text-ellipsis sm:max-w-[10ch] md:max-w-[20ch] lg:max-w-[30ch] xl:max-w-[40ch] 2xl:max-w-[50ch];
+  }
+}
