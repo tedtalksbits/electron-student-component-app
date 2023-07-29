@@ -157,6 +157,45 @@ ipcMain.on(
   }
 );
 
+ipcMain.on('add-study-session', async (event, data, refetchQuery?: string) => {
+  console.log('add-study-session', data);
+  try {
+    const [rows] = await crudRepository.createOne('study_sessions', data);
+    console.log(rows);
+    if (refetchQuery) {
+      const [rows] = await connection.execute(refetchQuery);
+      event.reply('add-study-session-response', { data: rows });
+    }
+    event.reply('add-study-session-response', { sessionId: rows.id });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('delete-deck-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on(
+  'update-study-session',
+  async (event, data, id, refetchQuery?: string) => {
+    console.log('update-study-session', data);
+    try {
+      const [row] = await crudRepository.updateOne('study_sessions', id, data);
+      console.log(row);
+      if (refetchQuery) {
+        const rows = await connection.execute(refetchQuery);
+        event.reply('update-study-session-response', { data: rows });
+      }
+      event.reply('update-study-session-response', { data: row });
+    } catch (error) {
+      const err = error as Error;
+      event.reply('delete-deck-response', {
+        error: err.sqlMessage,
+      });
+    }
+  }
+);
+
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 

@@ -1,13 +1,10 @@
 import React from 'react';
 import { FlashcardType } from '../types';
-import { deleteFlashcard, updateFlashcard } from '../api';
+import { deleteFlashcard, updateFlashcard } from '../api/flashcards';
 import Dialog from '../../../components/dialog/Dialog';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Menu from '../../../components/menu/Menu';
 import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
+import Markdown from '../../../components/markdown/Markdown';
 type FlashcardProps = {
   flashcard: FlashcardType;
   setFlashcards: React.Dispatch<React.SetStateAction<FlashcardType[]>>;
@@ -75,34 +72,7 @@ function Flashcard({ flashcard, setFlashcards }: FlashcardProps) {
       </header>
       <details className='my-4'>
         <summary>Q: {flashcard.question}</summary>
-        <ReactMarkdown
-          className='my-4 before:content-["A:"] before:block before:h-4'
-          remarkPlugins={[remarkGfm]}
-          children={flashcard.answer}
-          components={{
-            code({ node, inline, className, children, ...props }) {
-              const match = /language-(\w+)/.exec(className || '');
-              return !inline && match ? (
-                <SyntaxHighlighter
-                  {...props}
-                  children={String(children).replace(/\n$/, '')}
-                  style={atomDark}
-                  language={match[1]}
-                  PreTag='div'
-                />
-              ) : (
-                <code
-                  {...props}
-                  className={
-                    className + ' bg-neutral-700 rounded-md text-amber-200'
-                  }
-                >
-                  {children}
-                </code>
-              );
-            },
-          }}
-        />
+        <Markdown>{flashcard.answer}</Markdown>
       </details>
       <Dialog open={isOpenEditFlashcardDialog} onClose={closeDialog}>
         <div className='flex flex-col gap-4'>

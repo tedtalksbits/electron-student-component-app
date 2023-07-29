@@ -51,21 +51,32 @@ const crudRepository = {
         .join(', ')} WHERE id = ?`,
       [...values, id]
     );
-    const rows = await crudRepository.selectAll(table);
-    return rows;
+
+    const [update] = await connection.execute(
+      `SELECT * FROM ${table} WHERE id = ${id}`
+    );
+    return update as any[];
   },
 
   async createOne(table: string, data: any) {
     const keys = Object.keys(data);
     const values = Object.values(data);
-    await connection.execute(
+    const [rows] = await connection.execute(
       `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${keys
         .map(() => '?')
         .join(', ')})`,
       values
     );
-    const rows = await crudRepository.selectAll(table);
-    return rows;
+
+    // get the last inserted id from the rows array
+    const { insertId } = rows as any;
+
+    // get the newly created row
+    const [newRow] = await connection.execute(
+      `SELECT * FROM ${table} WHERE id = ${insertId}`
+    );
+
+    return newRow as any[];
   },
 };
 

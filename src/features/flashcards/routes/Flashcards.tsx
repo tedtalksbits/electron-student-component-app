@@ -3,12 +3,15 @@ import { useParams } from 'react-router-dom';
 import { FlashcardType, FlashcardDTO } from '../types';
 import { useEffect, useState } from 'react';
 import Flashcard from '../components/Flashcard';
-import { createFlashcard, fetchFlashcardsByDeckId } from '../api';
+import { createFlashcard, fetchFlashcardsByDeckId } from '../api/flashcards';
 import Dialog from '../../../components/dialog/Dialog';
+import { useNavigate } from 'react-router-dom';
+import { addStudySession } from '../../study/api/studysessions';
+import { getSessionId, setSessionId } from '../../../utils/setSessionId';
 
 function Flashcards() {
+  const navigate = useNavigate();
   const { id } = useParams();
-  console.log(id);
   const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
   const [isOpenNewFlashcardDialog, setIsOpenNewFlashcardDialog] =
     useState(false);
@@ -47,6 +50,24 @@ function Flashcards() {
     closeDialog();
   };
 
+  const handleStartStudy = () => {
+    addStudySession(
+      {
+        deck_id: Number(id),
+        user_id: 2,
+        start_time: new Date(),
+      },
+      (sessionId) => {
+        setSessionId(sessionId.toString());
+        console.log(sessionId);
+        console.log('session id set');
+        console.log(getSessionId());
+        navigate(`/deck/${id}/study`);
+      }
+    );
+    // navigate(`/deck/${id}/study`);
+  };
+
   return (
     <div>
       <div className='flex items-center justify-between my-4'>
@@ -65,7 +86,7 @@ function Flashcards() {
           />
         ))}
       </div>
-
+      <button onClick={handleStartStudy}>Start Studying</button>
       <Dialog open={isOpenNewFlashcardDialog} onClose={closeDialog}>
         <div className='flex flex-col gap-4'>
           <div className='flex item-center justify-between'>
@@ -86,7 +107,13 @@ function Flashcards() {
               placeholder='question'
             />
             <label htmlFor='answer'>Answer</label>
-            <input type='text' name='answer' id='answer' placeholder='answer' />
+            <textarea
+              name='answer'
+              id='answer'
+              placeholder='answer'
+              cols={30}
+              rows={10}
+            />
             <button className='btn-success mt-8'>Save</button>
           </form>
         </div>
