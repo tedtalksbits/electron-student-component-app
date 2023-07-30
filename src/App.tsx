@@ -5,6 +5,7 @@ import { Flashcards } from './features/flashcards/routes';
 import { Decks } from './features/decks/routes';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Study } from './features/study/routes';
+import { Button } from './components/ui/button';
 
 type ErrorFallbackProps = {
   error: Error;
@@ -15,7 +16,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps) => {
     <div role='alert'>
       <p>Something went wrong:</p>
       <pre>{error.message}</pre>
-      <button onClick={resetErrorBoundary}>Try again</button>
+      <Button onClick={resetErrorBoundary}>Try again</Button>
     </div>
   );
 };

@@ -45,6 +45,20 @@ ipcMain.on('get-decks', async (event) => {
   }
 });
 
+ipcMain.on('get-deck-by-id', async (event, id) => {
+  console.log('get-deck-by-id', id);
+  try {
+    const rows = await crudRepository.select('decks', ['*'], { id });
+    console.log(rows);
+    event.reply('get-deck-by-id-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('delete-deck-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
 ipcMain.on('create-deck', async (event, data, refetchQuery: string) => {
   console.log('create-deck', data);
   console.log('refetchQuery', refetchQuery);
@@ -195,6 +209,22 @@ ipcMain.on(
     }
   }
 );
+
+ipcMain.on('get-study-sessions', async (event, userId) => {
+  console.log('get-study-sessions', userId);
+  try {
+    const rows = await crudRepository.select('study_sessions', ['*'], {
+      user_id: userId,
+    });
+    console.log(rows);
+    event.reply('get-study-sessions-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('delete-deck-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
 
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];

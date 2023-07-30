@@ -1,137 +1,78 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
-
+ 
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
-
+ 
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-
+ 
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
-
+ 
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-
+ 
     --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
-
+ 
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
-
+ 
     --accent: 0 0% 96.1%;
     --accent-foreground: 0 0% 9%;
-
+ 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-
+ 
     --ring: 0 0% 63.9%;
-
+ 
     --radius: 0.5rem;
   }
-
+ 
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
-
+ 
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
-
+ 
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-
+ 
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
-
+ 
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
-
+ 
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
-
+ 
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
-
+ 
     --accent: 0 0% 14.9%;
     --accent-foreground: 0 0% 98%;
-
+ 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-
+ 
     --ring: 0 0% 14.9%;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
-  }
-
-  code {
-    @apply p-1 text-sm font-mono;
-  }
-
-  /* study flashcard */
-  .study-container {
-    @apply flex w-full h-full transition-all duration-500 ease-in-out;
-  }
-  .study-item {
-    @apply w-full flex-shrink-0 grid my-8 place-items-center;
-  }
-  .study-item-inner {
-    @apply flex flex-col justify-center items-center p-4 border rounded-md max-w-7xl w-full shadow-lg;
-  }
-
-  .study-item-nav-item {
-    @apply cursor-pointer inline-block w-2 h-2 rounded-full mx-1 transition-colors duration-300;
-  }
-
-  .text-constraint {
-    @apply overflow-x-hidden whitespace-nowrap text-ellipsis sm:max-w-[10ch] md:max-w-[20ch] lg:max-w-[30ch] xl:max-w-[40ch] 2xl:max-w-[50ch];
-  }
-
-  /* form */
-  .form {
-    @apply flex flex-col gap-4 mt-5;
-  }
-  .form-group {
-    @apply flex flex-col gap-2;
-  }
-  .form-group:has(*:required) label::after {
-    @apply content-['*'] text-red-500 ml-2;
-  }
-
-  /* .form:has(*:invalid:not(:focus)) button[type='submit'] {
-    @apply cursor-not-allowed opacity-50;
-  } */
-
-  .form-footer {
-    @apply flex justify-end gap-2 mt-8;
-  }
-
-  label {
-    @apply capitalize;
-  }
-
-  input::placeholder {
-    @apply capitalize;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }

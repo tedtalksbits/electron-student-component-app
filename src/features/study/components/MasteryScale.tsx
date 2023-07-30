@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 
 type MasteryScaleProps = {
@@ -15,21 +16,21 @@ export default function MasteryScale({ onSetMastery }: MasteryScaleProps) {
     <>
       <small>How well did you remember?</small>
       <div className='flex items-center gap-1'>
-        <button className='' onClick={() => handleSetMastery(0)}>
+        <Button variant={'outline'} onClick={() => handleSetMastery(0)}>
           😓
-        </button>
-        <button className='' onClick={() => handleSetMastery(5)}>
+        </Button>
+        <Button variant={'outline'} onClick={() => handleSetMastery(5)}>
           😕
-        </button>
-        <button className='' onClick={() => handleSetMastery(10)}>
+        </Button>
+        <Button variant={'outline'} onClick={() => handleSetMastery(10)}>
           😐
-        </button>
-        <button className='' onClick={() => handleSetMastery(20)}>
+        </Button>
+        <Button variant={'outline'} onClick={() => handleSetMastery(20)}>
           🙂
-        </button>
-        <button className='' onClick={() => handleSetMastery(25)}>
+        </Button>
+        <Button variant={'outline'} onClick={() => handleSetMastery(25)}>
           😀
-        </button>
+        </Button>
       </div>
     </>
   );

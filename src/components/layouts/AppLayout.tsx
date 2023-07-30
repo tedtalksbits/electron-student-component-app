@@ -1,23 +1,15 @@
-import React from 'react';
-import { NavLink, useNavigate, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+import Navbar from '../navigation/Navbar';
 
-type AppLayoutProps = {
-  children: React.ReactNode;
-};
 export default function AppLayout() {
-  const navigate = useNavigate();
-
-  const goBack = () => {
-    navigate(-1);
-  };
   return (
-    <div className='p-4 max-w-7xl mx-auto'>
+    <main>
       <header>
-        <nav>
-          <button onClick={goBack}>← Back</button>
-        </nav>
+        <Navbar />
       </header>
-      <Outlet />
-    </div>
+      <div className='p-4 max-w-7xl mx-auto'>
+        <Outlet />
+      </div>
+    </main>
   );
 }

@@ -1,60 +1,30 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { FlashcardType, FlashcardDTO } from '../types';
+import { useParams, useLocation } from 'react-router-dom';
+import { FlashcardType } from '../types';
 import { useEffect, useState } from 'react';
-import Flashcard from '../components/Flashcard';
-import { createFlashcard, fetchFlashcardsByDeckId } from '../api/flashcards';
-import Dialog from '../../../components/dialog/Dialog';
+import { fetchFlashcardsByDeckId } from '../api/flashcards';
 import { useNavigate } from 'react-router-dom';
 import { addStudySession } from '../../study/api/studysessions';
 import { getSessionId, setSessionId } from '../../../utils/setSessionId';
+import { Button } from '@/components/ui/button';
+import { PlayIcon } from '@heroicons/react/solid';
+import { AddDeckFlashcardDialogForm, Flashcard } from '../components';
+import { USER_ID } from '@/constants';
 
 function Flashcards() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
   const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
-  const [isOpenNewFlashcardDialog, setIsOpenNewFlashcardDialog] =
-    useState(false);
-
   useEffect(() => {
     fetchFlashcardsByDeckId<FlashcardType>(Number(id), setFlashcards);
   }, [id]);
-
-  const openDialog = () => {
-    setIsOpenNewFlashcardDialog(true);
-  };
-  const closeDialog = () => {
-    setIsOpenNewFlashcardDialog(false);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const question = formData.get('question') as string;
-    const answer = formData.get('answer') as string;
-    const data = {
-      question,
-      answer,
-      deck_id: Number(id),
-      user_id: 2,
-      audio: null,
-      image: null,
-      tags: null,
-      hint: null,
-      mastery_level: null,
-      video: null,
-    } as FlashcardDTO;
-    console.log(data);
-    const refetchQuery = `SELECT * FROM flashcards WHERE deck_id = ${id}`;
-    createFlashcard<FlashcardType>(data, setFlashcards, refetchQuery);
-    closeDialog();
-  };
 
   const handleStartStudy = () => {
     addStudySession(
       {
         deck_id: Number(id),
-        user_id: 2,
+        user_id: USER_ID,
         start_time: new Date(),
       },
       (sessionId) => {
@@ -65,18 +35,28 @@ function Flashcards() {
         navigate(`/deck/${id}/study`);
       }
     );
-    // navigate(`/deck/${id}/study`);
   };
 
   return (
     <div>
       <div className='flex items-center justify-between my-4'>
-        <h2 className='text-4xl font-bold'>Flashcards | Deck {id}</h2>
-        <button className='btn-primary' onClick={openDialog}>
-          new
-        </button>
+        <h2 className='text-4xl font-bold'>
+          Flashcards | {query.get('deck_name') || id}
+        </h2>
+        <div className='flex items-center gap-2'>
+          <AddDeckFlashcardDialogForm
+            onMutation={setFlashcards}
+            deckId={Number(id)}
+          />
+          <Button
+            className='bg-green-600 hover:bg-opacity-70 hover:bg-green-600 border border-green-500 border-opacity-40 hover:border-opacity-80 bg-opacity-40 text-foreground '
+            onClick={handleStartStudy}
+          >
+            <PlayIcon className='h-5 w-5 mr-1' />
+            Start Studying
+          </Button>
+        </div>
       </div>
-
       <div className='flex flex-col gap-4'>
         {flashcards.map((flashcard) => (
           <Flashcard
@@ -86,38 +66,6 @@ function Flashcards() {
           />
         ))}
       </div>
-      <button onClick={handleStartStudy}>Start Studying</button>
-      <Dialog open={isOpenNewFlashcardDialog} onClose={closeDialog}>
-        <div className='flex flex-col gap-4'>
-          <div className='flex item-center justify-between'>
-            <h2 className='text-2xl font-bold'>Add Flashcard</h2>
-            <button
-              onClick={closeDialog}
-              className='btn btn-secondary inline-block self-end'
-            >
-              close
-            </button>
-          </div>
-          <form onSubmit={handleSubmit} className='flex flex-col gap-2'>
-            <label htmlFor='question'>Question</label>
-            <input
-              type='text'
-              name='question'
-              id='question'
-              placeholder='question'
-            />
-            <label htmlFor='answer'>Answer</label>
-            <textarea
-              name='answer'
-              id='answer'
-              placeholder='answer'
-              cols={30}
-              rows={10}
-            />
-            <button className='btn-success mt-8'>Save</button>
-          </form>
-        </div>
-      </Dialog>
     </div>
   );
 }

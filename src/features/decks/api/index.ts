@@ -6,7 +6,6 @@ type ResponseData<T> = {
 /**
  *
  *
- * @param deckId
  * @param setFlashcards- React hook state setter
  * @returns void
  *
@@ -22,6 +21,22 @@ export function fetchDecks<T>(
 ) {
   window.electron.ipcRenderer.sendMessage('get-decks', 'decks');
   window.electron.ipcRenderer.once('get-decks-response', (args) => {
+    const response = args as ResponseData<T[]>;
+    if (response.error) {
+      alert(response.error);
+      return;
+    }
+
+    setDecks(response.data);
+  });
+}
+
+export function fetchDeckById<T>(
+  deckId: number,
+  setDecks: React.Dispatch<React.SetStateAction<T[]>>
+) {
+  window.electron.ipcRenderer.sendMessage('get-deck-by-id', deckId);
+  window.electron.ipcRenderer.once('get-deck-by-id-response', (args) => {
     const response = args as ResponseData<T[]>;
     if (response.error) {
       alert(response.error);

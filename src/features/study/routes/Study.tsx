@@ -7,6 +7,8 @@ import { updateStudySession } from '../api/studysessions';
 import { getSessionId } from '../../../utils/setSessionId';
 import { StudyFlashcard, StudyHeader, StudyHeading } from '../components';
 import { StudyFlashcardNavItems } from '../components/StudyFlashcardNavItems';
+import { Button } from '@/components/ui/button';
+import { USER_ID } from '@/constants';
 
 export default function Study() {
   const navigate = useNavigate();
@@ -68,7 +70,7 @@ export default function Study() {
     updateStudySession(
       {
         deck_id: Number(id),
-        user_id: 2,
+        user_id: USER_ID,
         end_time: new Date(),
         duration_sec: timeElapsed,
         flashcards_studied: cardsStudied.length,
@@ -98,7 +100,7 @@ export default function Study() {
           <StudyHeading />
           <h2>Time Elapsed: {timerFormat(timeElapsed)}</h2>
         </div>
-        <button onClick={handleDone}>Done</button>
+        <Button onClick={handleDone}>Done</Button>
       </StudyHeader>
       <div className='study-container' ref={flashcardContainerRef}>
         {flashcards.map((flashcard) => (
@@ -110,7 +112,7 @@ export default function Study() {
                 setFlashcards={setFlashcards}
               />
               <div className='w-full flex items-center justify-between'>
-                <button
+                <Button
                   className='disabled:opacity-50 disabled:cursor-not-allowed'
                   onClick={() =>
                     setCurrentFlashcardIndex(currentFlashcardIndex - 1)
@@ -118,13 +120,13 @@ export default function Study() {
                   disabled={currentFlashcardIndex === 0}
                 >
                   Previous
-                </button>
+                </Button>
                 <StudyFlashcardNavItems
                   flashcards={flashcards}
                   navItemClickHandler={navClickHandler}
                   currentFlashcardIndex={currentFlashcardIndex}
                 />
-                <button
+                <Button
                   onClick={() =>
                     setCurrentFlashcardIndex(currentFlashcardIndex + 1)
                   }
@@ -132,7 +134,7 @@ export default function Study() {
                   className='disabled:opacity-50 disabled:cursor-not-allowed'
                 >
                   Next
-                </button>
+                </Button>
               </div>
             </div>
           </div>

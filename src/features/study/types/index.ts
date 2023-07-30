@@ -4,8 +4,8 @@ export type StudySession = {
   deck_id: number;
   start_time: Date;
   end_time: Date;
-  duration_sec: number | null;
-  flashcards_studied: number | null;
+  duration_sec: number;
+  flashcards_studied: number;
 };
 
 export type StartStudySession = {
