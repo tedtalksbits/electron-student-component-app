@@ -32,7 +32,7 @@ function Flashcards() {
         console.log(sessionId);
         console.log('session id set');
         console.log(getSessionId());
-        navigate(`/deck/${id}/study`);
+        navigate(`/decks/${id}/study`);
       }
     );
   };

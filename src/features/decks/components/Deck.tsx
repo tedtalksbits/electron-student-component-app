@@ -31,7 +31,7 @@ export const Deck = ({ deck, setDecks }: DeckProps) => {
         />
       </header>
       <h4 className='my-2 hover:text-sky-300 text-constraint'>
-        <Link to={`/deck/${deck.id}/flashcards?deck_name=${deck.name}`}>
+        <Link to={`/decks/${deck.id}/flashcards?deck_name=${deck.name}`}>
           {deck.name}
         </Link>
       </h4>

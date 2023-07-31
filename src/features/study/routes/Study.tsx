@@ -94,7 +94,7 @@ export default function Study() {
   if (!flashcards.length) return <div>Loading...</div>;
 
   return (
-    <div className='overflow-hidden'>
+    <div className='overflow-hidden' id='study-session'>
       <StudyHeader>
         <div className='flex flex-col gap-1'>
           <StudyHeading />

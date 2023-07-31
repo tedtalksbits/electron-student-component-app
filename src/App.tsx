@@ -1,11 +1,12 @@
 import './App.css';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import AppLayout from './components/layouts/AppLayout';
-import { Flashcards } from './features/flashcards/routes';
-import { Decks } from './features/decks/routes';
+
 import { ErrorBoundary } from 'react-error-boundary';
-import { Study } from './features/study/routes';
+
 import { Button } from './components/ui/button';
+
+import { AnkiLayout, AppLayout } from './components/layouts';
+import { routes } from './routes';
 
 type ErrorFallbackProps = {
   error: Error;
@@ -27,10 +28,45 @@ function App() {
       <Router>
         <Routes>
           <Route element={<AppLayout />}>
-            <Route path='/' element={<Decks />} />
-            <Route path='/deck/:id/flashcards' element={<Flashcards />} />
+            {/* App Routes */}
+            {routes.home.routes.map((route) => (
+              <Route
+                key={route.href}
+                path={route.href}
+                element={route.element}
+              />
+            ))}
           </Route>
-          <Route path='/deck/:id/study' element={<Study />} />
+          <Route element={<AnkiLayout />}>
+            {/* Anki Routes */}
+            {routes.anki.routes.map((route) => (
+              <Route
+                key={route.href}
+                path={route.href}
+                element={route.element}
+              />
+            ))}
+          </Route>
+          <Route element={<AppLayout />}>
+            {/* Taskify Routes */}
+            {routes.taskify.routes.map((route) => (
+              <Route
+                key={route.href}
+                path={route.href}
+                element={route.element}
+              />
+            ))}
+          </Route>
+          <Route element={<AppLayout />}>
+            {/* Skedrool Routes */}
+            {routes.skedrool.routes.map((route) => (
+              <Route
+                key={route.href}
+                path={route.href}
+                element={route.element}
+              />
+            ))}
+          </Route>
         </Routes>
       </Router>
     </ErrorBoundary>

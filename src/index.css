@@ -125,6 +125,10 @@
   input::placeholder {
     @apply capitalize;
   }
+  /* hide nav when study-session is loaded */
+  body:has(#study-session) header nav {
+    @apply hidden;
+  }
 }
 
 @keyframes fadeIn {
