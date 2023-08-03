@@ -20,7 +20,7 @@ const crudRepository = {
       )} = ?`,
       values
     );
-    return rows;
+    return rows as any[];
   },
 
   async deleteOne(table: string, id: number) {

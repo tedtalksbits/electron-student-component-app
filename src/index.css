@@ -129,6 +129,21 @@
   body:has(#study-session) header nav {
     @apply hidden;
   }
+
+  /* table */
+  table {
+    @apply w-full border-collapse;
+  }
+  table tr {
+    @apply border-b;
+  }
+  table tr:last-child {
+    @apply border-b-0;
+  }
+  table th,
+  table td {
+    @apply py-2 px-4;
+  }
 }
 
 @keyframes fadeIn {

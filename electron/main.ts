@@ -226,6 +226,39 @@ ipcMain.on('get-study-sessions', async (event, userId) => {
   }
 });
 
+ipcMain.on('get-current-courses', async (event, year, term) => {
+  console.log('get-courses', year, term);
+  try {
+    const rows = await crudRepository.select('semesters', ['id'], {
+      term_year: year,
+      term,
+    });
+    const semester_id = rows[0].id as number;
+    const courses = await crudRepository.select('courses', ['*'], {
+      semester_id,
+    });
+    const coursesWithDaysAsNumberArray = courses.map((course) => {
+      if (course.days === null || !course.days)
+        return {
+          ...course,
+          days: [],
+        };
+      return {
+        ...course,
+        days: course.days.split(',').map((day: string) => Number(day)),
+      };
+    });
+    event.reply('get-current-courses-response', {
+      data: coursesWithDaysAsNumberArray,
+    });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('get-current-courses-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 

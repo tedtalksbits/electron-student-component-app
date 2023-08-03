@@ -28,7 +28,7 @@ const Navbar = () => {
                 <ViewGridIcon className='h-5 w-5' />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className='bg-secondary'>
+            <PopoverContent>
               <AppsGrid />
             </PopoverContent>
           </Popover>
