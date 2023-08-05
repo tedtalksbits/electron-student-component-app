@@ -4,6 +4,8 @@ import { Home } from '@/features/home/routes';
 import { Skedrool } from '@/features/skedrool/routes';
 import { Study } from '@/features/study/routes';
 import { Taskify } from '@/features/taskify/routes';
+import { Tasks } from '@/features/taskify/routes/Tasks';
+import { Book, CalendarCheck2Icon, HomeIcon, Tablets } from 'lucide-react';
 
 export const routes = {
   home: {
@@ -13,6 +15,7 @@ export const routes = {
         href: '/',
         description: 'Home',
         element: <Home />,
+        icon: HomeIcon,
       },
     ],
   },
@@ -23,18 +26,21 @@ export const routes = {
         href: '/decks',
         description: 'Anki App',
         element: <Decks />,
+        icon: Book,
       },
       {
         title: 'Anki App',
         href: '/decks/:id/flashcards',
         description: 'Anki App',
         element: <Flashcards />,
+        icon: Book,
       },
       {
         title: 'Anki App',
         href: '/decks/:id/study',
         description: 'Anki App',
         element: <Study />,
+        icon: Book,
       },
     ],
   },
@@ -45,6 +51,7 @@ export const routes = {
         href: '/skedrool',
         description: 'Skedrool App',
         element: <Skedrool />,
+        icon: CalendarCheck2Icon,
       },
     ],
   },
@@ -55,6 +62,13 @@ export const routes = {
         href: '/taskify',
         description: 'Taskify App',
         element: <Taskify />,
+        icon: Tablets,
+      },
+      {
+        title: 'Taskify',
+        href: '/taskify/tasks/:id',
+        description: 'Taskify App',
+        element: <Tasks />,
       },
     ],
   },

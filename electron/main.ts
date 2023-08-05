@@ -183,7 +183,7 @@ ipcMain.on('add-study-session', async (event, data, refetchQuery?: string) => {
     event.reply('add-study-session-response', { sessionId: rows.id });
   } catch (error) {
     const err = error as Error;
-    event.reply('delete-deck-response', {
+    event.reply('add-study-session-response', {
       error: err.sqlMessage,
     });
   }
@@ -203,7 +203,7 @@ ipcMain.on(
       event.reply('update-study-session-response', { data: row });
     } catch (error) {
       const err = error as Error;
-      event.reply('delete-deck-response', {
+      event.reply('update-study-session-response', {
         error: err.sqlMessage,
       });
     }
@@ -220,7 +220,7 @@ ipcMain.on('get-study-sessions', async (event, userId) => {
     event.reply('get-study-sessions-response', { data: rows });
   } catch (error) {
     const err = error as Error;
-    event.reply('delete-deck-response', {
+    event.reply('get-study-sessions-response', {
       error: err.sqlMessage,
     });
   }
@@ -254,6 +254,143 @@ ipcMain.on('get-current-courses', async (event, year, term) => {
   } catch (error) {
     const err = error as Error;
     event.reply('get-current-courses-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on('get-projects', async (event, userId) => {
+  console.log('get-projects');
+  try {
+    const rows = await crudRepository.select('projects', ['*'], {
+      user_id: userId,
+    });
+    console.log(rows);
+    event.reply('get-projects-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('get-projects-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on('create-project', async (event, data, refetchQuery: string) => {
+  console.log('create-project', data);
+  console.log('refetchQuery', refetchQuery);
+  try {
+    await crudRepository.createOne('projects', data);
+    const [rows] = await connection.execute(refetchQuery);
+    event.reply('create-project-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('create-project-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on('delete-project', async (event, id, refetchQuery: string) => {
+  console.log('delete-project', id);
+  console.log('refetchQuery', refetchQuery);
+  try {
+    await crudRepository.deleteOne('projects', id);
+    const [rows] = await connection.execute(refetchQuery);
+    event.reply('delete-project-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('delete-project-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on('update-project', async (event, id, data, refetchQuery: string) => {
+  console.log('update-project', data);
+  try {
+    await crudRepository.updateOne('projects', id, data);
+    const [rows] = await connection.execute(refetchQuery);
+    console.log(rows);
+    event.reply('update-project-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('update-project-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on('get-tasks', async (event, userId) => {
+  console.log('get-tasks');
+  try {
+    const rows = await crudRepository.select('project_tasks', ['*'], {
+      user_id: userId,
+    });
+    console.log(rows);
+    event.reply('get-tasks-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('get-tasks-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on('get-tasks-by-projectId', async (event, projectId) => {
+  console.log('get-tasks-by-projectId', projectId);
+  try {
+    const rows = await crudRepository.select('project_tasks', ['*'], {
+      project_id: projectId,
+    });
+    console.log(rows);
+    event.reply('get-tasks-by-projectId-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('get-tasks-by-projectId-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on('create-task', async (event, data, refetchQuery: string) => {
+  console.log('create-task', data);
+  console.log('refetchQuery', refetchQuery);
+  try {
+    await crudRepository.createOne('project_tasks', data);
+    const [rows] = await connection.execute(refetchQuery);
+    event.reply('create-task-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('create-task-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on('delete-task', async (event, id, refetchQuery: string) => {
+  console.log('delete-task', id);
+  console.log('refetchQuery', refetchQuery);
+  try {
+    await crudRepository.deleteOne('project_tasks', id);
+    const [rows] = await connection.execute(refetchQuery);
+    event.reply('delete-task-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('delete-task-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+ipcMain.on('update-task', async (event, id, data, refetchQuery: string) => {
+  console.log('update-task', data);
+  try {
+    await crudRepository.updateOne('project_tasks', id, data);
+    const [rows] = await connection.execute(refetchQuery);
+    event.reply('update-task-response', { data: rows });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('update-task-response', {
       error: err.sqlMessage,
     });
   }

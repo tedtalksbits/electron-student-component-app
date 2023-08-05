@@ -26,7 +26,9 @@ export const StudyFlashcard = ({
       <summary className='cursor-pointer font-medium'>
         Q: {flashcard.question}
       </summary>
-      <Markdown>{flashcard.answer}</Markdown>
+      <Markdown className=' before:content-["A:"] before:block before:h-4'>
+        {flashcard.answer}
+      </Markdown>
       <MasteryScale onSetMastery={handleSetMastery} />
     </details>
   );

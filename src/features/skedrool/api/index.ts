@@ -6,8 +6,7 @@ type ResponseData<T> = {
 export function getCurrentCourses(
   year: number,
   term: string,
-  setCourses: React.Dispatch<React.SetStateAction<Course[]>>,
-  refetchQuery?: string
+  cb: (courses: Course[]) => void
 ) {
   window.electron.ipcRenderer.sendMessage('get-current-courses', year, term);
   window.electron.ipcRenderer.once('get-current-courses-response', (args) => {
@@ -16,6 +15,13 @@ export function getCurrentCourses(
       alert(response.error);
       return;
     }
-    setCourses(response.data);
+    const dataWithDatesAsString = response.data.map((course) => {
+      return {
+        ...course,
+        created_at: course.created_at.toString() as any,
+        updated_at: course.updated_at.toString() as any,
+      };
+    });
+    cb(dataWithDatesAsString);
   });
 }

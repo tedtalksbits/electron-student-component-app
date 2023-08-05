@@ -6,11 +6,16 @@ import GoBackButton from './GoBackButton';
 import logo from '@/assets/ankiwindows.png';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { AppsGrid } from './AppsGrid';
+import { useState } from 'react';
 
-const Navbar = () => {
+const Navbar = ({ showBackButton = true }: { showBackButton?: boolean }) => {
   const location = useLocation();
 
   const { theme, toggleTheme } = useToggleTheme();
+  const [open, setOpen] = useState(false);
+  function onAppGridItemClick() {
+    setOpen(false);
+  }
   return (
     <nav className='border-b p-3 '>
       <div className='max-w-7xl flex items-center justify-between flex-wrap mx-auto'>
@@ -18,18 +23,18 @@ const Navbar = () => {
           {location.pathname === '/' ? (
             <img src={logo} alt='logo' className='h-10 w-10' />
           ) : (
-            <GoBackButton />
+            showBackButton && <GoBackButton />
           )}
         </div>
         <div className='block'>
-          <Popover>
+          <Popover open={open} onOpenChange={() => setOpen(!open)}>
             <PopoverTrigger asChild>
-              <Button variant='outline'>
+              <Button variant='outline' onClick={() => setOpen(true)}>
                 <ViewGridIcon className='h-5 w-5' />
               </Button>
             </PopoverTrigger>
             <PopoverContent>
-              <AppsGrid />
+              <AppsGrid onItemClick={onAppGridItemClick} />
             </PopoverContent>
           </Popover>
           <Button variant='outline' onClick={toggleTheme}>

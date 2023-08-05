@@ -2,10 +2,16 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-export default function Markdown({ children }: { children: string }) {
+export default function Markdown({
+  children,
+  className,
+}: {
+  children: string;
+  className?: string;
+}) {
   return (
     <ReactMarkdown
-      className='my-4 before:content-["A:"] before:block before:h-4'
+      className={className + ' my-4'}
       remarkPlugins={[remarkGfm]}
       children={children}
       components={{

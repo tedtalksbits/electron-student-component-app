@@ -1,30 +1,13 @@
 import './App.css';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-
-import { ErrorBoundary } from 'react-error-boundary';
-
-import { Button } from './components/ui/button';
-
 import { AnkiLayout, AppLayout } from './components/layouts';
 import { routes } from './routes';
-
-type ErrorFallbackProps = {
-  error: Error;
-  resetErrorBoundary: (...args: Array<unknown>) => void;
-};
-const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps) => {
-  return (
-    <div role='alert'>
-      <p>Something went wrong:</p>
-      <pre>{error.message}</pre>
-      <Button onClick={resetErrorBoundary}>Try again</Button>
-    </div>
-  );
-};
+import { AppProvider } from './providers/app';
+import { TaskLayout } from './components/layouts/TaskLayout';
 
 function App() {
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <AppProvider>
       <Router>
         <Routes>
           <Route element={<AppLayout />}>
@@ -47,7 +30,7 @@ function App() {
               />
             ))}
           </Route>
-          <Route element={<AppLayout />}>
+          <Route element={<TaskLayout />}>
             {/* Taskify Routes */}
             {routes.taskify.routes.map((route) => (
               <Route
@@ -69,7 +52,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
-    </ErrorBoundary>
+    </AppProvider>
   );
 }
 
