@@ -20,7 +20,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useAppDispatch } from '@/hooks/redux';
 import { PlusIcon } from 'lucide-react';
 import React, { useState } from 'react';
-import { createTask } from '../api';
+import { createTask } from '../../api';
 import { setTasks } from '@/features/slice/task-slice';
 import { USER_ID } from '@/constants';
 

@@ -1,20 +1,28 @@
-import { StudySession } from '@/features/study/types';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { Card, Title, Text, Metric, Divider } from '@tremor/react';
-type StudyHistoryProps = {
-  studySessions: StudySession[];
-};
-export const StudyHistory = ({ studySessions }: StudyHistoryProps) => {
-  const lastStudySession = studySessions.sort((a, b) => {
-    return new Date(a.end_time).getTime() - new Date(b.end_time).getTime();
-  })[studySessions.length - 1];
+import { useEffect } from 'react';
+import { getLastStudiedDeck } from '../api';
+import { USER_ID } from '@/constants';
+import { setLastStudySession } from '@/features/slice/analytics-slice';
 
+export const StudyHistory = () => {
+  const dispatch = useAppDispatch();
+  const lastStudySession = useAppSelector(
+    (state) => state.studyAnalytics.lastStudySession
+  );
+
+  useEffect(() => {
+    getLastStudiedDeck(USER_ID, (data) =>
+      dispatch(setLastStudySession(data[0]))
+    );
+  }, [dispatch]);
   return (
     <Card>
       <Title>Study History</Title>
       <Text>Last Study Session</Text>
-      {lastStudySession?.id}
+      {lastStudySession?.name}
       <Metric>
-        {lastStudySession?.end_time.toLocaleDateString('en-US', {
+        {new Date(lastStudySession?.end_time).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
           hour: 'numeric',

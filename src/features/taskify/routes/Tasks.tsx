@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { ArrowRight } from 'lucide-react';
-import { EditTaskForm } from '../components/EditTaskForm';
+import { EditTaskForm } from '../components/task/EditTaskForm';
 import Markdown from '@/components/markdown/Markdown';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -21,9 +21,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { AddTaskDialogForm } from '../components/AddTaskDialogForm';
+import { AddTaskDialogForm } from '../components/task/AddTaskDialogForm';
 import { USER_ID } from '@/constants';
-import { DeleteTaskForm } from '../components/DeleteTaskForm';
+import { DeleteTaskForm } from '../components/task/DeleteTaskForm';
 import { Zone } from '@/components/zones/Zone';
 export const Tasks = () => {
   const [openSheet, setOpenSheet] = useState(false);

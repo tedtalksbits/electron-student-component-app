@@ -1,5 +1,10 @@
 import { StudySession } from '@/features/study/types';
 import { DailyStudyAnalytics } from '../components/MostStudied';
+import {
+  LastStudySession,
+  MostStudiedDeck,
+  TotalStudyAnalytics,
+} from '@/features/slice/analytics-slice';
 
 type ResponseData = {
   data: StudySession[];
@@ -28,14 +33,13 @@ export function getStudyAnalytics(
       alert(response.error);
       return;
     }
-    console.log('response get study session', response.data);
     setStudyAnalytics(response.data);
   });
 }
 
 /**
  * @param userId
- * @param setStudyDailyAnalytics
+ * @param callback
  * @returns void
  * @description
  * This function is used to get the daily study analytics of a user.
@@ -44,9 +48,7 @@ export function getStudyAnalytics(
 
 export function getDailyStudyAnalytics(
   userId: number,
-  setStudyDailyAnalytics: React.Dispatch<
-    React.SetStateAction<DailyStudyAnalytics[]>
-  >
+  callback: (data: DailyStudyAnalytics[]) => void
 ) {
   window.electron.ipcRenderer.sendMessage(
     'get-flashcards-studied-daily',
@@ -64,8 +66,117 @@ export function getDailyStudyAnalytics(
         alert(response.error);
         return;
       }
-      console.log('response get daily study session', response.data);
-      setStudyDailyAnalytics(response.data);
+      const dataWithDatesAsString = response.data.map((task) => {
+        return {
+          ...task,
+          study_date: task.study_date.toString() as any,
+        };
+      });
+      callback(dataWithDatesAsString);
     }
   );
+}
+
+/**
+ * @param userId
+ * @param callback
+ * @returns void
+ * @description
+ * This function is used to get most studied decks of a user.
+ * key: get-most-studied-decks, get-most-studied-decks-response
+ *
+ * */
+
+export function getMostStudiedDecks(
+  userId: number,
+  callback: (data: MostStudiedDeck[]) => void
+) {
+  window.electron.ipcRenderer.sendMessage('get-most-studied-decks', userId);
+
+  window.electron.ipcRenderer.on('get-most-studied-decks-response', (arg) => {
+    const response = arg as {
+      data: MostStudiedDeck[];
+      error?: string;
+    };
+    if (response.error) {
+      alert(response.error);
+      return;
+    }
+
+    const dataWithDatesAsString = response.data.map((task) => {
+      return {
+        ...task,
+        created_at: task.created_at.toString() as any,
+        updated_at: task.updated_at.toString() as any,
+      };
+    });
+    callback(dataWithDatesAsString);
+  });
+}
+
+/**
+ * @param userId
+ * @param callback
+ * @returns void
+ * @description
+ * This function is used to get the last study session + deck of a user.
+ * key: get-last-studied-deck, get-last-studied-deck-response
+ * */
+
+export function getLastStudiedDeck(
+  userId: number,
+  callback: (data: LastStudySession[]) => void
+) {
+  window.electron.ipcRenderer.sendMessage('get-last-studied-deck', userId);
+
+  window.electron.ipcRenderer.on('get-last-studied-deck-response', (arg) => {
+    const response = arg as {
+      data: LastStudySession[];
+      error?: string;
+    };
+    if (response.error) {
+      alert(response.error);
+      return;
+    }
+
+    const dataWithDatesAsString = response.data.map((task) => {
+      return {
+        ...task,
+        created_at: task.created_at.toString() as any,
+        updated_at: task.updated_at.toString() as any,
+        end_time: task.end_time.toString() as any,
+        start_time: task.start_time.toString() as any,
+      };
+    });
+    callback(dataWithDatesAsString);
+  });
+}
+
+/**
+ * @param userId
+ * @param callback
+ * @returns void
+ * @description
+ * This function is used to get the totals for analytical data points.
+ * key: get-total-analytics, get-total-analytics-response
+ * */
+
+export function getTotalAnalytics(
+  userId: number,
+  callback: (data: TotalStudyAnalytics[]) => void
+) {
+  window.electron.ipcRenderer.sendMessage('get-total-analytics', userId);
+
+  window.electron.ipcRenderer.on('get-total-analytics-response', (arg) => {
+    const response = arg as {
+      data: TotalStudyAnalytics[];
+      error?: string;
+    };
+    if (response.error) {
+      alert(response.error);
+      return;
+    }
+
+    callback(response.data);
+  });
 }

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Course } from '../types';
 import { getDayNameByDayIndex } from '@/lib/utils';
 import { Calendar, Clock, Mail, Pin, Text, User } from 'lucide-react';
@@ -69,17 +68,17 @@ function sayMeetDaysForCourse(course?: Course) {
   return days;
 }
 
-function convertString24HourTimeTo12HourTime(time?: string) {
-  if (!time) return '';
-  // time forma is '1200' or '1230'
-  const hour = time.slice(0, 2);
-  const minute = time.slice(2, 4);
-  const hourInt = parseInt(hour);
-  const minuteInt = parseInt(minute);
-  const isPM = hourInt >= 12;
-  const hour12 = hourInt > 12 ? hourInt - 12 : hourInt;
-  const hour12String = hour12.toString().length === 1 ? '0' + hour12 : hour12;
-  const minuteString = minuteInt.toString() === '0' ? '00' : minuteInt;
-  const ampm = isPM ? 'PM' : 'AM';
-  return `${hour12String}:${minuteString} ${ampm}`;
-}
+// function convertString24HourTimeTo12HourTime(time?: string) {
+//   if (!time) return '';
+//   // time forma is '1200' or '1230'
+//   const hour = time.slice(0, 2);
+//   const minute = time.slice(2, 4);
+//   const hourInt = parseInt(hour);
+//   const minuteInt = parseInt(minute);
+//   const isPM = hourInt >= 12;
+//   const hour12 = hourInt > 12 ? hourInt - 12 : hourInt;
+//   const hour12String = hour12.toString().length === 1 ? '0' + hour12 : hour12;
+//   const minuteString = minuteInt.toString() === '0' ? '00' : minuteInt;
+//   const ampm = isPM ? 'PM' : 'AM';
+//   return `${hour12String}:${minuteString} ${ampm}`;
+// }

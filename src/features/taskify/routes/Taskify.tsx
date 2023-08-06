@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { setProjects } from '@/features/slice/project-slice';
 import { getProjects } from '../api';
-import { AddProjectDialogForm } from '../components/AddProjectDialogForm';
+import { AddProjectDialogForm } from '../components/project/AddProjectDialogForm';
 
 export const Taskify = () => {
   const dispatch = useAppDispatch();

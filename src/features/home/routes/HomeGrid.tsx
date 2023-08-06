@@ -1,7 +1,6 @@
 import { SkedroolPreview } from '@/features/skedrool/components/SkedroolPreview';
 import { AvatarIcon } from '@radix-ui/react-icons';
 import { Card, Divider, Title } from '@tremor/react';
-import React from 'react';
 
 export const HomeGrid = () => {
   return (

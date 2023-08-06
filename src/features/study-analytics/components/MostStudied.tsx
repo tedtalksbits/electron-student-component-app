@@ -1,6 +1,3 @@
-import { fetchDeckById } from '@/features/decks/api';
-import { DeckType } from '@/features/decks/types';
-import { StudySession } from '@/features/study/types';
 import {
   Card,
   Text,
@@ -13,9 +10,14 @@ import {
   TableRow,
   Title,
 } from '@tremor/react';
-import { useEffect, useState } from 'react';
-import { getDailyStudyAnalytics } from '../api';
+import { useEffect } from 'react';
+import { getDailyStudyAnalytics, getMostStudiedDecks } from '../api';
 import { USER_ID } from '../../../constants/index';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import {
+  setDailyStudyAnalytics,
+  setMostStudiedDecks,
+} from '@/features/slice/analytics-slice';
 
 export type DailyStudyAnalytics = {
   study_date: string;
@@ -23,12 +25,20 @@ export type DailyStudyAnalytics = {
 };
 
 export const MostStudied = () => {
-  const [dailyStudyAnalytics, setDailyStudyAnalytics] = useState<
-    DailyStudyAnalytics[]
-  >([]);
+  const dispatch = useAppDispatch();
+  const dailyStudyAnalytics = useAppSelector(
+    (state) => state.studyAnalytics.dailyStudyAnalytics
+  );
+  const mostStudiedDecks = useAppSelector(
+    (state) => state.studyAnalytics.mostStudiedDecks
+  );
+
   useEffect(() => {
-    getDailyStudyAnalytics(USER_ID, setDailyStudyAnalytics);
-  }, []);
+    getDailyStudyAnalytics(USER_ID, (data) =>
+      dispatch(setDailyStudyAnalytics(data))
+    );
+    getMostStudiedDecks(USER_ID, (data) => dispatch(setMostStudiedDecks(data)));
+  }, [dispatch]);
 
   const barchartData = dailyStudyAnalytics.map((studySession) => {
     return {
@@ -45,7 +55,6 @@ export const MostStudied = () => {
 
   return (
     <div className='flex flex-col gap-4'>
-      {JSON.stringify(dailyStudyAnalytics)}
       <Card>
         <Title>Daily Studying</Title>
         <BarChart
@@ -55,7 +64,7 @@ export const MostStudied = () => {
           index='study_date'
         />
       </Card>
-      {/* <Card>
+      <Card>
         <Title>Most Studied Deck</Title>
         <Table>
           <TableHead>
@@ -66,14 +75,24 @@ export const MostStudied = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell>{deck[0]?.name}</TableCell>
-              <TableCell>{mostStudiedDeck?.duration_sec}</TableCell>
-              <TableCell>{mostStudiedDeck?.flashcards_studied}</TableCell>
-            </TableRow>
+            {mostStudiedDecks.map((deck) => {
+              return (
+                <TableRow key={deck.id}>
+                  <TableCell>
+                    <Text>{deck.name}</Text>
+                  </TableCell>
+                  <TableCell>
+                    <Text>{deck.total_duration}</Text>
+                  </TableCell>
+                  <TableCell>
+                    <Text>{deck.total_flashcards_studied}</Text>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
-      </Card> */}
+      </Card>
     </div>
   );
 };

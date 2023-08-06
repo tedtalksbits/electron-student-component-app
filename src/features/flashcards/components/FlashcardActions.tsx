@@ -64,7 +64,6 @@ export const FlashcardActions = ({
       hint,
       tags,
     } as FlashcardType;
-    console.log(data);
 
     updateFlashcard<FlashcardType>(
       flashcard.id,

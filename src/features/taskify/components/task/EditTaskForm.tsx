@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { updateTask } from '../api';
+import { updateTask } from '../../api';
 import { useAppDispatch } from '@/hooks/redux';
 import { useToast } from '@/components/ui/use-toast';
 import { USER_ID } from '@/constants';

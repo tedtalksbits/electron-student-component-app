@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { AddProjectDialogForm } from './AddProjectDialogForm';
-import { EditProjectDialogForm } from './EditProjectDialogForm';
+import { AddProjectDialogForm } from './project/AddProjectDialogForm';
+import { EditProjectDialogForm } from './project/EditProjectDialogForm';
 import { useAppSelector } from '@/hooks/redux';
 import { Project } from '@/features/slice/project-slice';
 

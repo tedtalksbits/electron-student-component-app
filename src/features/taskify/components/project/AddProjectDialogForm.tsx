@@ -8,7 +8,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import React, { useState } from 'react';
-import { createProject } from '../api';
+import { createProject } from '../../api';
 import { useAppDispatch } from '@/hooks/redux';
 import { setProjects } from '@/features/slice/project-slice';
 import { USER_ID } from '@/constants';
@@ -21,7 +21,6 @@ export const AddProjectDialogForm = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    console.log(data);
     data.user_id = USER_ID.toString();
     createProject(data, (data) => dispatch(setProjects(data)));
     setOpen(false);

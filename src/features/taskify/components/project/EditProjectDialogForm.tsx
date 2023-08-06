@@ -4,11 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import React from 'react';
 import { Project, setProjects } from '@/features/slice/project-slice';
-import IconSelection from './IconSelection';
-import { getTasks, updateProject } from '../api';
+import IconSelection from '../IconSelection';
+import { getTasks, updateProject } from '../../api';
 import { useAppDispatch } from '@/hooks/redux';
 import { Zone } from '@/components/zones/Zone';
-import { deleteProject } from '../api/index';
+import { deleteProject } from '../../api/index';
 
 type EditProjectDialogFormProps = {
   show: boolean;

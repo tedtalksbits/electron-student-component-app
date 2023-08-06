@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Trash } from 'lucide-react';
 import React, { useState } from 'react';
-import { deleteTask } from '../api/index';
+import { deleteTask } from '../../api/index';
 import { useAppDispatch } from '@/hooks/redux';
 import { Task, setTasks } from '@/features/slice/task-slice';
 

@@ -69,6 +69,7 @@ export const routes = {
         href: '/taskify/tasks/:id',
         description: 'Taskify App',
         element: <Tasks />,
+        icon: Tablets,
       },
     ],
   },

@@ -1,35 +1,40 @@
-import { StudySession } from '@/features/study/types';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { Card, Text, Metric, Title, Divider } from '@tremor/react';
-type StudyDurationProps = {
-  studySessions: StudySession[];
-};
-export const StudyDuration = ({ studySessions }: StudyDurationProps) => {
-  const totalDuration = studySessions.reduce((acc, curr) => {
-    return (acc + curr.duration_sec) as number;
-  }, 0);
+import { getTotalAnalytics } from '../api';
+import { setTotalStudyAnalytics } from '@/features/slice/analytics-slice';
+import { USER_ID } from '@/constants';
+import { useEffect } from 'react';
 
-  const totalFlashcardsStudied = studySessions.reduce((acc, curr) => {
-    return (acc + curr.flashcards_studied) as number;
-  }, 0);
+export const StudyDuration = () => {
+  const dispatch = useAppDispatch();
+  const totalAnalytics = useAppSelector(
+    (state) => state.studyAnalytics.totalStudyAnalytics
+  );
 
-  const totalStudySessions = studySessions.length;
-
-  const averageDuration = totalDuration / totalStudySessions;
+  useEffect(() => {
+    getTotalAnalytics(USER_ID, (data) =>
+      dispatch(setTotalStudyAnalytics(data[0]))
+    );
+  }, [dispatch]);
 
   return (
     <Card>
       <Title>Study Duration</Title>
       <Text>Total Study Time</Text>
-      <Metric>{Math.floor(totalDuration / 60)} minutes</Metric>
+      <Metric>
+        {Math.floor(totalAnalytics.total_time_studied / 60)} minutes
+      </Metric>
       <Divider />
       <Text>Total Flashcards Studied</Text>
-      <Metric>{totalFlashcardsStudied}</Metric>
+      <Metric>{totalAnalytics.total_flashcards_studied}</Metric>
       <Divider />
       <Text>Total Study Sessions</Text>
-      <Metric>{totalStudySessions}</Metric>
+      <Metric>{totalAnalytics.total_completed_sessions}</Metric>
       <Divider />
       <Text>Average Study Duration</Text>
-      <Metric>{(averageDuration / 60).toFixed(2)} minutes</Metric>
+      <Metric>
+        {(totalAnalytics.average_study_duration / 60).toFixed(2)} minutes
+      </Metric>
     </Card>
   );
 };

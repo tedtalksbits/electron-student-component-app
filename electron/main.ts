@@ -233,18 +233,68 @@ ipcMain.on('get-study-sessions', async (event, userId) => {
 ipcMain.on('get-flashcards-studied-daily', async (event, userId) => {
   console.log('get-flashcards-studied-daily', userId);
   try {
-    const [rows, fields] = await connection.execute<RowDataPacket[]>(
+    const [rows] = await connection.execute<RowDataPacket[]>(
       'CALL get_flashcards_study_daily(?)',
       [userId]
     );
-
-    console.log('rows', rows);
-    console.log('fields', fields);
-
     event.reply('get-flashcards-studied-daily-response', { data: rows[0] });
   } catch (error) {
     const err = error as Error;
     event.reply('get-flashcards-studied-daily-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+// get most studied decks by user
+
+ipcMain.on('get-most-studied-decks', async (event, userId) => {
+  console.log('get-most-studied-decks', userId);
+  try {
+    const [rows] = await connection.execute<RowDataPacket[]>(
+      'CALL get_most_studied_decks(?)',
+      [userId]
+    );
+    event.reply('get-most-studied-decks-response', { data: rows[0] });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('get-most-studied-decks-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+// get last studied deck by user
+
+ipcMain.on('get-last-studied-deck', async (event, userId) => {
+  console.log('get-last-studied-deck', userId);
+  try {
+    const [rows] = await connection.execute<RowDataPacket[]>(
+      'CALL get_last_study_session(?)',
+      [userId]
+    );
+    event.reply('get-last-studied-deck-response', { data: rows[0] });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('get-last-studied-deck-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+// get_total_analytics
+
+ipcMain.on('get-total-analytics', async (event, userId) => {
+  console.log('get-total-analytics', userId);
+  try {
+    const [rows] = await connection.execute<RowDataPacket[]>(
+      'CALL get_total_analytics(?)',
+      [userId]
+    );
+    event.reply('get-total-analytics-response', { data: rows[0] });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('get-total-analytics-response', {
       error: err.sqlMessage,
     });
   }

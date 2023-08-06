@@ -1,7 +1,5 @@
 import { AppsGrid } from '@/components/navigation/AppsGrid';
-import { SkedroolPreview } from '@/features/skedrool/components/SkedroolPreview';
-import { AvatarIcon } from '@radix-ui/react-icons';
-import { Card, Title, Divider } from '@tremor/react';
+import { Title } from '@tremor/react';
 
 export const Home = () => {
   return (
