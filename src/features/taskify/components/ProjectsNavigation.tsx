@@ -15,7 +15,7 @@ export const ProjectsNavigation = () => {
     setOpen(true);
   }
   return (
-    <div className='p-4 flex flex-col h-full bg-secondary'>
+    <div className='p-4 flex flex-col h-full bg-accent'>
       <div className='flex justify-between items-center my-4 border-b pb-4'>
         <h2 className='text-lg font-medium'>Projects</h2>
         <AddProjectDialogForm />
@@ -26,8 +26,8 @@ export const ProjectsNavigation = () => {
             key={project.id}
             to={`/taskify/tasks/${project.id}`}
             className={({ isActive }) =>
-              (isActive ? 'bg-sky-600 text-white' : '') +
-              ' block px-4 py-2 rounded-full text-left hover:bg-black/10 transition-colors duration-300 ease-in-out'
+              (isActive ? 'bg-muted text-white' : '') +
+              ' block px-4 py-2 rounded-full text-left hover:bg-muted transition-colors duration-300 ease-in-out'
             }
             onClick={() => setLastVisitedProject(project.id)}
           >

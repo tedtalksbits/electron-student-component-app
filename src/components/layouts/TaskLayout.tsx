@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
-import Navbar from '../navigation/Navbar';
 import { ProjectsNavigation } from '@/features/taskify/components/ProjectsNavigation';
+import { AppGridPopover } from '../navigation/AppGridPopover';
+import { ThemeToggler } from '../theme/ThemeToggler';
 
 export const TaskLayout = () => {
   return (
@@ -11,9 +12,19 @@ export const TaskLayout = () => {
         </div>
       </div>
       <div className='w-full'>
-        <div className='h-screen'>
-          <Navbar showBackButton={false} />
-          <Outlet />
+        <div className='h-screen flex flex-col gap-4'>
+          <nav className='w-full border-b'>
+            <div className='flex items-center justify-between px-4 py-2'>
+              <h2 className='text-2xl font-bold'>Taskify</h2>
+              <div className='actions'>
+                <AppGridPopover />
+                <ThemeToggler />
+              </div>
+            </div>
+          </nav>
+          <div className='px-4'>
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

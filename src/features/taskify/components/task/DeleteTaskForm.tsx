@@ -36,10 +36,10 @@ export const DeleteTaskForm = ({
     <Dialog open={open} onOpenChange={() => setOpen(!open)}>
       <DialogTrigger asChild>
         <Button variant='destructive'>
-          <Trash size={14} className='hover:text-primary text-primary/80' />
+          <Trash size={14} /> Delete
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className='mt-auto'>
         <DialogTitle>Delete {task.name}?</DialogTitle>
 
         <div className='form-footer'>

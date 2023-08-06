@@ -68,7 +68,9 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
     <Dialog open={open} onOpenChange={() => setOpen(!open)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant='outline'>...</Button>
+          <Button variant='outline' className='w-max h-max'>
+            ...
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DialogTrigger asChild>

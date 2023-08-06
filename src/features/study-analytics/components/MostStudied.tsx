@@ -1,5 +1,4 @@
 import {
-  Card,
   Text,
   BarChart,
   Table,
@@ -8,7 +7,6 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
-  Title,
 } from '@tremor/react';
 import { useEffect } from 'react';
 import { getDailyStudyAnalytics, getMostStudiedDecks } from '../api';
@@ -18,7 +16,7 @@ import {
   setDailyStudyAnalytics,
   setMostStudiedDecks,
 } from '@/features/slice/analytics-slice';
-
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export type DailyStudyAnalytics = {
   study_date: string;
   total_flashcards_studied: number;
@@ -56,42 +54,50 @@ export const MostStudied = () => {
   return (
     <div className='flex flex-col gap-4'>
       <Card>
-        <Title>Daily Studying</Title>
-        <BarChart
-          className='mt-6'
-          data={barchartData}
-          categories={['total_flashcards_studied']}
-          index='study_date'
-        />
+        <CardHeader>
+          <CardTitle>Daily Studying</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BarChart
+            className='mt-6'
+            data={barchartData}
+            categories={['total_flashcards_studied']}
+            index='study_date'
+          />
+        </CardContent>
       </Card>
       <Card>
-        <Title>Most Studied Deck</Title>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>Deck Name</TableHeaderCell>
-              <TableHeaderCell>Duration (sec)</TableHeaderCell>
-              <TableHeaderCell>Cards Studied</TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {mostStudiedDecks.map((deck) => {
-              return (
-                <TableRow key={deck.id}>
-                  <TableCell>
-                    <Text>{deck.name}</Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text>{deck.total_duration}</Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text>{deck.total_flashcards_studied}</Text>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <CardHeader>
+          <CardTitle>Most Studied Decks</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell>Deck Name</TableHeaderCell>
+                <TableHeaderCell>Duration (sec)</TableHeaderCell>
+                <TableHeaderCell>Cards Studied</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {mostStudiedDecks.map((deck) => {
+                return (
+                  <TableRow key={deck.id}>
+                    <TableCell>
+                      <Text>{deck.name}</Text>
+                    </TableCell>
+                    <TableCell>
+                      <Text>{deck.total_duration}</Text>
+                    </TableCell>
+                    <TableCell>
+                      <Text>{deck.total_flashcards_studied}</Text>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
       </Card>
     </div>
   );

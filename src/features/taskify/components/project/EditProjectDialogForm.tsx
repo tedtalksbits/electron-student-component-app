@@ -54,7 +54,15 @@ export const EditProjectDialogForm = ({
   return (
     <Dialog open={show} onOpenChange={() => setShow(!open)}>
       <DialogContent>
-        <DialogTitle>Update Project</DialogTitle>
+        <DialogTitle>
+          <div>
+            <h2 className='text-lg font-semibold'>Update Project</h2>
+            <div className='flex gap-2 text-xs text-muted'>
+              <span>Last updated:</span>
+              <span>{new Date(project.updated_at).toLocaleString()}</span>
+            </div>
+          </div>
+        </DialogTitle>
         <form onSubmit={handleSubmit} className='form'>
           <IconSelection defaultValue={project.icon} />
           <div className='form-group'>
@@ -68,18 +76,7 @@ export const EditProjectDialogForm = ({
               required
             />
           </div>
-          <div className='form-group text-xs'>
-            <div className='flex gap-4'>
-              <span>Created:</span>
-              <span className='text-secondary'>
-                {new Date(project.created_at).toLocaleString()}
-              </span>
-            </div>
-            <div className='flex gap-4'>
-              <span>Updated:</span>
-              <span>{new Date(project.updated_at).toLocaleString()}</span>
-            </div>
-          </div>
+
           <div className='form-footer'>
             <Button type='submit'>Save</Button>
           </div>

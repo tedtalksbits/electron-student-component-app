@@ -42,7 +42,7 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
     <div>
       <Dialog open={open} onOpenChange={() => setOpen(!open)}>
         <DialogTrigger asChild>
-          <Button variant='secondary'>Add Deck</Button>
+          <Button variant='default'>Add Deck</Button>
         </DialogTrigger>
         <DialogContent>
           <DialogTitle>Add New Deck</DialogTitle>

@@ -25,6 +25,7 @@ import { AddTaskDialogForm } from '../components/task/AddTaskDialogForm';
 import { USER_ID } from '@/constants';
 import { DeleteTaskForm } from '../components/task/DeleteTaskForm';
 import { Zone } from '@/components/zones/Zone';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 export const Tasks = () => {
   const [openSheet, setOpenSheet] = useState(false);
   const dispatch = useAppDispatch();
@@ -53,175 +54,184 @@ export const Tasks = () => {
   const statuses = ['not started', 'in progress', 'done'] as const;
 
   return (
-    <div>
-      <div className='flex items-center gap-4 my-4 p-2'>
+    <>
+      <div className='flex items-center gap-4 my-4 '>
         <h2 className='text-lg font-medium'>Tasks</h2>
         <AddTaskDialogForm project_id={id} />
       </div>
-      <Table className='table-auto w-full'>
-        <TableHeader>
-          <TableRow>
-            {['Name', 'Status', 'Priority', 'Created'].map((item) => (
-              <TableHead key={item}>{item}</TableHead>
-            ))}
+      <Card>
+        <CardHeader>All Tasks</CardHeader>
+        <CardContent>
+          <Table className='table-auto w-full'>
+            <TableHeader>
+              <TableRow>
+                {['Name', 'Status', 'Priority', 'Created'].map((item) => (
+                  <TableHead key={item}>{item}</TableHead>
+                ))}
 
-            <TableHead className='2xl:block hidden'>Descriptions</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {tasks.map((task) => (
-            <TableRow key={task.id}>
-              <TableCell>
-                <div className='flex items-center gap-2' key={task.id}>
-                  <label htmlFor={task.id.toString()}>
-                    <input
-                      type='checkbox'
-                      name=''
-                      id={task.id.toString()}
-                      className='checkbox-fancy'
-                      checked={task.status === 'done'}
-                      onChange={() =>
-                        handleEdit(
-                          {
-                            status:
-                              task.status === 'done' ? 'not started' : 'done',
-                          },
-                          task.id,
-                          task.project_id
-                        )
-                      }
-                    />
-                    {task.name}
-                  </label>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Popover>
-                  <PopoverTrigger>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        tagColors[task.status]
-                      }`}
-                    >
-                      {task.status}
-                    </span>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <div className='flex items-center gap-2 flex-col'>
-                      {statuses.map((item) => (
-                        <button
-                          type='button'
-                          key={item}
-                          className={`px-2 py-1 rounded-full text-xs ${tagColors[item]} w-full hover:bg-opacity-100 hover:border-opacity-100`}
-                          onClick={() =>
+                <TableHead className='2xl:block hidden'>Descriptions</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {tasks.map((task) => (
+                <TableRow key={task.id}>
+                  <TableCell>
+                    <div className='flex items-center gap-2' key={task.id}>
+                      <label htmlFor={task.id.toString()}>
+                        <input
+                          type='checkbox'
+                          name=''
+                          id={task.id.toString()}
+                          className='checkbox-fancy'
+                          checked={task.status === 'done'}
+                          onChange={() =>
                             handleEdit(
-                              { status: item },
+                              {
+                                status:
+                                  task.status === 'done'
+                                    ? 'not started'
+                                    : 'done',
+                              },
                               task.id,
                               task.project_id
                             )
                           }
-                        >
-                          {item}
-                        </button>
-                      ))}
+                        />
+                        {task.name}
+                      </label>
                     </div>
-                  </PopoverContent>
-                </Popover>
-              </TableCell>
-              <TableCell>
-                <Popover>
-                  <PopoverTrigger>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        tagColors[task.priority]
-                      }`}
+                  </TableCell>
+                  <TableCell>
+                    <Popover>
+                      <PopoverTrigger>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            tagColors[task.status]
+                          }`}
+                        >
+                          {task.status}
+                        </span>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className='flex items-center gap-2 flex-col'>
+                          {statuses.map((item) => (
+                            <button
+                              type='button'
+                              key={item}
+                              className={`px-2 py-1 rounded-full text-xs ${tagColors[item]} w-full hover:bg-opacity-100 hover:border-opacity-100`}
+                              onClick={() =>
+                                handleEdit(
+                                  { status: item },
+                                  task.id,
+                                  task.project_id
+                                )
+                              }
+                            >
+                              {item}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </TableCell>
+                  <TableCell>
+                    <Popover>
+                      <PopoverTrigger>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            tagColors[task.priority]
+                          }`}
+                        >
+                          {task.priority}
+                        </span>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className='flex items-center gap-2 flex-col'>
+                          {priorities.map((item) => (
+                            <button
+                              type='button'
+                              key={item}
+                              className={`px-2 py-1 rounded-full text-xs ${tagColors[item]} w-full hover:bg-opacity-100 hover:border-opacity-100`}
+                              onClick={() =>
+                                handleEdit(
+                                  { priority: item },
+                                  task.id,
+                                  task.project_id
+                                )
+                              }
+                            >
+                              {item}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(task.created_at).toLocaleDateString()}
+                  </TableCell>
+
+                  <TableCell className='2xl:block hidden text-constraint'>
+                    {task.description || 'No description'}
+                  </TableCell>
+                  <TableCell>
+                    <Sheet
+                      open={openSheet}
+                      onOpenChange={() => setOpenSheet(!openSheet)}
                     >
-                      {task.priority}
-                    </span>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <div className='flex items-center gap-2 flex-col'>
-                      {priorities.map((item) => (
-                        <button
-                          type='button'
-                          key={item}
-                          className={`px-2 py-1 rounded-full text-xs ${tagColors[item]} w-full hover:bg-opacity-100 hover:border-opacity-100`}
-                          onClick={() =>
-                            handleEdit(
-                              { priority: item },
-                              task.id,
-                              task.project_id
-                            )
-                          }
-                        >
-                          {item}
-                        </button>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </TableCell>
-              <TableCell>
-                {new Date(task.created_at).toLocaleDateString()}
-              </TableCell>
+                      <button
+                        className='btn btn-primary'
+                        onClick={() => setOpenSheet(true)}
+                      >
+                        <ArrowRight />
+                      </button>
 
-              <TableCell className='2xl:block hidden text-constraint'>
-                {task.description || 'No description'}
-              </TableCell>
-              <TableCell>
-                <Sheet
-                  open={openSheet}
-                  onOpenChange={() => setOpenSheet(!openSheet)}
-                >
-                  <button
-                    className='btn btn-primary'
-                    onClick={() => setOpenSheet(true)}
-                  >
-                    <ArrowRight />
-                  </button>
-
-                  <SheetContent className='min-w-[600px]'>
-                    <Tabs defaultValue='view'>
-                      <TabsList>
-                        <TabsTrigger value='edit'>Edit</TabsTrigger>
-                        <TabsTrigger value='view'>View</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value='edit'>
-                        <EditTaskForm task={task} />
-                        <Zone
-                          variant='destructive'
-                          className='my-4'
-                          title='Danger Zone'
-                        >
-                          <div className='flex items-center justify-between'>
-                            <div className='flex flex-col'>
-                              <p className='text-sm font-medium'>Delete Task</p>
-                              <small className='text-xs'>
-                                This action cannot be undone
-                              </small>
-                            </div>
-                            <DeleteTaskForm
-                              task={task}
-                              onMutation={() => setOpenSheet(false)}
-                            />
-                          </div>
-                        </Zone>
-                      </TabsContent>
-                      <TabsContent value='view'>
-                        <p className='my-4'>Description</p>
-                        <Markdown>
-                          {task.description || 'No description'}
-                        </Markdown>
-                      </TabsContent>
-                    </Tabs>
-                  </SheetContent>
-                </Sheet>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+                      <SheetContent className='min-w-[600px]'>
+                        <Tabs defaultValue='view'>
+                          <TabsList>
+                            <TabsTrigger value='edit'>Edit</TabsTrigger>
+                            <TabsTrigger value='view'>View</TabsTrigger>
+                          </TabsList>
+                          <TabsContent value='edit'>
+                            <EditTaskForm task={task} />
+                            <Zone
+                              variant='destructive'
+                              className='mt-96'
+                              title='Danger Zone'
+                            >
+                              <div className='flex items-center justify-between'>
+                                <div className='flex flex-col'>
+                                  <p className='text-sm font-medium'>
+                                    Delete Task
+                                  </p>
+                                  <small className='text-xs'>
+                                    This action cannot be undone
+                                  </small>
+                                </div>
+                                <DeleteTaskForm
+                                  task={task}
+                                  onMutation={() => setOpenSheet(false)}
+                                />
+                              </div>
+                            </Zone>
+                          </TabsContent>
+                          <TabsContent value='view'>
+                            <p className='my-4'>Description</p>
+                            <Markdown>
+                              {task.description || 'No description'}
+                            </Markdown>
+                          </TabsContent>
+                        </Tabs>
+                      </SheetContent>
+                    </Sheet>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </>
   );
 };
