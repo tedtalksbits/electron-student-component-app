@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Badge, Calendar, theme } from 'antd';
+import { useState } from 'react';
+import { Badge, Calendar } from 'antd';
 import type { Dayjs } from 'dayjs';
 import {
   Sheet,
@@ -9,63 +9,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Course } from '../types';
-import { getDayNameByDayIndex } from '@/lib/utils';
 import { CourseInfo } from './CourseInfo';
-
-const courses = [
-  {
-    name: 'Math',
-    color: 'blue',
-    days: [1, 2, 4],
-    start_time: '10:00',
-    end_time: '',
-    duration: '1 hour',
-    location: 'Zoom',
-    professor: 'Mr. Smith',
-    year: '2021-2022',
-    start: '2023-08-28',
-    end: '2023-12-18',
-  },
-  {
-    name: 'English',
-    color: 'red',
-    days: [1, 4],
-    start_time: '21:00',
-    end_time: '',
-    duration: '1 hour',
-    location: 'Hudson Hall',
-    professor: 'Mr. Joe',
-    term_year: '2021-2022',
-    start: '2023-08-28',
-    end: '2023-12-18',
-  },
-  {
-    name: 'Science',
-    color: 'green',
-    days: [2, 3, 4],
-    start_time: '21:05',
-    end_time: '',
-    duration: '1 hour',
-    location: 'Hudson Hall',
-    professor: 'Mr. Joe',
-    term_year: '2021-2022',
-    start: '2023-08-28',
-    end: '2023-12-18',
-  },
-  {
-    name: 'History',
-    color: 'purple',
-    days: [1, 2, 3, 4],
-    start_time: '17:05',
-    end_time: '',
-    duration: '1 hour',
-    location: 'Hudson Hall',
-    professor: 'Mr. Joe',
-    term_year: '2021-2022',
-    start: '2023-08-28',
-    end: '2023-12-18',
-  },
-];
 
 type CalendarItemsProps = {
   courses: Course[];

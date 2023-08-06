@@ -10,10 +10,9 @@ import { Label } from '@/components/ui/label';
 import React, { useState } from 'react';
 import { createProject } from '../api';
 import { useAppDispatch } from '@/hooks/redux';
-import { setProjects } from '../slice/project-slice';
+import { setProjects } from '@/features/slice/project-slice';
 import { USER_ID } from '@/constants';
-import { Divide, PlusIcon } from 'lucide-react';
-import { Divider } from '@tremor/react';
+import { PlusIcon } from 'lucide-react';
 
 export const AddProjectDialogForm = () => {
   const [open, setOpen] = useState(false);

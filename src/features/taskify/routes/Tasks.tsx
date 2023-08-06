@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getTasksByProjectId, updateTask } from '../api';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { Task, setTasks } from '../slice/task-slice';
+import { Task, setTasks } from '@/features/slice/task-slice';
 import {
   Table,
   TableBody,
@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { ArrowRight } from 'lucide-react';
 import { EditTaskForm } from '../components/EditTaskForm';
 import Markdown from '@/components/markdown/Markdown';
@@ -21,22 +21,24 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { AddTaskDialogForm } from '../components/AddTaskDialogForm';
+import { USER_ID } from '@/constants';
+import { DeleteTaskForm } from '../components/DeleteTaskForm';
+import { Zone } from '@/components/zones/Zone';
 export const Tasks = () => {
+  const [openSheet, setOpenSheet] = useState(false);
   const dispatch = useAppDispatch();
-
   const { id } = useParams();
-
   useEffect(() => {
-    console.log(id);
     getTasksByProjectId(Number(id), (data) => dispatch(setTasks(data)));
   }, [id, dispatch]);
 
-  const handleEdit = (task: Partial<Task>, id: number) => {
-    console.log('clicked');
-    updateTask(id, task, (data) => dispatch(setTasks(data)));
+  const handleEdit = (task: Partial<Task>, id: number, project_id: number) => {
+    const refetchQuery = `SELECT * FROM project_tasks WHERE project_id = ${project_id} AND user_id = ${USER_ID}`;
+    updateTask(id, task, (data) => dispatch(setTasks(data)), refetchQuery);
   };
 
-  const tasks = useAppSelector((state) => state.tasksData.tasks);
+  const tasks = useAppSelector((state) => state.task.tasks);
 
   const tagColors = {
     'not started': 'bg-gray-700/50 border border-gray-700/50',
@@ -52,6 +54,10 @@ export const Tasks = () => {
 
   return (
     <div>
+      <div className='flex items-center gap-4 my-4 p-2'>
+        <h2 className='text-lg font-medium'>Tasks</h2>
+        <AddTaskDialogForm project_id={id} />
+      </div>
       <Table className='table-auto w-full'>
         <TableHeader>
           <TableRow>
@@ -81,7 +87,8 @@ export const Tasks = () => {
                             status:
                               task.status === 'done' ? 'not started' : 'done',
                           },
-                          task.id
+                          task.id,
+                          task.project_id
                         )
                       }
                     />
@@ -107,7 +114,13 @@ export const Tasks = () => {
                           type='button'
                           key={item}
                           className={`px-2 py-1 rounded-full text-xs ${tagColors[item]} w-full hover:bg-opacity-100 hover:border-opacity-100`}
-                          onClick={() => handleEdit({ status: item }, task.id)}
+                          onClick={() =>
+                            handleEdit(
+                              { status: item },
+                              task.id,
+                              task.project_id
+                            )
+                          }
                         >
                           {item}
                         </button>
@@ -135,7 +148,11 @@ export const Tasks = () => {
                           key={item}
                           className={`px-2 py-1 rounded-full text-xs ${tagColors[item]} w-full hover:bg-opacity-100 hover:border-opacity-100`}
                           onClick={() =>
-                            handleEdit({ priority: item }, task.id)
+                            handleEdit(
+                              { priority: item },
+                              task.id,
+                              task.project_id
+                            )
                           }
                         >
                           {item}
@@ -153,12 +170,17 @@ export const Tasks = () => {
                 {task.description || 'No description'}
               </TableCell>
               <TableCell>
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <button className='btn btn-primary'>
-                      <ArrowRight />
-                    </button>
-                  </SheetTrigger>
+                <Sheet
+                  open={openSheet}
+                  onOpenChange={() => setOpenSheet(!openSheet)}
+                >
+                  <button
+                    className='btn btn-primary'
+                    onClick={() => setOpenSheet(true)}
+                  >
+                    <ArrowRight />
+                  </button>
+
                   <SheetContent className='min-w-[600px]'>
                     <Tabs defaultValue='view'>
                       <TabsList>
@@ -167,6 +189,24 @@ export const Tasks = () => {
                       </TabsList>
                       <TabsContent value='edit'>
                         <EditTaskForm task={task} />
+                        <Zone
+                          variant='destructive'
+                          className='my-4'
+                          title='Danger Zone'
+                        >
+                          <div className='flex items-center justify-between'>
+                            <div className='flex flex-col'>
+                              <p className='text-sm font-medium'>Delete Task</p>
+                              <small className='text-xs'>
+                                This action cannot be undone
+                              </small>
+                            </div>
+                            <DeleteTaskForm
+                              task={task}
+                              onMutation={() => setOpenSheet(false)}
+                            />
+                          </div>
+                        </Zone>
                       </TabsContent>
                       <TabsContent value='view'>
                         <p className='my-4'>Description</p>

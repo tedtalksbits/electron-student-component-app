@@ -3,6 +3,7 @@ import path from 'node:path';
 import crudRepository from './crudRepository';
 import connection from './sql';
 import { FlashcardDTO } from '../src/features/flashcards/types/index';
+import { RowDataPacket } from 'mysql2';
 type Error = {
   code: string;
   errno: number;
@@ -35,11 +36,11 @@ ipcMain.on('renderer-process-message', (event, arg) => {
 ipcMain.on('get-decks', async (event) => {
   try {
     const rows = await crudRepository.selectAll('decks');
-    console.log(rows);
+
     event.reply('get-decks-response', { data: rows });
   } catch (error) {
     const err = error as Error;
-    event.reply('delete-deck-response', {
+    event.reply('get-decks-response', {
       error: err.sqlMessage,
     });
   }
@@ -49,11 +50,11 @@ ipcMain.on('get-deck-by-id', async (event, id) => {
   console.log('get-deck-by-id', id);
   try {
     const rows = await crudRepository.select('decks', ['*'], { id });
-    console.log(rows);
+
     event.reply('get-deck-by-id-response', { data: rows });
   } catch (error) {
     const err = error as Error;
-    event.reply('delete-deck-response', {
+    event.reply('get-deck-by-id-response', {
       error: err.sqlMessage,
     });
   }
@@ -68,7 +69,7 @@ ipcMain.on('create-deck', async (event, data, refetchQuery: string) => {
     event.reply('create-deck-response', { data: rows });
   } catch (error) {
     const err = error as Error;
-    event.reply('delete-deck-response', {
+    event.reply('create-deck-response', {
       error: err.sqlMessage,
     });
   }
@@ -110,7 +111,7 @@ ipcMain.on('get-flashcards-by-deckId', async (event, tableName, deckId) => {
     const rows = await crudRepository.select('flashcards', ['*'], {
       deck_id: deckId,
     });
-    console.log(rows);
+
     event.reply('get-flashcards-by-deckId-response', { data: rows });
   } catch (error) {
     const err = error as Error;
@@ -175,7 +176,7 @@ ipcMain.on('add-study-session', async (event, data, refetchQuery?: string) => {
   console.log('add-study-session', data);
   try {
     const [rows] = await crudRepository.createOne('study_sessions', data);
-    console.log(rows);
+
     if (refetchQuery) {
       const [rows] = await connection.execute(refetchQuery);
       event.reply('add-study-session-response', { data: rows });
@@ -216,11 +217,34 @@ ipcMain.on('get-study-sessions', async (event, userId) => {
     const rows = await crudRepository.select('study_sessions', ['*'], {
       user_id: userId,
     });
-    console.log(rows);
+
     event.reply('get-study-sessions-response', { data: rows });
   } catch (error) {
     const err = error as Error;
     event.reply('get-study-sessions-response', {
+      error: err.sqlMessage,
+    });
+  }
+});
+
+// study session analytics stored procedures
+// get flashcards studied daily by user
+
+ipcMain.on('get-flashcards-studied-daily', async (event, userId) => {
+  console.log('get-flashcards-studied-daily', userId);
+  try {
+    const [rows, fields] = await connection.execute<RowDataPacket[]>(
+      'CALL get_flashcards_study_daily(?)',
+      [userId]
+    );
+
+    console.log('rows', rows);
+    console.log('fields', fields);
+
+    event.reply('get-flashcards-studied-daily-response', { data: rows[0] });
+  } catch (error) {
+    const err = error as Error;
+    event.reply('get-flashcards-studied-daily-response', {
       error: err.sqlMessage,
     });
   }
@@ -265,7 +289,7 @@ ipcMain.on('get-projects', async (event, userId) => {
     const rows = await crudRepository.select('projects', ['*'], {
       user_id: userId,
     });
-    console.log(rows);
+
     event.reply('get-projects-response', { data: rows });
   } catch (error) {
     const err = error as Error;
@@ -295,6 +319,7 @@ ipcMain.on('delete-project', async (event, id, refetchQuery: string) => {
   console.log('refetchQuery', refetchQuery);
   try {
     await crudRepository.deleteOne('projects', id);
+    await crudRepository.deleteMany('project_tasks', { project_id: id });
     const [rows] = await connection.execute(refetchQuery);
     event.reply('delete-project-response', { data: rows });
   } catch (error) {
@@ -310,7 +335,7 @@ ipcMain.on('update-project', async (event, id, data, refetchQuery: string) => {
   try {
     await crudRepository.updateOne('projects', id, data);
     const [rows] = await connection.execute(refetchQuery);
-    console.log(rows);
+
     event.reply('update-project-response', { data: rows });
   } catch (error) {
     const err = error as Error;
@@ -326,7 +351,7 @@ ipcMain.on('get-tasks', async (event, userId) => {
     const rows = await crudRepository.select('project_tasks', ['*'], {
       user_id: userId,
     });
-    console.log(rows);
+
     event.reply('get-tasks-response', { data: rows });
   } catch (error) {
     const err = error as Error;
@@ -342,7 +367,7 @@ ipcMain.on('get-tasks-by-projectId', async (event, projectId) => {
     const rows = await crudRepository.select('project_tasks', ['*'], {
       project_id: projectId,
     });
-    console.log(rows);
+
     event.reply('get-tasks-by-projectId-response', { data: rows });
   } catch (error) {
     const err = error as Error;

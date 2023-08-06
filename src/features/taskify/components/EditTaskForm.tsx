@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task, setTasks } from '../slice/task-slice';
+import { Task, setTasks } from '@/features/slice/task-slice';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,15 +15,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { updateTask } from '../api';
 import { useAppDispatch } from '@/hooks/redux';
 import { useToast } from '@/components/ui/use-toast';
+import { USER_ID } from '@/constants';
 
 export const EditTaskForm = ({ task }: { task: Task }) => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const refetchQuery = `SELECT * FROM project_tasks WHERE project_id = ${task.project_id} AND user_id = ${USER_ID}`;
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    updateTask(task.id, data, (data) => dispatch(setTasks(data)));
+    updateTask(task.id, data, (data) => dispatch(setTasks(data)), refetchQuery);
     toast({
       title: 'Task updated',
       description: 'Task has been updated successfully',
