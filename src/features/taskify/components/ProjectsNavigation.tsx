@@ -24,10 +24,11 @@ export const ProjectsNavigation = () => {
         <div key={project.id} onDoubleClick={() => openOnDoubleClick(project)}>
           <NavLink
             key={project.id}
+            title={`${project.name} \n double click to edit project`}
             to={`/taskify/tasks/${project.id}`}
             className={({ isActive }) =>
               (isActive ? 'bg-muted text-white' : '') +
-              ' block px-4 py-2 rounded-full text-left hover:bg-muted transition-colors duration-300 ease-in-out'
+              ' block px-4 py-2 rounded-full text-left hover:bg-muted transition-colors duration-300 ease-in-out text-constraint'
             }
             onClick={() => setLastVisitedProject(project.id)}
           >
