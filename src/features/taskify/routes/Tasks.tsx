@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ArrowRight } from 'lucide-react';
 import { EditTaskForm } from '../components/task/EditTaskForm';
 import Markdown from '@/components/markdown/Markdown';
@@ -180,12 +180,11 @@ export const Tasks = () => {
                       open={openSheet}
                       onOpenChange={() => setOpenSheet(!openSheet)}
                     >
-                      <button
-                        className='btn btn-primary'
-                        onClick={() => setOpenSheet(true)}
-                      >
-                        <ArrowRight />
-                      </button>
+                      <SheetTrigger asChild>
+                        <button className='btn btn-primary'>
+                          <ArrowRight />
+                        </button>
+                      </SheetTrigger>
 
                       <SheetContent className='min-w-[600px]'>
                         <Tabs defaultValue='view'>

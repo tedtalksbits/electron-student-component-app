@@ -6,6 +6,7 @@ import { Divider } from '@tremor/react';
 export const CourseInfo = ({ course }: { course?: Course }) => {
   return (
     <div className='flex flex-col gap-3'>
+      {course?.code}
       <table>
         <tbody>
           <tr>
@@ -49,7 +50,7 @@ export const CourseInfo = ({ course }: { course?: Course }) => {
             <td className='text-foreground font-medium'>
               <a
                 href={`${course?.professor_email}`}
-                className='flex items-center gap-1'
+                className='flex items-center gap-1 underline text-primary'
               >
                 Email
               </a>
