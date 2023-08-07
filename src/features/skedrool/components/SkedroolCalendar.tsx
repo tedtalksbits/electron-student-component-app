@@ -35,23 +35,21 @@ export const SkedroolCalendar = ({ courses }: CalendarItemsProps) => {
     return (
       <ul className='space-y-2'>
         {listData.map((course) => (
-          <>
-            <Sheet key={course.id}>
-              <SheetTrigger asChild>
-                <Badge
-                  title='Click to view course details'
-                  color={course.color}
-                  text={course.code + '\n@' + course.class_time}
-                />
-              </SheetTrigger>
-              <SheetContent className='min-w-[600px]'>
-                <SheetHeader>
-                  <SheetTitle>{course?.name}</SheetTitle>
-                </SheetHeader>
-                <CourseInfo course={course} />
-              </SheetContent>
-            </Sheet>
-          </>
+          <Sheet key={course.id}>
+            <SheetTrigger asChild>
+              <Badge
+                title='Click to view course details'
+                color={course.color}
+                text={course.code + '\n@' + course.class_time}
+              />
+            </SheetTrigger>
+            <SheetContent className='min-w-[600px]'>
+              <SheetHeader>
+                <SheetTitle>{course?.name}</SheetTitle>
+              </SheetHeader>
+              <CourseInfo course={course} />
+            </SheetContent>
+          </Sheet>
         ))}
       </ul>
     );
