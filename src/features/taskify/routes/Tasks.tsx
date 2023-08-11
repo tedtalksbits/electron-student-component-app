@@ -70,7 +70,7 @@ export const Tasks = () => {
                 ))}
 
                 <TableHead className='2xl:block hidden'>Descriptions</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

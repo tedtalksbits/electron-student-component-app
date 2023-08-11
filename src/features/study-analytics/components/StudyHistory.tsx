@@ -5,6 +5,8 @@ import { getLastStudiedDeck } from '../api';
 import { USER_ID } from '@/constants';
 import { setLastStudySession } from '@/features/slice/analytics-slice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { secondsToMinutes } from '@/lib/utils';
+
 export const StudyHistory = () => {
   const dispatch = useAppDispatch();
   const lastStudySession = useAppSelector(
@@ -39,7 +41,7 @@ export const StudyHistory = () => {
         <Divider />
         <Text>Time Spent Studying</Text>
         <Metric>
-          {(lastStudySession?.duration_sec / 60).toFixed(2)} minutes
+          {secondsToMinutes(Number(lastStudySession?.duration_sec))} minutes
         </Metric>
       </CardContent>
     </Card>

@@ -5,6 +5,7 @@ import { setTotalStudyAnalytics } from '@/features/slice/analytics-slice';
 import { USER_ID } from '@/constants';
 import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { secondsToMinutes } from '@/lib/utils';
 
 export const StudyDuration = () => {
   const dispatch = useAppDispatch();
@@ -37,7 +38,7 @@ export const StudyDuration = () => {
         <Divider />
         <Text>Average Study Duration</Text>
         <Metric>
-          {(totalAnalytics.average_study_duration / 60).toFixed(2)} minutes
+          {secondsToMinutes(totalAnalytics.average_study_duration)} minutes
         </Metric>
       </CardContent>
     </Card>

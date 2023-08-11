@@ -27,7 +27,7 @@ export const ProjectsNavigation = () => {
             title={`${project.name} \n double click to edit project`}
             to={`/taskify/tasks/${project.id}`}
             className={({ isActive }) =>
-              (isActive ? 'bg-muted text-white' : '') +
+              (isActive ? 'bg-muted dark:text-white' : '') +
               ' block px-4 py-2 rounded-full text-left hover:bg-muted transition-colors duration-300 ease-in-out text-constraint'
             }
             onClick={() => setLastVisitedProject(project.id)}

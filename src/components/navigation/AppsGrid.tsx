@@ -43,7 +43,7 @@ export const AppsGrid = ({
           key={app.href}
           to={app.href}
           onClick={onItemClick}
-          className={`border flex items-center justify-center rounded-md flex-col ${itemSizes[size]} no-underline outline-none hover:bg-muted transition-colors`}
+          className={`border flex items-center justify-center rounded-md flex-col ${itemSizes[size]} no-underline outline-none  transition-colors bg-white dark:bg-neutral-900 hover:shadow-md active:border-primary`}
         >
           <app.icon className={`${iconSizes[size]} ${colors[i]}`} />
           <span className='text-center'>{app.title}</span>

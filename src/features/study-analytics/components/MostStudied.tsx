@@ -17,6 +17,7 @@ import {
   setMostStudiedDecks,
 } from '@/features/slice/analytics-slice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { secondsToMinutes } from '@/lib/utils';
 export type DailyStudyAnalytics = {
   study_date: string;
   total_flashcards_studied: number;
@@ -75,7 +76,7 @@ export const MostStudied = () => {
             <TableHead>
               <TableRow>
                 <TableHeaderCell>Deck Name</TableHeaderCell>
-                <TableHeaderCell>Duration (sec)</TableHeaderCell>
+                <TableHeaderCell>Duration (min)</TableHeaderCell>
                 <TableHeaderCell>Cards Studied</TableHeaderCell>
               </TableRow>
             </TableHead>
@@ -87,7 +88,9 @@ export const MostStudied = () => {
                       <Text>{deck.name}</Text>
                     </TableCell>
                     <TableCell>
-                      <Text>{deck.total_duration}</Text>
+                      <Text>
+                        {secondsToMinutes(Number(deck.total_duration))}
+                      </Text>
                     </TableCell>
                     <TableCell>
                       <Text>{deck.total_flashcards_studied}</Text>
