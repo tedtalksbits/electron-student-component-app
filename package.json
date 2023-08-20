@@ -64,10 +64,5 @@
     "vite-plugin-electron": "^0.11.2",
     "vite-plugin-electron-renderer": "^0.14.5"
   },
-  "main": "dist-electron/main.js",
-  "build": {
-    "win": {
-      "icon": "public/ankiwindows.ico"
-    }
-  }
+  "main": "dist-electron/main.js"
 }

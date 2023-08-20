@@ -1,6 +1,14 @@
 import { Course } from '../types';
 import { getDayNameByDayIndex } from '@/lib/utils';
-import { Calendar, Clock, Mail, Pin, Text, User } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  Mail,
+  Paperclip,
+  Pin,
+  Text,
+  User,
+} from 'lucide-react';
 import { Divider } from '@tremor/react';
 
 export const CourseInfo = ({ course }: { course?: Course }) => {
@@ -14,6 +22,12 @@ export const CourseInfo = ({ course }: { course?: Course }) => {
               <Text height={15} width={15} /> Name:
             </td>
             <td className='text-foreground font-medium'>{course?.name}</td>
+          </tr>
+          <tr>
+            <td className='pr-2 flex text-muted-foreground items-center gap-1'>
+              <Paperclip height={15} width={15} /> Type:
+            </td>
+            <td className='text-foreground font-medium'>{course?.type}</td>
           </tr>
           <tr>
             <td className='pr-2 flex text-muted-foreground items-center gap-1'>
