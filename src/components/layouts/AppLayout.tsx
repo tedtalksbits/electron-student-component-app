@@ -6,7 +6,7 @@ export const AppLayout = () => {
     <div>
       <Navbar />
       <main>
-        <section className='max-w-7xl mx-auto'>
+        <section className=''>
           <Outlet />
         </section>
       </main>

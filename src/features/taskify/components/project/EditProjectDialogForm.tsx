@@ -71,7 +71,7 @@ export const EditProjectDialogForm = ({
         </DialogTitle>
         <form onSubmit={handleSubmit} className='form'>
           <div className=' form-group'>
-            <span>Icon</span>
+            <Label>Icon</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant='outline'>

@@ -8,7 +8,7 @@ const Navbar = ({ showBackButton = true }: { showBackButton?: boolean }) => {
   const location = useLocation();
 
   return (
-    <nav className='border-b p-3 '>
+    <nav className='border-b p-3 h-[5rem]'>
       <div className='max-w-7xl flex items-center justify-between flex-wrap mx-auto'>
         <div className='flex items-center flex-shrink-0 mr-6 '>
           {location.pathname === '/' ? (

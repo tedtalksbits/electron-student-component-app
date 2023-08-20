@@ -47,7 +47,7 @@ export const EditTaskForm = ({ task }: { task: Task }) => {
         <Input type='text' name='name' id='name' defaultValue={task.name} />
       </div>
       <div className=' form-group'>
-        <span>Icon</span>
+        <Label>Icon</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button variant='outline'>

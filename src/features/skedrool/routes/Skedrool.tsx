@@ -15,8 +15,8 @@ export const Skedrool = () => {
 
   const courses = useAppSelector((state) => state.courses.courses);
   return (
-    <>
+    <div className='max-w-7xl mx-auto'>
       <SkedroolCalendar courses={courses} />
-    </>
+    </div>
   );
 };
