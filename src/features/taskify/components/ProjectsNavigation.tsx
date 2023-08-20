@@ -38,6 +38,7 @@ export const ProjectsNavigation = () => {
       ))}
       <div className='mt-auto py-6'>Edit Projects</div>
       <EditProjectDialogForm
+        key={selectedProject?.id}
         project={selectedProject}
         setShow={setOpen}
         show={open}

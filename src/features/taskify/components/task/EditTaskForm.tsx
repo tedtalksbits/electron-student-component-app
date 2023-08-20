@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Task, setTasks } from '@/features/slice/task-slice';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -16,15 +16,23 @@ import { updateTask } from '../../api';
 import { useAppDispatch } from '@/hooks/redux';
 import { useToast } from '@/components/ui/use-toast';
 import { USER_ID } from '@/constants';
+import EmojiPicker, { Theme } from 'emoji-picker-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 export const EditTaskForm = ({ task }: { task: Task }) => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
+  const [icon, setIcon] = useState(task.icon);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const refetchQuery = `SELECT * FROM project_tasks WHERE project_id = ${task.project_id} AND user_id = ${USER_ID}`;
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
+    data.icon = icon;
     updateTask(task.id, data, (data) => dispatch(setTasks(data)), refetchQuery);
     toast({
       title: 'Task updated',
@@ -38,38 +46,22 @@ export const EditTaskForm = ({ task }: { task: Task }) => {
         <Label htmlFor='name'>Name</Label>
         <Input type='text' name='name' id='name' defaultValue={task.name} />
       </div>
-      <div className='form-group'>
-        <Label htmlFor='icon'>Icon</Label>
-        <Select name='icon' defaultValue={task.icon}>
-          <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder={task.icon || 'emoji'} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value='💀'>💀</SelectItem>
-              <SelectItem value='👻'>👻</SelectItem>
-              <SelectItem value='👽'>👽</SelectItem>
-              <SelectItem value='🤖'>🤖</SelectItem>
-              <SelectItem value='👾'>👾</SelectItem>
-              <SelectItem value='👹'>👹</SelectItem>
-              <SelectItem value='👺'>👺</SelectItem>
-              <SelectItem value='👿'>👿</SelectItem>
-              <SelectItem value='💩'>💩</SelectItem>
-              <SelectItem value='👶'>👶</SelectItem>
-              <SelectItem value='👦'>👦</SelectItem>
-              <SelectItem value='👧'>👧</SelectItem>
-              <SelectItem value='🧒'>🧒</SelectItem>
-              <SelectItem value='👩'>👩</SelectItem>
-              <SelectItem value='🧑'>🧑</SelectItem>
-              <SelectItem value='👨'>👨</SelectItem>
-              <SelectItem value='👵'>👵</SelectItem>
-              <SelectItem value='🧓'>🧓</SelectItem>
-              <SelectItem value='👴'>👴</SelectItem>
-              <SelectItem value='👲'>👲</SelectItem>
-              <SelectItem value='👳'>👳</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className=' form-group'>
+        <span>Icon</span>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant='outline'>
+              <span className='text-2xl'>{icon}</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <EmojiPicker
+              onEmojiClick={(e) => setIcon(e.emoji)}
+              theme={Theme.DARK}
+              width='100%'
+            />
+          </PopoverContent>
+        </Popover>
       </div>
       <div className='form-group'>
         <Label htmlFor='status'>Status</Label>

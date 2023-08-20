@@ -4,11 +4,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import React from 'react';
 import { Project, setProjects } from '@/features/slice/project-slice';
-import IconSelection from '../IconSelection';
 import { getTasks, updateProject } from '../../api';
 import { useAppDispatch } from '@/hooks/redux';
 import { Zone } from '@/components/zones/Zone';
 import { deleteProject } from '../../api/index';
+import EmojiPicker, { Theme } from 'emoji-picker-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 type EditProjectDialogFormProps = {
   show: boolean;
@@ -21,7 +26,7 @@ export const EditProjectDialogForm = ({
   project,
 }: EditProjectDialogFormProps) => {
   const dispatch = useAppDispatch();
-
+  const [icon, setIcon] = React.useState(project?.icon);
   if (!project) return null;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,6 +34,7 @@ export const EditProjectDialogForm = ({
     const refreshQuery = `SELECT * FROM projects`;
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
+    data.icon = icon as string;
     updateProject(
       project.id,
       data,
@@ -64,7 +70,24 @@ export const EditProjectDialogForm = ({
           </div>
         </DialogTitle>
         <form onSubmit={handleSubmit} className='form'>
-          <IconSelection defaultValue={project.icon} />
+          <div className=' form-group'>
+            <span>Icon</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant='outline'>
+                  <span className='text-2xl'>{icon}</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <EmojiPicker
+                  onEmojiClick={(e) => setIcon(e.emoji)}
+                  theme={Theme.DARK}
+                  width='100%'
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <div className='form-group'>
             <Label htmlFor='name'>name</Label>
             <Input

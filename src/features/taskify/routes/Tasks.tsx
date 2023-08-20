@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getTasksByProjectId, updateTask } from '../api';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
@@ -11,11 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ArrowRight } from 'lucide-react';
-import { EditTaskForm } from '../components/task/EditTaskForm';
-import Markdown from '@/components/markdown/Markdown';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Popover,
   PopoverContent,
@@ -23,11 +18,9 @@ import {
 } from '@/components/ui/popover';
 import { AddTaskDialogForm } from '../components/task/AddTaskDialogForm';
 import { USER_ID } from '@/constants';
-import { DeleteTaskForm } from '../components/task/DeleteTaskForm';
-import { Zone } from '@/components/zones/Zone';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { TaskUpdate } from '../components/task/TaskUpdate';
 export const Tasks = () => {
-  const [openSheet, setOpenSheet] = useState(false);
   const dispatch = useAppDispatch();
   const { id } = useParams();
   useEffect(() => {
@@ -65,9 +58,11 @@ export const Tasks = () => {
           <Table className='table-auto w-full'>
             <TableHeader>
               <TableRow>
-                {['Name', 'Status', 'Priority', 'Created'].map((item) => (
-                  <TableHead key={item}>{item}</TableHead>
-                ))}
+                {['Icon', 'Name', 'Status', 'Priority', 'Created'].map(
+                  (item) => (
+                    <TableHead key={item}>{item}</TableHead>
+                  )
+                )}
 
                 <TableHead className='2xl:block hidden'>Descriptions</TableHead>
                 <TableHead></TableHead>
@@ -76,6 +71,7 @@ export const Tasks = () => {
             <TableBody>
               {tasks.map((task) => (
                 <TableRow key={task.id}>
+                  <TableCell>{task.icon}</TableCell>
                   <TableCell>
                     <div className='flex items-center gap-2' key={task.id}>
                       <label htmlFor={task.id.toString()}>
@@ -176,54 +172,7 @@ export const Tasks = () => {
                     {task.description || 'No description'}
                   </TableCell>
                   <TableCell>
-                    <Sheet
-                      open={openSheet}
-                      onOpenChange={() => setOpenSheet(!openSheet)}
-                    >
-                      <SheetTrigger asChild>
-                        <button className='btn btn-primary'>
-                          <ArrowRight />
-                        </button>
-                      </SheetTrigger>
-
-                      <SheetContent className='min-w-[600px]'>
-                        <Tabs defaultValue='view'>
-                          <TabsList>
-                            <TabsTrigger value='edit'>Edit</TabsTrigger>
-                            <TabsTrigger value='view'>View</TabsTrigger>
-                          </TabsList>
-                          <TabsContent value='edit'>
-                            <EditTaskForm task={task} />
-                            <Zone
-                              variant='destructive'
-                              className='mt-96'
-                              title='Danger Zone'
-                            >
-                              <div className='flex items-center justify-between'>
-                                <div className='flex flex-col'>
-                                  <p className='text-sm font-medium'>
-                                    Delete Task
-                                  </p>
-                                  <small className='text-xs'>
-                                    This action cannot be undone
-                                  </small>
-                                </div>
-                                <DeleteTaskForm
-                                  task={task}
-                                  onMutation={() => setOpenSheet(false)}
-                                />
-                              </div>
-                            </Zone>
-                          </TabsContent>
-                          <TabsContent value='view'>
-                            <p className='my-4'>Description</p>
-                            <Markdown>
-                              {task.description || 'No description'}
-                            </Markdown>
-                          </TabsContent>
-                        </Tabs>
-                      </SheetContent>
-                    </Sheet>
+                    <TaskUpdate task={task} key={task.id} />
                   </TableCell>
                 </TableRow>
               ))}
