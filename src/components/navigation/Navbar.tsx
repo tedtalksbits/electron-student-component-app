@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import GoBackButton from './GoBackButton';
-import logo from '@/assets/ankiwindows.png';
+import logo from '@/assets/icon.png';
 import { AppGridPopover } from './AppGridPopover';
 import { ThemeToggler } from '../theme/ThemeToggler';
 
