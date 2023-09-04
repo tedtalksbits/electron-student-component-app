@@ -10,7 +10,7 @@ export const AppGridPopover = () => {
   return (
     <Popover open={open} onOpenChange={() => setOpen(!open)}>
       <PopoverTrigger asChild>
-        <Button variant='outline' onClick={() => setOpen(true)}>
+        <Button variant='secondary' onClick={() => setOpen(true)}>
           <ViewGridIcon className='h-5 w-5' />
         </Button>
       </PopoverTrigger>

@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import { DeckType } from '../types';
 import { Label } from '@/components/ui/label';
 import { deleteDeck, updateDeck } from '../api';
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
 
 type DeckActionsProps = {
   deck: DeckType;
@@ -68,8 +69,8 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
     <Dialog open={open} onOpenChange={() => setOpen(!open)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant='outline' className='w-max h-max'>
-            ...
+          <Button variant='secondary' className='w-fit h-fit p-1'>
+            <DotsVerticalIcon className='h-5 w-5' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>

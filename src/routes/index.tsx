@@ -3,9 +3,7 @@ import { Flashcards } from '@/features/flashcards/routes';
 import { Home } from '@/features/home/routes';
 import { Skedrool } from '@/features/skedrool/routes';
 import { Study } from '@/features/study/routes';
-import { Taskify } from '@/features/taskify/routes';
-import { Tasks } from '@/features/taskify/routes/Tasks';
-import { Book, CalendarCheck2Icon, HomeIcon, Tablets } from 'lucide-react';
+import { Book, CalendarCheck2Icon, HomeIcon } from 'lucide-react';
 
 export const routes = {
   home: {
@@ -52,24 +50,6 @@ export const routes = {
         description: 'Skedrool App',
         element: <Skedrool />,
         icon: CalendarCheck2Icon,
-      },
-    ],
-  },
-  taskify: {
-    routes: [
-      {
-        title: 'Taskify',
-        href: '/taskify',
-        description: 'Taskify App',
-        element: <Taskify />,
-        icon: Tablets,
-      },
-      {
-        title: 'Taskify',
-        href: '/taskify/tasks/:id',
-        description: 'Taskify App',
-        element: <Tasks />,
-        icon: Tablets,
       },
     ],
   },

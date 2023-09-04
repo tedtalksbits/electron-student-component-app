@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'node:path';
 import crudRepository from './crudRepository';
 import connection from './sql';
@@ -27,7 +27,8 @@ process.env.PUBLIC = app.isPackaged
   : path.join(process.env.DIST, '../public');
 
 let win: BrowserWindow | null;
-
+const isMac = process.platform === 'darwin';
+const isProd = process.env.NODE_ENV === 'production' || app.isPackaged;
 ipcMain.on('renderer-process-message', (event, arg) => {
   console.log('this came from the renderer', arg);
   event.reply('main-process-reply', 'pong');
@@ -473,7 +474,8 @@ ipcMain.on('update-task', async (event, id, data, refetchQuery: string) => {
 
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
-
+const localDir = path.join(app.getPath('userData'));
+console.log('localDir', localDir);
 function createWindow() {
   win = new BrowserWindow({
     icon: path.join(process.env.PUBLIC, 'icon.png'),
@@ -492,6 +494,25 @@ function createWindow() {
   } else {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, 'index.html'));
+  }
+
+  const displays = screen.getAllDisplays();
+  let display;
+
+  if (!isProd) {
+    win.webContents.openDevTools();
+    const devMonitorLabel = isMac ? 'Built-in Retina Display' : 'DELL U2518D';
+    display = displays.find((display) =>
+      display.label.includes(devMonitorLabel)
+    );
+  } else {
+    display = displays.find(
+      (display) => display.bounds.x === 0 && display.bounds.y === 0
+    );
+  }
+
+  if (display) {
+    win.setBounds(display.bounds);
   }
 }
 

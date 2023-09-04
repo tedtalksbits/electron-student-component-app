@@ -20,7 +20,7 @@ export const StudyDuration = () => {
   }, [dispatch]);
 
   return (
-    <Card>
+    <Card className='border-none'>
       <CardHeader>
         <CardTitle>Study Duration</CardTitle>
       </CardHeader>

@@ -54,7 +54,7 @@ export const MostStudied = () => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <Card>
+      <Card className='border-none'>
         <CardHeader>
           <CardTitle>Daily Studying</CardTitle>
         </CardHeader>
@@ -67,7 +67,7 @@ export const MostStudied = () => {
           />
         </CardContent>
       </Card>
-      <Card>
+      <Card className='border-none'>
         <CardHeader>
           <CardTitle>Most Studied Decks</CardTitle>
         </CardHeader>

@@ -3,7 +3,6 @@ import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { AnkiLayout, AppLayout } from './components/layouts';
 import { routes } from './routes';
 import { AppProvider } from './providers/app';
-import { TaskLayout } from './components/layouts/TaskLayout';
 
 function App() {
   return (
@@ -23,16 +22,6 @@ function App() {
           <Route element={<AnkiLayout />}>
             {/* Anki Routes */}
             {routes.anki.routes.map((route) => (
-              <Route
-                key={route.href}
-                path={route.href}
-                element={route.element}
-              />
-            ))}
-          </Route>
-          <Route element={<TaskLayout />}>
-            {/* Taskify Routes */}
-            {routes.taskify.routes.map((route) => (
               <Route
                 key={route.href}
                 path={route.href}

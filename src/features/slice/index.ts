@@ -1,7 +1,5 @@
 import analyticsReduces from './analytics-slice';
 import coursesReducer from './courses-slice';
-import projectReducer from './project-slice';
-import taskReducer from './task-slice';
 import studyAnalyticsReducer from './analytics-slice';
 import { combineReducers } from '@reduxjs/toolkit';
 // import authReducer from './auth-slice';
@@ -14,8 +12,6 @@ const rootReducer = combineReducers({
   // user: userReducer,
   analytics: analyticsReduces,
   courses: coursesReducer,
-  project: projectReducer,
-  task: taskReducer,
   studyAnalytics: studyAnalyticsReducer,
 });
 

@@ -100,7 +100,12 @@ export default function Study() {
           <StudyHeading />
           <h2>Time Elapsed: {timerFormat(timeElapsed)}</h2>
         </div>
-        <Button onClick={handleDone}>Done</Button>
+        <Button
+          className='bg-green-500/80 ring-green-500 hover:bg-green-500'
+          onClick={handleDone}
+        >
+          Done
+        </Button>
       </StudyHeader>
       <div className='study-container' ref={flashcardContainerRef}>
         {flashcards.map((flashcard) => (
@@ -113,6 +118,7 @@ export default function Study() {
               />
               <div className='w-full flex items-center justify-between'>
                 <Button
+                  variant='outline'
                   className='disabled:opacity-50 disabled:cursor-not-allowed'
                   onClick={() =>
                     setCurrentFlashcardIndex(currentFlashcardIndex - 1)
@@ -132,6 +138,7 @@ export default function Study() {
                   }
                   disabled={currentFlashcardIndex === flashcards.length - 1}
                   className='disabled:opacity-50 disabled:cursor-not-allowed'
+                  variant='outline'
                 >
                   Next
                 </Button>

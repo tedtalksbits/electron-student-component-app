@@ -60,11 +60,12 @@ export const AddDeckFlashcardDialogForm = ({
         <form onSubmit={handleSubmit} className='form'>
           <div className='form-group'>
             <Label htmlFor='question'>Question</Label>
-            <Input
-              type='text'
+            <Textarea
               name='question'
               id='question'
               placeholder='question'
+              cols={30}
+              rows={10}
               required
             />
           </div>

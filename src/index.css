@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 300 9% 98%;
     --foreground: 0 0% 3.9%;
 
     --muted: 0 0% 98.1%;
@@ -37,16 +37,16 @@
   }
 
   .dark {
-    --background: 0 0% 8%;
+    --background: 220 7% 9%;
     --foreground: 0 0% 98%;
 
     --muted: 0 0% 20%;
     --muted-foreground: 0 0% 63.9%;
 
-    --popover: 0 0% 8%;
+    --popover: 220 7% 9%;
     --popover-foreground: 0 0% 98%;
 
-    --card: 0 0% 15%;
+    --card: 220 5% 12%;
     --card-foreground: 0 0% 98%;
 
     --border: 0 0% 20%;
@@ -58,7 +58,7 @@
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
 
-    --accent: 0 0% 15%;
+    --accent: 220 5% 12%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -144,134 +144,6 @@
   table td {
     @apply py-2 px-4;
   }
-
-  /* checkbox */
-  /* .checkbox-toggle-input[type='checkbox'] {
-    display: none;
-  }
-
-  .checkbox-toggle-label {
-    cursor: pointer;
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 30px;
-    background: #ddd;
-    border-radius: 15px;
-  }
-
-  .checkbox-toggle-label:after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 25px;
-    height: 25px;
-    background: #fff;
-    border-radius: 50%;
-    transition: 0.3s cubic-bezier(1, 0, 0, 1);
-  }
-
-  .checkbox-toggle-input:checked + label {
-    @apply bg-sky-500;
-    animation: pulse-border-1 0.75s ease-in-out 0.1s;
-  }
-
-  .checkbox-toggle-input:checked + label:after {
-    left: calc(100% - 2px);
-    transform: translateX(-100%);
-  }
-
-  .checkbox-toggle-label:active:after {
-    width: 30px;
-  }
-
-  .checkbox-toggle-label:active {
-    background: #9ec4ff;
-  }
-
-  .checkbox-toggle-label:active:after {
-    background: #fff;
-  }
-
-  @keyframes pulse-border-1 {
-    0% {
-      box-shadow: 0 0 0 0 #3b82f6;
-    }
-    70% {
-      box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-    }
-  }
-
-  .checkbox-input[type='checkbox'] {
-    display: none;
-  }
-  .checkbox-label {
-    --cb-size: 20px;
-  }
-  .checkbox-label.sm {
-    --cb-size: 16px;
-  }
-  .checkbox-label.md {
-    --cb-size: 20px;
-  }
-  .checkbox-label.lg {
-    --cb-size: 24px;
-  }
-  .checkbox-label {
-    cursor: pointer;
-    position: relative;
-    display: inline-block;
-    width: var(--cb-size);
-    height: var(--cb-size);
-    background: #ddd;
-    border-radius: 50%;
-  }
-
-  .checkbox-label:after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    width: calc(var(--cb-size) * 0.5);
-    height: calc(var(--cb-size) * 0.5);
-    background: #fff;
-    border-radius: 50%;
-    transition: 0.3s cubic-bezier(1, 0, 0, 1);
-  }
-
-  .checkbox-input:checked + label {
-    @apply bg-sky-500;
-    animation: pulse-border 0.75s ease-in-out 0.1s;
-  }
-
-  .checkbox-input:checked + label:after {
-    transform: translate(-50%, -50%) scale(1);
-  }
-
-  .checkbox-label:active {
-    background: #9ec8ff;
-  }
-
-  .checkbox-label:active:after {
-    background: #fff;
-  }
-
-  @keyframes pulse-border {
-    0% {
-      box-shadow: 0 0 0 0 #3b82f6;
-    }
-    70% {
-      box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-    }
-  } */
 
   .checkbox-fancy {
     --color: rgb(14 165 233);
@@ -373,6 +245,27 @@
   }
   .pulse-border {
     animation: pulse-border 2s infinite;
+  }
+
+  /* scroll bar */
+  *::-webkit-scrollbar {
+    @apply w-1 h-1 bg-transparent opacity-0 hover:opacity-100;
+  }
+
+  *::-webkit-scrollbar-track {
+    @apply bg-background/0 rounded-full border-none outline-none transition-colors duration-300 opacity-0 hover:opacity-100;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    @apply bg-foreground/0 rounded-full transition-colors duration-300;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    @apply bg-foreground/30;
+  }
+
+  *::-webkit-scrollbar-thumb:active {
+    @apply bg-foreground/50;
   }
 }
 

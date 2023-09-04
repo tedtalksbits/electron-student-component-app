@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { PlayIcon } from '@heroicons/react/solid';
 import { AddDeckFlashcardDialogForm, Flashcard } from '../components';
 import { USER_ID } from '@/constants';
+import { Progress } from '@/components/ui/progress';
 
 function Flashcards() {
   const navigate = useNavigate();
@@ -36,11 +37,25 @@ function Flashcards() {
       }
     );
   };
+  const overallMastery = flashcards.reduce((acc, curr) => {
+    return acc + curr.mastery_level;
+  }, 0);
+  const averageMastery = overallMastery / flashcards.length;
 
   return (
     <div>
+      <div className='flex items-center justify-between'>
+        <h2 className='text-lg font-bold'>Deck Overview</h2>
+        <div className='flex items-center gap-2'>
+          <p>Overall Mastery:</p>
+          <div className='text-foreground/50'>
+            {averageMastery.toFixed(2)}%
+            <Progress value={averageMastery} />
+          </div>
+        </div>
+      </div>
       <div className='flex items-center justify-between my-4'>
-        <h2 className='text-4xl font-bold'>
+        <h2 className='text-lg font-bold'>
           Flashcards | {query.get('deck_name') || id}
         </h2>
         <div className='flex items-center gap-2'>

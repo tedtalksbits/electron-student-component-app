@@ -5,7 +5,7 @@ import { useToggleTheme } from '@/hooks/theme';
 export const ThemeToggler = () => {
   const { theme, toggleTheme } = useToggleTheme();
   return (
-    <Button variant='outline' onClick={toggleTheme}>
+    <Button variant='secondary' onClick={toggleTheme}>
       {theme === 'light' ? (
         <MoonIcon className='h-5 w-5' />
       ) : (

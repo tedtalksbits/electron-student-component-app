@@ -17,7 +17,7 @@ export const StudyFlashcardNavItems = ({
           onClick={() => navItemClickHandler(index)}
           key={index}
           className={`study-item-nav-item ${
-            index === currentFlashcardIndex ? 'bg-sky-600' : 'bg-gray-300'
+            index === currentFlashcardIndex ? 'bg-primary' : 'bg-foreground/50'
           }`}
         ></span>
       ))}

@@ -19,7 +19,7 @@ export const StudyHistory = () => {
     );
   }, [dispatch]);
   return (
-    <Card>
+    <Card className='border-none'>
       <CardHeader>
         <CardTitle>Study History</CardTitle>
       </CardHeader>

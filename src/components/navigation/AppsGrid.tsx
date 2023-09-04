@@ -10,9 +10,8 @@ export const AppsGrid = ({
 }) => {
   const ankiBaseApp = routes.anki.routes[0];
   const skedroolBaseApp = routes.skedrool.routes[0];
-  const taskifyBaseApp = routes.taskify.routes[0];
   const homeBaseApp = routes.home.routes[0];
-  const baseApps = [homeBaseApp, ankiBaseApp, skedroolBaseApp, taskifyBaseApp];
+  const baseApps = [homeBaseApp, ankiBaseApp, skedroolBaseApp];
   const gridSizes = {
     sm: 'grid-cols-3 gap-1',
     lg: 'grid-cols-3 gap-4',
@@ -43,7 +42,7 @@ export const AppsGrid = ({
           key={app.href}
           to={app.href}
           onClick={onItemClick}
-          className={`border flex items-center justify-center rounded-md flex-col ${itemSizes[size]} no-underline outline-none  transition-colors bg-white dark:bg-neutral-900 hover:shadow-md active:border-primary`}
+          className={`border flex items-center justify-center rounded-md flex-col ${itemSizes[size]} no-underline outline-none  transition-colors bg-foreground/5 hover:shadow-md active:border-primary`}
         >
           <app.icon className={`${iconSizes[size]} ${colors[i]}`} />
           <span className='text-center'>{app.title}</span>

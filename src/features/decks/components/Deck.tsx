@@ -9,17 +9,24 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 type DeckProps = {
   deck: DeckType;
   setDecks: React.Dispatch<React.SetStateAction<DeckType[]>>;
+  setSearch?: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const Deck = ({ deck, setDecks }: DeckProps) => {
+export const Deck = ({ deck, setDecks, setSearch }: DeckProps) => {
   return (
-    <Card className='col-span-3'>
-      <CardHeader className='flex items-center flex-row'>
-        <h4 className='my-2 hover:text-sky-300 text-constraint'>
-          <Link to={`/decks/${deck.id}/flashcards?deck_name=${deck.name}`}>
-            {deck.name}
-          </Link>
-        </h4>
+    <Card className='col-span-3 border-none flex flex-col'>
+      <CardHeader className='flex items-start gap-2 flex-row'>
+        <div>
+          <h2
+            className='hover:text-primary text-lg underline'
+            title={deck.name}
+          >
+            <Link to={`/decks/${deck.id}/flashcards?deck_name=${deck.name}`}>
+              {deck.name}
+            </Link>
+          </h2>
+          <p className='text-foreground/50'>{deck.description}</p>
+        </div>
         <header className='ml-auto'>
           <DeckActions
             deck={deck}
@@ -38,17 +45,21 @@ export const Deck = ({ deck, setDecks }: DeckProps) => {
           />
         </header>
       </CardHeader>
-      <CardContent>
-        <p>{deck.description}</p>
+      <CardContent className='mt-auto'>
         <div className='flex gap-1 my-2 overflow-x-auto snap-x scroll-smooth snap-mandatory'>
           {deck.tags &&
             deck.tags.split(',').map((tag, i) => (
-              <Badge key={i} variant='outline'>
+              <Badge
+                key={i}
+                variant='outline'
+                className='whitespace-nowrap text-[10px] cursor-pointer'
+                onClick={() => setSearch && setSearch(tag)}
+              >
                 {tag}
               </Badge>
             ))}
         </div>
-        <small className='font-light text-xs mt-auto text-muted-foreground'>
+        <small className='font-light text-xs mt-auto text-foreground/50'>
           Last updated: {new Date(deck.updated_at).toLocaleDateString()}
         </small>
       </CardContent>

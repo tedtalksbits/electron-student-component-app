@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { FlashcardType } from '../types';
 import { useState } from 'react';
 import { deleteFlashcard, updateFlashcard } from '../api/flashcards';
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
 
 type FlashcardActionsProps = {
   flashcard: FlashcardType;
@@ -78,7 +79,9 @@ export const FlashcardActions = ({
     <Dialog open={open} onOpenChange={() => setOpen(!open)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant='outline'>...</Button>
+          <Button variant='secondary' className='w-fit h-fit p-1'>
+            <DotsVerticalIcon className='h-5 w-5' />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DialogTrigger asChild>
@@ -101,10 +104,11 @@ export const FlashcardActions = ({
         <form onSubmit={handleUpdate} className='form'>
           <div className='form-group'>
             <Label htmlFor='question'>Question</Label>
-            <Input
-              type='text'
+            <Textarea
               name='question'
               id='question'
+              cols={30}
+              rows={10}
               defaultValue={flashcard.question}
               placeholder='question'
             />

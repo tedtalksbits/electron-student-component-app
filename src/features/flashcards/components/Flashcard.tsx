@@ -3,6 +3,7 @@ import { FlashcardType } from '../types';
 import Markdown from '../../../components/markdown/Markdown';
 import { FlashcardActions } from '.';
 import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
+import { Progress } from '@/components/ui/progress';
 
 type FlashcardProps = {
   flashcard: FlashcardType;
@@ -14,6 +15,10 @@ export const Flashcard = ({ flashcard, setFlashcards }: FlashcardProps) => {
       key={flashcard.id}
       className='border rounded-md p-4 flex flex-col relative'
     >
+      <Progress
+        className='absolute top-0 left-0'
+        value={flashcard.mastery_level}
+      />
       <header className='ml-auto'>
         <FlashcardActions
           flashcard={flashcard}

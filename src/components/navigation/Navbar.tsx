@@ -17,7 +17,7 @@ const Navbar = ({ showBackButton = true }: { showBackButton?: boolean }) => {
             showBackButton && <GoBackButton />
           )}
         </div>
-        <div className='block'>
+        <div className='flex gap-2'>
           <AppGridPopover />
           <ThemeToggler />
         </div>

@@ -24,11 +24,9 @@ export const StudyFlashcard = ({
   return (
     <details onClick={() => handleStudiedCard(flashcard.id)} className='my-4'>
       <summary className='cursor-pointer font-medium'>
-        Q: {flashcard.question}
+        <Markdown>{flashcard.question}</Markdown>
       </summary>
-      <Markdown className=' before:content-["A:"] before:block before:h-4'>
-        {flashcard.answer}
-      </Markdown>
+      <Markdown className=''>{flashcard.answer}</Markdown>
       <MasteryScale onSetMastery={handleSetMastery} />
     </details>
   );
