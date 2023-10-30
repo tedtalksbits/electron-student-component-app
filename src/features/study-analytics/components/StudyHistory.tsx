@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { Text, Metric, Divider } from '@tremor/react';
+import { Metric, Divider } from '@tremor/react';
 import { useEffect } from 'react';
 import { getLastStudiedDeck } from '../api';
 import { USER_ID } from '@/constants';
@@ -24,8 +24,11 @@ export const StudyHistory = () => {
         <CardTitle>Study History</CardTitle>
       </CardHeader>
       <CardContent>
-        <Text>Last Study Session</Text>
-        {lastStudySession?.name}
+        <small className='text-foreground/50'>
+          Last Study Session:{' '}
+          <span className='text-foreground'>{lastStudySession?.name}</span>
+        </small>
+
         <Metric>
           {new Date(lastStudySession?.end_time).toLocaleDateString('en-US', {
             month: 'short',
@@ -36,10 +39,10 @@ export const StudyHistory = () => {
           })}
         </Metric>
         <Divider />
-        <Text>Flashcards Studied</Text>
+        <small className='text-foreground/50'>Flashcards Studied</small>
         <Metric>{lastStudySession?.flashcards_studied}</Metric>
         <Divider />
-        <Text>Time Spent Studying</Text>
+        <small className='text-foreground/50'>Time Spent Studying</small>
         <Metric>
           {secondsToMinutes(Number(lastStudySession?.duration_sec))} minutes
         </Metric>

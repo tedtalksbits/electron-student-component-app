@@ -18,7 +18,7 @@ export const Deck = ({ deck, setDecks, setSearch }: DeckProps) => {
       <CardHeader className='flex items-start gap-2 flex-row'>
         <div>
           <h2
-            className='hover:text-primary text-lg underline'
+            className='hover:text-primary text-xl font-medium underline'
             title={deck.name}
           >
             <Link to={`/decks/${deck.id}/flashcards?deck_name=${deck.name}`}>

@@ -1,5 +1,4 @@
 import {
-  Text,
   BarChart,
   Table,
   TableBody,
@@ -75,9 +74,13 @@ export const MostStudied = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Deck Name</TableHeaderCell>
-                <TableHeaderCell>Duration (min)</TableHeaderCell>
-                <TableHeaderCell>Cards Studied</TableHeaderCell>
+                <TableHeaderCell title='Deck Name'>Deck Name</TableHeaderCell>
+                <TableHeaderCell title='Duration (mins)'>
+                  Duration (mins)
+                </TableHeaderCell>
+                <TableHeaderCell title='Card Studied'>
+                  Cards Studied
+                </TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -85,15 +88,15 @@ export const MostStudied = () => {
                 return (
                   <TableRow key={deck.id}>
                     <TableCell>
-                      <Text>{deck.name}</Text>
+                      <small>{deck.name}</small>
                     </TableCell>
                     <TableCell>
-                      <Text>
+                      <small>
                         {secondsToMinutes(Number(deck.total_duration))}
-                      </Text>
+                      </small>
                     </TableCell>
                     <TableCell>
-                      <Text>{deck.total_flashcards_studied}</Text>
+                      <small>{deck.total_flashcards_studied}</small>
                     </TableCell>
                   </TableRow>
                 );

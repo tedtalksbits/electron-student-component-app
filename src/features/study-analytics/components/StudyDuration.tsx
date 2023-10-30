@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { Text, Metric, Divider } from '@tremor/react';
+import { Metric, Divider } from '@tremor/react';
 import { getTotalAnalytics } from '../api';
 import { setTotalStudyAnalytics } from '@/features/slice/analytics-slice';
 import { USER_ID } from '@/constants';
@@ -25,18 +25,18 @@ export const StudyDuration = () => {
         <CardTitle>Study Duration</CardTitle>
       </CardHeader>
       <CardContent>
-        <Text>Total Study Time</Text>
+        <small className='text-foreground/50'>Total Study Time</small>
         <Metric>
           {Math.floor(totalAnalytics.total_time_studied / 60)} minutes
         </Metric>
         <Divider />
-        <Text>Total Flashcards Studied</Text>
+        <small className='text-foreground/50'>Total Flashcards Studied</small>
         <Metric>{totalAnalytics.total_flashcards_studied}</Metric>
         <Divider />
-        <Text>Total Study Sessions</Text>
+        <small className='text-foreground/50'>Total Study Sessions</small>
         <Metric>{totalAnalytics.total_completed_sessions}</Metric>
         <Divider />
-        <Text>Average Study Duration</Text>
+        <small className='text-foreground/50'>Average Study Duration</small>
         <Metric>
           {secondsToMinutes(totalAnalytics.average_study_duration)} minutes
         </Metric>

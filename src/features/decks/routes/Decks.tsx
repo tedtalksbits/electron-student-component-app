@@ -33,6 +33,8 @@ function Decks() {
 
   useShortcuts(handleSearchShortcut);
 
+  if (!decks || decks.length === 0) return <div>loading...</div>;
+
   return (
     <div>
       <Input
@@ -56,7 +58,7 @@ function Decks() {
           />
         ))}
       </div>
-      <hr className='my-5' />
+      <hr className='my-10' />
       <AllStudyData />
     </div>
   );
