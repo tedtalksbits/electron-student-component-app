@@ -12,6 +12,7 @@ export type FlashcardType = {
   audio: string | null;
   video: string | null;
   mastery_level: number;
+  type: 'basic' | 'cloze' | 'image' | 'audio' | 'video' | 'advanced';
 };
 
 export type DataResponse = {
