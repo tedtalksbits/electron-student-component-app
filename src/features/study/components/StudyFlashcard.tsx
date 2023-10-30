@@ -2,6 +2,7 @@ import Markdown from '../../../components/markdown/Markdown';
 import MasteryScale from './MasteryScale';
 import { FlashcardType } from '../../flashcards/types';
 import { updateFlashcard } from '../../flashcards/api/flashcards';
+import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
 
 type StudyFlashcardProps = {
   flashcard: FlashcardType;
@@ -22,12 +23,17 @@ export const StudyFlashcard = ({
     );
   };
   return (
-    <details onClick={() => handleStudiedCard(flashcard.id)} className='my-4'>
-      <summary className='cursor-pointer font-medium'>
+    <div onClick={() => handleStudiedCard(flashcard.id)} className='my-4'>
+      <CollapseTrigger
+        className='font-medium'
+        aria-labelledby={flashcard.id.toString()}
+      >
         <Markdown>{flashcard.question}</Markdown>
-      </summary>
-      <Markdown className=''>{flashcard.answer}</Markdown>
-      <MasteryScale onSetMastery={handleSetMastery} />
-    </details>
+      </CollapseTrigger>
+      <CollapseContent id={flashcard.id.toString()}>
+        <Markdown className=''>{flashcard.answer}</Markdown>
+        <MasteryScale onSetMastery={handleSetMastery} />
+      </CollapseContent>
+    </div>
   );
 };

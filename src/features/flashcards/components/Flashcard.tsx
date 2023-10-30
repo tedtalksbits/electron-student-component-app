@@ -4,6 +4,8 @@ import Markdown from '../../../components/markdown/Markdown';
 import { FlashcardActions } from '.';
 import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
 import { Progress } from '@/components/ui/progress';
+import ContentEditor from '@/components/ui/contentEditor';
+import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
 
 type FlashcardProps = {
   flashcard: FlashcardType;
@@ -18,6 +20,7 @@ export const Flashcard = ({ flashcard, setFlashcards }: FlashcardProps) => {
       <Progress
         className='absolute top-0 left-0'
         value={flashcard.mastery_level}
+        title={`${flashcard.mastery_level ?? 0}%`}
       />
       <header className='ml-auto'>
         <FlashcardActions
@@ -36,12 +39,24 @@ export const Flashcard = ({ flashcard, setFlashcards }: FlashcardProps) => {
           }}
         />
       </header>
-      <details className='my-4'>
-        <summary>Q: {flashcard.question}</summary>
-        <Markdown className=' before:content-["A:"] before:block before:h-4'>
-          {flashcard.answer}
-        </Markdown>
-      </details>
+      {flashcard.type === 'advanced' ? (
+        <>
+          <ContentEditor value={flashcard.question} />
+          <ContentEditor value={flashcard.answer} />
+        </>
+      ) : (
+        <article className='my-4'>
+          <CollapseTrigger
+            variant='ghost'
+            aria-labelledby={flashcard.id.toString()}
+          >
+            {flashcard.question}
+          </CollapseTrigger>
+          <CollapseContent id={flashcard.id.toString()}>
+            <Markdown>{flashcard.answer}</Markdown>
+          </CollapseContent>
+        </article>
+      )}
     </div>
   );
 };
