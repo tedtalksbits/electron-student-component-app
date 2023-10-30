@@ -50,8 +50,8 @@ ipcMain.on('get-decks', async (event) => {
 ipcMain.on('get-deck-by-id', async (event, id) => {
   console.log('get-deck-by-id', id);
   try {
-    const rows = await crudRepository.select('decks', ['*'], { id });
-
+    const [rows] = await crudRepository.select('decks', ['*'], { id });
+    console.log(rows);
     event.reply('get-deck-by-id-response', { data: rows });
   } catch (error) {
     const err = error as Error;

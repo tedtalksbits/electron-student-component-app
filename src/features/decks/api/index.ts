@@ -33,11 +33,11 @@ export function fetchDecks<T>(
 
 export function fetchDeckById<T>(
   deckId: number,
-  setDecks: React.Dispatch<React.SetStateAction<T[]>>
+  setDecks: React.Dispatch<React.SetStateAction<T | null>>
 ) {
   window.electron.ipcRenderer.sendMessage('get-deck-by-id', deckId);
   window.electron.ipcRenderer.once('get-deck-by-id-response', (args) => {
-    const response = args as ResponseData<T[]>;
+    const response = args as ResponseData<T>;
     if (response.error) {
       alert(response.error);
       return;

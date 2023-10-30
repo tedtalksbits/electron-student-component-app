@@ -1,4 +1,4 @@
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { FlashcardType } from '../types';
 import { useEffect, useState } from 'react';
 import { fetchFlashcardsByDeckId } from '../api/flashcards';
@@ -10,15 +10,17 @@ import { PlayIcon } from '@heroicons/react/solid';
 import { AddDeckFlashcardDialogForm, Flashcard } from '../components';
 import { USER_ID } from '@/constants';
 import { Progress } from '@/components/ui/progress';
+import { DeckType } from '@/features/decks/types';
+import { fetchDeckById } from '@/features/decks/api';
 
 function Flashcards() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
   const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
+  const [deck, setDeck] = useState<DeckType | null>(null);
   useEffect(() => {
     fetchFlashcardsByDeckId<FlashcardType>(Number(id), setFlashcards);
+    fetchDeckById<DeckType>(Number(id), setDeck);
   }, [id]);
 
   const handleStartStudy = () => {
@@ -40,7 +42,7 @@ function Flashcards() {
   const overallMastery = flashcards.reduce((acc, curr) => {
     return acc + curr.mastery_level;
   }, 0);
-  const averageMastery = overallMastery / flashcards.length;
+  const averageMastery = overallMastery / flashcards.length || 0;
 
   return (
     <div>
@@ -54,10 +56,11 @@ function Flashcards() {
           </div>
         </div>
       </div>
-      <div className='flex items-center justify-between my-4'>
-        <h2 className='text-lg font-bold'>
-          Flashcards | {query.get('deck_name') || id}
-        </h2>
+      <div className='flex items-center justify-between my-8'>
+        <div>
+          <h2 className='text-lg font-bold'>{deck?.name}</h2>
+          <small className='text-foreground/50'>{deck?.description}</small>
+        </div>
         <div className='flex items-center gap-2'>
           <AddDeckFlashcardDialogForm
             onMutation={setFlashcards}
