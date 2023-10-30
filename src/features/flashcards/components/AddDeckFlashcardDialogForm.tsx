@@ -28,6 +28,10 @@ export const AddDeckFlashcardDialogForm = ({
     const formData = new FormData(e.currentTarget);
     const question = formData.get('question') as string;
     const answer = formData.get('answer') as string;
+    const hint = formData.get('hint') as string;
+    const tags = formData.get('tags') as string;
+    const type = formData.get('type') as string;
+    console.log(type);
 
     if (!question || !answer) return console.log('question or answer is null');
     const data = {
@@ -37,8 +41,9 @@ export const AddDeckFlashcardDialogForm = ({
       user_id: USER_ID,
       audio: null,
       image: null,
-      tags: null,
-      hint: null,
+      tags,
+      hint,
+      type,
       mastery_level: null,
       video: null,
     } as FlashcardDTO;
@@ -80,6 +85,7 @@ export const AddDeckFlashcardDialogForm = ({
               required
             />
           </div>
+
           <div className='form-group'>
             <Label htmlFor='hint'>Hint</Label>
             <Input type='text' name='hint' id='hint' placeholder='hint' />
