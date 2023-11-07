@@ -4,6 +4,7 @@ import crudRepository from './crudRepository';
 import connection from './sql';
 import { FlashcardDTO } from '../src/features/flashcards/types/index';
 import { RowDataPacket } from 'mysql2';
+import { playgroundListeners } from './playground-listener';
 type Error = {
   code: string;
   errno: number;
@@ -33,6 +34,8 @@ ipcMain.on('renderer-process-message', (event, arg) => {
   console.log('this came from the renderer', arg);
   event.reply('main-process-reply', 'pong');
 });
+
+playgroundListeners();
 
 ipcMain.on('get-decks', async (event) => {
   try {

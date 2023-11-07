@@ -1,17 +1,15 @@
-import { routes } from '@/routes';
+import { iRoute, indexRoutes } from '@/routes';
 import { Link } from 'react-router-dom';
 
 export const AppsGrid = ({
   onItemClick,
   size = 'sm',
+  routes,
 }: {
   onItemClick?: () => void;
   size?: 'sm' | 'lg';
+  routes: iRoute[];
 }) => {
-  const ankiBaseApp = routes.anki.routes[0];
-  const skedroolBaseApp = routes.skedrool.routes[0];
-  const homeBaseApp = routes.home.routes[0];
-  const baseApps = [homeBaseApp, ankiBaseApp, skedroolBaseApp];
   const gridSizes = {
     sm: 'grid-cols-3 gap-1',
     lg: 'grid-cols-3 gap-4',
@@ -37,10 +35,10 @@ export const AppsGrid = ({
   ];
   return (
     <div className={`grid ${gridSizes[size]}`}>
-      {baseApps.map((app, i) => (
+      {routes.map((app, i) => (
         <Link
           key={app.href}
-          to={app.href}
+          to={app.href || ''}
           onClick={onItemClick}
           className={`border flex items-center justify-center rounded-md flex-col ${itemSizes[size]} no-underline outline-none  transition-colors bg-foreground/5 hover:shadow-md active:border-primary`}
         >
