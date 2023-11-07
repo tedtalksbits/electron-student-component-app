@@ -3,7 +3,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { ViewGridIcon } from '@heroicons/react/solid';
 import { AppsGrid } from './AppsGrid';
-import { indexRoutes } from '@/routes';
 
 export const AppGridPopover = () => {
   const [open, setOpen] = useState(false);
@@ -16,7 +15,7 @@ export const AppGridPopover = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        <AppsGrid routes={indexRoutes} onItemClick={onItemClick} />
+        <AppsGrid onItemClick={onItemClick} />
       </PopoverContent>
     </Popover>
   );

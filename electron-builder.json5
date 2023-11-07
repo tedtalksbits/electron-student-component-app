@@ -3,7 +3,7 @@
  */
 {
   $schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
-  appId: 'com.ankidesktop.app',
+  appId: 'ankiwindows',
   asar: true,
   directories: {
     output: 'release/${version}',
