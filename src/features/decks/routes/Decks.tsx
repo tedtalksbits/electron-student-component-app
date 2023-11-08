@@ -1,14 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeckType } from '../types';
 import { fetchDecks } from '../api';
-import { Deck, AddDeckDialogForm } from '../components';
+import { Deck, AddDeckDialogForm, DeckActions } from '../components';
 import { AllStudyData } from '@/features/study-analytics/components/AllStudyData';
 import { Input } from '@/components/ui/input';
 import { useShortcuts } from '@/hooks/useShortcuts';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
+import { Link } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
 
 function Decks() {
   const [decks, setDecks] = useState<DeckType[]>([]);
   const [search, setSearch] = useState('');
+  const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     fetchDecks<DeckType>(setDecks);
@@ -47,17 +59,90 @@ function Decks() {
       <div className='flex items-center justify-between my-8'>
         <h3 className='text-2xl font-bold'>Your Decks</h3>
         <AddDeckDialogForm onMutation={setDecks} />
+        <Button
+          variant='outline'
+          onClick={() =>
+            setViewType((prev) => (prev === 'grid' ? 'list' : 'grid'))
+          }
+        >
+          {viewType === 'grid' ? 'list' : 'grid'}
+        </Button>
       </div>
-      <div className='grid md:grid-cols-12 gap-2'>
-        {filteredDecks.map((deck) => (
-          <Deck
-            key={deck.id}
-            deck={deck}
-            setDecks={setDecks}
-            setSearch={setSearch}
-          />
-        ))}
-      </div>
+      {viewType === 'grid' ? (
+        <div className='grid md:grid-cols-12 gap-2'>
+          {filteredDecks.map((deck) => (
+            <Deck
+              key={deck.id}
+              deck={deck}
+              setDecks={setDecks}
+              setSearch={setSearch}
+            />
+          ))}
+        </div>
+      ) : (
+        <div>
+          <Table className='bg-accent rounded-lg overflow-hidden'>
+            <TableHeader>
+              <TableRow className='hover:bg-foreground/5 bg-foreground/5 font-semibold'>
+                <TableCell>Name</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Last Updated</TableCell>
+                <TableCell>Tags</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredDecks.map((deck) => (
+                <TableRow key={deck.id} className='[&>td]:py-5'>
+                  <TableCell>
+                    <h2
+                      className='hover:text-primary font-medium underline'
+                      title={deck.name}
+                    >
+                      <Link to={`/decks/${deck.id}/flashcards`}>
+                        {deck.name}
+                      </Link>
+                    </h2>
+                  </TableCell>
+                  <TableCell>{deck.description}</TableCell>
+                  <TableCell>
+                    {new Date(deck.updated_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {deck.tags?.split(',').map((tag, i) => (
+                      <Badge
+                        key={i}
+                        variant='outline'
+                        className='whitespace-nowrap text-[10px] cursor-pointer'
+                        onClick={() => setSearch(tag)}
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                    <DeckActions
+                      deck={deck}
+                      actions={{
+                        delete: {
+                          icon: <TrashIcon />,
+                          label: 'Delete',
+                          onMutate: setDecks,
+                        },
+                        edit: {
+                          icon: <PencilIcon />,
+                          label: 'Edit',
+                          onMutate: setDecks,
+                        },
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
       <hr className='my-10' />
       <AllStudyData />
     </div>
