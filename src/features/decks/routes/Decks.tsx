@@ -16,11 +16,18 @@ import {
 import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
+import { Grid, List } from 'lucide-react';
 
 function Decks() {
   const [decks, setDecks] = useState<DeckType[]>([]);
   const [search, setSearch] = useState('');
-  const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
+  const [viewType, setViewType] = useState<'grid' | 'list'>(
+    (localStorage.getItem('viewType') as 'grid' | 'list') || 'grid'
+  );
+  const handleViewTypeChange = (viewType: 'grid' | 'list') => {
+    setViewType(viewType);
+    localStorage.setItem('viewType', viewType);
+  };
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     fetchDecks<DeckType>(setDecks);
@@ -49,24 +56,27 @@ function Decks() {
 
   return (
     <div>
-      <Input
-        type='search'
-        placeholder='Search'
-        onChange={(e) => setSearch(e.target.value)}
-        value={search || ''}
-        ref={inputRef}
-      />
-      <div className='flex items-center justify-between my-8'>
-        <h3 className='text-2xl font-bold'>Your Decks</h3>
-        <AddDeckDialogForm onMutation={setDecks} />
+      <div className='flex items-center justify-between'>
+        <Input
+          type='search'
+          placeholder='Search'
+          onChange={(e) => setSearch(e.target.value)}
+          value={search || ''}
+          ref={inputRef}
+          className='w-34'
+        />
         <Button
           variant='outline'
           onClick={() =>
-            setViewType((prev) => (prev === 'grid' ? 'list' : 'grid'))
+            handleViewTypeChange(viewType === 'grid' ? 'list' : 'grid')
           }
         >
-          {viewType === 'grid' ? 'list' : 'grid'}
+          {viewType === 'grid' ? <List /> : <Grid />}
         </Button>
+      </div>
+      <div className='flex items-center justify-between my-8'>
+        <h3 className='text-2xl font-bold'>Your Decks</h3>
+        <AddDeckDialogForm onMutation={setDecks} />
       </div>
       {viewType === 'grid' ? (
         <div className='grid md:grid-cols-12 gap-2'>
@@ -81,19 +91,19 @@ function Decks() {
         </div>
       ) : (
         <div>
-          <Table className='bg-accent rounded-lg overflow-hidden'>
+          <Table className='bg-card rounded-lg overflow-hidden'>
             <TableHeader>
-              <TableRow className='hover:bg-foreground/5 bg-foreground/5 font-semibold'>
+              <TableRow className='hover:bg-accent bg-accent [&>td]:p-4  font-semibold'>
                 <TableCell>Name</TableCell>
                 <TableCell>Description</TableCell>
-                <TableCell>Last Updated</TableCell>
+                <TableCell>Updated</TableCell>
                 <TableCell>Tags</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredDecks.map((deck) => (
-                <TableRow key={deck.id} className='[&>td]:py-5'>
+                <TableRow key={deck.id} className='[&>td]:p-4'>
                   <TableCell>
                     <h2
                       className='hover:text-primary font-medium underline'

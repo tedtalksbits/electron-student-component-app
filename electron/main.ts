@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron';
+import { app, BrowserWindow, ipcMain, Notification, screen } from 'electron';
 import path from 'node:path';
 import crudRepository from './crudRepository';
 import connection from './sql';
@@ -515,9 +515,17 @@ function createWindow() {
     win.setBounds(display.bounds);
   }
 }
+const NOTIFICATION_TITLE = 'Basic Notification';
+const NOTIFICATION_BODY = 'Notification from the Main process';
 
+function showNotification() {
+  new Notification({
+    title: NOTIFICATION_TITLE,
+    body: NOTIFICATION_BODY,
+  }).show();
+}
 app.on('window-all-closed', () => {
   win = null;
 });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createWindow).then(showNotification);

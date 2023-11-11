@@ -39,6 +39,16 @@ function App() {
               />
             ))}
           </Route>
+          <Route element={<AppLayout />}>
+            {/* Playground Routes */}
+            {routes.playground.routes.map((route) => (
+              <Route
+                key={route.href}
+                path={route.href}
+                element={route.element}
+              />
+            ))}
+          </Route>
         </Routes>
       </Router>
     </AppProvider>

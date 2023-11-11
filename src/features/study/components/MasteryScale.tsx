@@ -44,7 +44,7 @@ export default function MasteryScale({ onSetMastery }: MasteryScaleProps) {
           title='Well'
           variant={'outline'}
           onClick={() => handleSetMastery(20)}
-          className='bg-green-500/20 hover:bg-green-500/30'
+          className='bg-success/20 hover:bg-success/30'
         >
           🙂
         </Button>
@@ -52,7 +52,7 @@ export default function MasteryScale({ onSetMastery }: MasteryScaleProps) {
           title='I Know This'
           variant={'outline'}
           onClick={() => handleSetMastery(25)}
-          className='bg-green-500/20 hover:bg-green-500/40'
+          className='bg-success/20 hover:bg-success/40'
         >
           😀
         </Button>

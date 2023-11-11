@@ -1,10 +1,10 @@
 import { StudySession } from '@/features/study/types';
-import { DailyStudyAnalytics } from '../components/MostStudied';
 import {
+  DailyStudyAnalytics,
   LastStudySession,
   MostStudiedDeck,
   TotalStudyAnalytics,
-} from '@/features/slice/analytics-slice';
+} from '../types';
 
 type ResponseData = {
   data: StudySession[];
@@ -69,7 +69,7 @@ export function getDailyStudyAnalytics(
       const dataWithDatesAsString = response.data.map((task) => {
         return {
           ...task,
-          study_date: task.study_date.toString() as any,
+          study_date: task.study_date?.toString(),
         };
       });
       callback(dataWithDatesAsString);
@@ -106,8 +106,8 @@ export function getMostStudiedDecks(
     const dataWithDatesAsString = response.data.map((task) => {
       return {
         ...task,
-        created_at: task.created_at.toString() as any,
-        updated_at: task.updated_at.toString() as any,
+        created_at: task.created_at?.toString(),
+        updated_at: task.updated_at?.toString(),
       };
     });
     callback(dataWithDatesAsString);
@@ -142,10 +142,10 @@ export function getLastStudiedDeck(
     const dataWithDatesAsString = response.data.map((task) => {
       return {
         ...task,
-        created_at: task.created_at.toString() as any,
-        updated_at: task.updated_at.toString() as any,
-        end_time: task.end_time.toString() as any,
-        start_time: task.start_time.toString() as any,
+        created_at: task.created_at?.toString(),
+        updated_at: task.updated_at?.toString(),
+        end_time: task.end_time?.toString(),
+        start_time: task.start_time?.toString(),
       };
     });
     callback(dataWithDatesAsString);

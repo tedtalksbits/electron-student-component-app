@@ -67,7 +67,7 @@ function Flashcards() {
             deckId={Number(id)}
           />
           <Button
-            className='bg-green-600 hover:bg-opacity-70 hover:bg-green-600 border border-green-500 border-opacity-40 hover:border-opacity-80 bg-opacity-40 text-foreground '
+            className='bg-success/80 hover:bg-opacity-70 hover:bg-success border border-success border-opacity-40 hover:border-opacity-80 bg-opacity-40 text-foreground '
             onClick={handleStartStudy}
           >
             <PlayIcon className='h-5 w-5 mr-1' />

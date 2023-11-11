@@ -22,7 +22,7 @@ export const StudyDuration = () => {
   return (
     <Card className='border-none'>
       <CardHeader>
-        <CardTitle>Study Duration</CardTitle>
+        <CardTitle>Study Duration ⌛</CardTitle>
       </CardHeader>
       <CardContent>
         <small className='text-foreground/50'>Total Study Time</small>
