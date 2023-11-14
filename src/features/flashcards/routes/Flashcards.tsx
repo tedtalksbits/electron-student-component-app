@@ -1,6 +1,6 @@
-import { useParams } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { FlashcardType } from '../types';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { fetchFlashcardsByDeckId } from '../api/flashcards';
 import { useNavigate } from 'react-router-dom';
 import { addStudySession } from '../../study/api/studysessions';
@@ -12,16 +12,31 @@ import { USER_ID } from '@/constants';
 import { Progress } from '@/components/ui/progress';
 import { DeckType } from '@/features/decks/types';
 import { fetchDeckById } from '@/features/decks/api';
+import { Transition } from '@headlessui/react';
+import starImage from '@/assets/star.gif';
 
 function Flashcards() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as { study: boolean };
   const { id } = useParams();
+
   const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
+  const [showStudyAnimation, setShowStudyAnimation] = useState(false);
   const [deck, setDeck] = useState<DeckType | null>(null);
   useEffect(() => {
     fetchFlashcardsByDeckId<FlashcardType>(Number(id), setFlashcards);
     fetchDeckById<DeckType>(Number(id), setDeck);
   }, [id]);
+
+  useEffect(() => {
+    if (state?.study) {
+      setShowStudyAnimation(true);
+      setTimeout(() => {
+        setShowStudyAnimation(false);
+      }, 3000);
+    }
+  }, [state]);
 
   const handleStartStudy = () => {
     addStudySession(
@@ -45,8 +60,28 @@ function Flashcards() {
   const averageMastery = overallMastery / flashcards.length || 0;
 
   return (
-    <div>
+    <div className='relative'>
+      <Transition
+        as={Fragment}
+        show={showStudyAnimation}
+        enter='transform transition duration-[900ms]'
+        enterFrom='opacity-0 scale-50 translate-y-[-100%]'
+        enterTo='opacity-100 scale-125'
+        leave='transform duration-600 transition ease-in-out'
+        leaveFrom='opacity-100 scale-125 '
+        leaveTo='opacity-0 scale-95 translate-y-[-100%]'
+      >
+        <div className='absolute top-0 left-0 w-full h-full flex items-center justify-center z-10 select-none'>
+          <div className='bg-accent p-8 rounded-md text-center'>
+            <p className='font-black'>Nice work!</p>
+            <img src={starImage} alt='star' className='w-36 h-36' />
+          </div>
+        </div>
+      </Transition>
       <div className='flex items-center justify-between'>
+        <NavLink to='/decks'>
+          <Button variant='outline'>← Back</Button>
+        </NavLink>
         <h2 className='text-lg font-bold'>Deck Overview</h2>
         <div className='flex items-center gap-2'>
           <p>Overall Mastery:</p>
