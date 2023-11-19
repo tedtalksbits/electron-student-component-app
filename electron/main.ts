@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, Notification, screen } from 'electron';
+
 import path from 'node:path';
 import crudRepository from './crudRepository';
 import connection from './sql';
@@ -166,7 +167,7 @@ ipcMain.on(
       event.reply('update-flashcard-response', { data: rows });
     } catch (error) {
       const err = error as Error;
-      event.reply('delete-deck-response', {
+      event.reply('update-flashcard-response', {
         error: err.sqlMessage,
       });
     }

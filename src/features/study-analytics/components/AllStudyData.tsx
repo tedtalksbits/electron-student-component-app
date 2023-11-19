@@ -1,6 +1,7 @@
 import { StudyDuration } from './StudyDuration';
 import { MostStudied } from './MostStudied';
 import { StudyHistory } from './StudyHistory';
+import { DailyStudy } from './DailyStudy';
 
 export const AllStudyData = () => {
   return (
@@ -11,7 +12,10 @@ export const AllStudyData = () => {
 
       <div className='grid grid-cols-3 gap-4 my-4'>
         <StudyDuration />
-        <MostStudied />
+        <div className='flex flex-col gap-4'>
+          <DailyStudy />
+          <MostStudied />
+        </div>
         <StudyHistory />
       </div>
     </div>

@@ -19,6 +19,7 @@ import { DeckType } from '../types';
 import { Label } from '@/components/ui/label';
 import { deleteDeck, updateDeck } from '../api';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSelectorWithCategories';
 
 type DeckActionsProps = {
   deck: DeckType;
@@ -37,6 +38,7 @@ type DeckActionsProps = {
 };
 export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
   const [open, setOpen] = useState(false);
+  const [image, setImage] = useState<string | null>(deck.image);
   const refetchDecksQuery = `SELECT * FROM decks`;
 
   function handleDelete() {
@@ -54,6 +56,7 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
       name,
       description,
       tags,
+      image,
     } as DeckType;
 
     updateDeck<DeckType>(
@@ -63,6 +66,7 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
       refetchDecksQuery
     );
     setOpen(false);
+    setImage('');
   };
 
   return (
@@ -87,9 +91,15 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DialogContent>
+      <DialogContent className='flex flex-col'>
         <DialogTitle>Edit</DialogTitle>
+        <EmojiSelectorWithCategories
+          labelKey='updateDeckEmoji'
+          onSelectEmoji={setImage}
+        />
         <form onSubmit={handleEdit} className='form'>
+          <DeckImage image={image} />
+
           <div className='form-group'>
             <Label htmlFor='name-edit'>Name</Label>
             <Input
@@ -130,5 +140,19 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
         </form>
       </DialogContent>
     </Dialog>
+  );
+};
+
+const DeckImage = ({ image }: { image: string | null }) => {
+  return (
+    <>
+      <Label htmlFor='updateDeckEmoji'>Deck Icon</Label>
+
+      <div
+        className={`deck-image flex items-start justify-center text-center p-2 rounded-xl border w-12 h-12`}
+      >
+        <span className='text-3xl font-semibold '>{image ? image : ''}</span>
+      </div>
+    </>
   );
 };
