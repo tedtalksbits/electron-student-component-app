@@ -3,7 +3,7 @@ import { VariantProps, cva } from 'class-variance-authority';
 import React from 'react';
 
 const CollapseTriggerVariants = cva(
-  'flex items-center justify-between w-full px-4 py-4 text-sm font-medium text-left text-foreground [_&>*]:text-primary bg-card hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring',
+  'flex items-center justify-between w-full px-4 py-4 text-sm font-medium text-left text-foreground bg-card hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring',
   {
     variants: {
       variant: {
@@ -11,7 +11,8 @@ const CollapseTriggerVariants = cva(
         destructive: 'text-destructive',
         outline: 'text-primary',
         secondary: 'text-secondary',
-        ghost: 'bg-transparent hover:bg-accent hover:text-accent-foreground',
+        ghost:
+          'bg-transparent hover:bg-transparent hover:text-accent-foreground',
       },
     },
     defaultVariants: {
@@ -40,6 +41,13 @@ const CollapseTrigger = React.forwardRef<
         ? 'false'
         : 'true'
     );
+
+    // remove border-bottom if collapsed
+    if (e.currentTarget.getAttribute('aria-expanded') === 'true') {
+      target.classList.remove('border-b');
+    } else {
+      target.classList.add('border-b');
+    }
     // toggle max-height
     if (target.style.maxHeight) {
       target.style.maxHeight = '';
@@ -86,7 +94,7 @@ const CollapseContent = React.forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <div
-      className='transition-[max-height] duration-200 ease-out overflow-hidden max-h-0 py-0 px-4 border-b'
+      className='transition-[max-height] duration-200 ease-out overflow-hidden max-h-0 py-0 border-b'
       {...props}
       ref={ref}
     >

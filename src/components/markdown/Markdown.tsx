@@ -11,7 +11,10 @@ export default function Markdown({
 }) {
   return (
     <ReactMarkdown
-      className={className + ' my-4'}
+      className={
+        className +
+        ' my-4 whitespace-break-spaces markdown [&>*a]:text-primary hover:text-primary-600 dark:hover:text-primary-400'
+      }
       remarkPlugins={[remarkGfm]}
       children={children}
       components={{
@@ -19,6 +22,7 @@ export default function Markdown({
           const match = /language-(\w+)/.exec(className || '');
           return !inline && match ? (
             <SyntaxHighlighter
+              className='dark:bg-neutral-700 rounded-xl text-amber-200'
               {...props}
               children={String(children).replace(/\n$/, '')}
               style={atomDark}
@@ -29,7 +33,7 @@ export default function Markdown({
             <code
               {...props}
               className={
-                className + ' bg-neutral-700 rounded-md text-amber-200'
+                className + ' dark:bg-neutral-700 rounded-xl text-amber-200'
               }
             >
               {children}

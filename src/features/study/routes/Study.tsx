@@ -5,7 +5,7 @@ import { fetchFlashcardsByDeckId } from '../../flashcards/api/flashcards';
 import { useCallback } from 'react';
 import { updateStudySession } from '../api/studysessions';
 import { getSessionId } from '../../../utils/setSessionId';
-import { StudyFlashcard, StudyHeader, StudyHeading } from '../components';
+import { StudyFlashcard, StudyHeader } from '../components';
 import { StudyFlashcardNavItems } from '../components/StudyFlashcardNavItems';
 import { Button } from '@/components/ui/button';
 import { USER_ID } from '@/constants';
@@ -14,21 +14,10 @@ export default function Study() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
-  // const [timeElapsed, setTimeElapsed] = useState(0);
-  const [isDone, setIsDone] = useState(false);
+  const [, setIsDone] = useState(false);
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
   const [cardsStudied, setCardsStudied] = useState<number[]>([]);
   const flashcardContainerRef = useRef<HTMLDivElement>(null);
-
-  // const timerFormat = (timeElapsed: number) => {
-  //   const minutes = Math.floor(timeElapsed / 60);
-  //   const seconds = timeElapsed % 60;
-
-  //   const minutesStr = String(minutes).padStart(2, '0');
-  //   const secondsStr = String(seconds).padStart(2, '0');
-
-  //   return `${minutesStr}:${secondsStr}`;
-  // };
 
   const getFlashcardsByDeckId = useCallback(() => {
     fetchFlashcardsByDeckId(Number(id), setFlashcards);
@@ -37,19 +26,6 @@ export default function Study() {
   useEffect(() => {
     getFlashcardsByDeckId();
   }, [getFlashcardsByDeckId]);
-
-  // useEffect(() => {
-  //   let timer: NodeJS.Timeout;
-  //   if (!isDone) {
-  //     timer = setInterval(() => {
-  //       setTimeElapsed((timeElapsed) => timeElapsed + 1);
-  //     }, 1000);
-  //   }
-
-  //   return () => {
-  //     clearInterval(timer);
-  //   };
-  // }, [isDone]);
 
   const navClickHandler = (index: number) => {
     setCurrentFlashcardIndex(index);
@@ -80,7 +56,15 @@ export default function Study() {
       (data) => {
         console.log('study session updated');
         console.log(data);
-        navigate(-1);
+
+        // if > 1 card studied, go to /decks/:id/flashcards?study=true
+        if (data.flashcards_studied >= 1) {
+          console.log('more than 1 card studied');
+          navigate(`/decks/${id}/flashcards`, { state: { study: true } });
+        } else {
+          console.log('less than 1 card studied');
+          navigate(`/decks/${id}/flashcards`);
+        }
       }
     );
     setIsDone(true);
@@ -138,7 +122,7 @@ export default function Study() {
         ))}
       </div>
       {/* embedd leetcodes playground */}
-
+      {/* 
       <a
         className='text-primary hover:underline'
         target='_blank'
@@ -146,7 +130,7 @@ export default function Study() {
         title='Leetcode Playground'
       >
         Playground
-      </a>
+      </a> */}
     </div>
   );
 }

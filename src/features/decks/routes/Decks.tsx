@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeckType } from '../types';
 import { fetchDecks } from '../api';
-import { Deck, AddDeckDialogForm, DeckActions } from '../components';
+import { DeckCard, AddDeckDialogForm, DeckRow } from '../components';
 import { AllStudyData } from '@/features/study-analytics/components/AllStudyData';
 import { Input } from '@/components/ui/input';
 import { useShortcuts } from '@/hooks/useShortcuts';
@@ -13,10 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
-import { Link } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
 import { Grid, List } from 'lucide-react';
+import GoBackButton from '@/components/navigation/GoBackButton';
+import { motion } from 'framer-motion';
+import { NavLink } from 'react-router-dom';
 
 function Decks() {
   const [decks, setDecks] = useState<DeckType[]>([]);
@@ -52,19 +52,36 @@ function Decks() {
 
   useShortcuts(handleSearchShortcut);
 
-  if (!decks || decks.length === 0) return <div>loading...</div>;
+  if (!decks || decks.length === 0)
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{
+          scale: [1, 2, 2, 1, 1],
+          rotate: [0, 0, 270, 270, 0],
+          borderRadius: ['20%', '20%', '50%', '50%', '20%'],
+        }}
+      >
+        loading...
+      </motion.div>
+    );
 
   return (
     <div>
       <div className='flex items-center justify-between'>
-        <Input
-          type='search'
-          placeholder='Search'
-          onChange={(e) => setSearch(e.target.value)}
-          value={search || ''}
-          ref={inputRef}
-          className='w-34'
-        />
+        <div className='space-x-2 flex items-center'>
+          <NavLink to='/'>
+            <Button variant='outline'>← Back</Button>
+          </NavLink>
+          <Input
+            type='search'
+            placeholder='Search'
+            onChange={(e) => setSearch(e.target.value)}
+            value={search || ''}
+            ref={inputRef}
+            className='w-34'
+          />
+        </div>
         <Button
           variant='outline'
           onClick={() =>
@@ -76,12 +93,13 @@ function Decks() {
       </div>
       <div className='flex items-center justify-between my-8'>
         <h3 className='text-2xl font-bold'>Your Decks</h3>
+
         <AddDeckDialogForm onMutation={setDecks} />
       </div>
       {viewType === 'grid' ? (
         <div className='grid md:grid-cols-12 gap-2'>
           {filteredDecks.map((deck) => (
-            <Deck
+            <DeckCard
               key={deck.id}
               deck={deck}
               setDecks={setDecks}
@@ -90,12 +108,11 @@ function Decks() {
           ))}
         </div>
       ) : (
-        <div>
-          <Table className='bg-card rounded-lg overflow-hidden'>
+        <div className='border rounded-lg overflow-hidden'>
+          <Table className='bg-card '>
             <TableHeader>
-              <TableRow className='hover:bg-accent bg-accent [&>td]:p-4  font-semibold'>
+              <TableRow className='hover:bg-accent bg-accent [&>td]:p-4 text-foreground/30'>
                 <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
                 <TableCell>Updated</TableCell>
                 <TableCell>Tags</TableCell>
                 <TableCell>Actions</TableCell>
@@ -103,51 +120,12 @@ function Decks() {
             </TableHeader>
             <TableBody>
               {filteredDecks.map((deck) => (
-                <TableRow key={deck.id} className='[&>td]:p-4'>
-                  <TableCell>
-                    <h2
-                      className='hover:text-primary font-medium underline'
-                      title={deck.name}
-                    >
-                      <Link to={`/decks/${deck.id}/flashcards`}>
-                        {deck.name}
-                      </Link>
-                    </h2>
-                  </TableCell>
-                  <TableCell>{deck.description}</TableCell>
-                  <TableCell>
-                    {new Date(deck.updated_at).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {deck.tags?.split(',').map((tag, i) => (
-                      <Badge
-                        key={i}
-                        variant='outline'
-                        className='whitespace-nowrap text-[10px] cursor-pointer'
-                        onClick={() => setSearch(tag)}
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    <DeckActions
-                      deck={deck}
-                      actions={{
-                        delete: {
-                          icon: <TrashIcon />,
-                          label: 'Delete',
-                          onMutate: setDecks,
-                        },
-                        edit: {
-                          icon: <PencilIcon />,
-                          label: 'Edit',
-                          onMutate: setDecks,
-                        },
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
+                <DeckRow
+                  key={deck.id}
+                  deck={deck}
+                  setDecks={setDecks}
+                  setSearch={setSearch}
+                />
               ))}
             </TableBody>
           </Table>

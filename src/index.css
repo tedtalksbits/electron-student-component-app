@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 300 9% 98%;
+    --background: 300 9% 97%;
     --foreground: 0 0% 3.9%;
 
     --muted: 0 0% 98.1%;
@@ -16,22 +16,22 @@
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
 
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
+    --border: 0 0% 86%;
+    --input: 0 0% 86%;
 
     --primary: 217 91% 60%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 0 0% 96.1%;
+    --secondary: 0 0% 92.1%;
     --secondary-foreground: 0 0% 9%;
 
-    --accent: 0 0% 96.1%;
+    --accent: 0 0% 98.1%;
     --accent-foreground: 0 0% 9%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --ring: 0 0% 63.9%;
+    --ring: 217 91% 60%;
 
     --radius: 0.5rem;
 
@@ -90,7 +90,7 @@
     @apply w-full flex-shrink-0 grid my-8 place-items-center;
   }
   .study-item-inner {
-    @apply flex flex-col justify-center items-center p-4 border rounded-md max-w-7xl w-full shadow-lg;
+    @apply flex flex-col justify-between items-center p-4 border rounded-md max-w-7xl w-full shadow-lg h-full;
   }
 
   .study-item-nav-item {
@@ -147,6 +147,19 @@
     @apply py-2 px-4;
   }
 
+  ul {
+    @apply list-disc list-inside;
+  }
+  ol {
+    @apply list-decimal list-inside;
+  }
+
+  /*
+    ========================================
+    Fancy Checkbox
+    ========================================
+  */
+
   .checkbox-fancy {
     --color: rgb(14 165 233);
     --text-color: #fff;
@@ -201,7 +214,7 @@
     height: 4px;
     width: 4px;
     border-radius: 50%;
-    animation: firework 0.5s ease forwards 0.1s;
+    animation: splash 0.5s ease forwards 0.1s;
   }
 
   label:has(.checkbox-fancy:checked) {
@@ -215,12 +228,292 @@
     align-items: center;
     gap: 0.5rem;
   }
+
+  /*
+    ========================================
+    markdown
+    ========================================
+  */
+
+  /*
+    ========================================
+    contentEditor
+    ========================================
+  */
+
+  .contentEditor {
+    @apply flex flex-col gap-4;
+  }
+
+  .markdown {
+    @apply dark:text-gray-300 text-gray-700;
+  }
+  .markdown > * a {
+    @apply text-blue-500 underline;
+  }
   /*
     ========================================
     animations
     ========================================
   */
+
+  .scale-up-center {
+    -webkit-animation: scale-up-center 0.4s cubic-bezier(0.39, 0.575, 0.565, 1)
+      both;
+    animation: scale-up-center 0.4s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  }
+  .scale-down-center {
+    -webkit-animation: scale-down-center 0.4s
+      cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    animation: scale-down-center 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  .scale-down-left {
+    -webkit-animation: scale-down-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+      both;
+    animation: scale-down-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+
+  @keyframes scale-down-left {
+    0% {
+      -webkit-transform: scale(1);
+      transform: scale(1);
+      -webkit-transform-origin: 0% 50%;
+      transform-origin: 0% 50%;
+    }
+    100% {
+      -webkit-transform: scale(0.5);
+      transform: scale(0.5);
+      -webkit-transform-origin: 0% 50%;
+      transform-origin: 0% 50%;
+    }
+  }
+
+  @keyframes scale-up-center {
+    0% {
+      -webkit-transform: scale(0.5);
+      transform: scale(0.5);
+    }
+    100% {
+      -webkit-transform: scale(1);
+      transform: scale(1);
+    }
+  }
+  @keyframes scale-down-center {
+    0% {
+      -webkit-transform: scale(1);
+      transform: scale(1);
+    }
+    100% {
+      -webkit-transform: scale(0.5);
+      transform: scale(0.5);
+    }
+  }
+
+  .slide-in-blurred-right {
+    -webkit-animation: slide-in-blurred-right 0.6s
+      cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation: slide-in-blurred-right 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  @keyframes slide-in-blurred-right {
+    0% {
+      -webkit-transform: translateX(1000px) scaleX(2.5) scaleY(0.2);
+      transform: translateX(1000px) scaleX(2.5) scaleY(0.2);
+      -webkit-transform-origin: 0% 50%;
+      transform-origin: 0% 50%;
+      -webkit-filter: blur(40px);
+      filter: blur(40px);
+      opacity: 0;
+    }
+    100% {
+      -webkit-transform: translateX(0) scaleY(1) scaleX(1);
+      transform: translateX(0) scaleY(1) scaleX(1);
+      -webkit-transform-origin: 50% 50%;
+      transform-origin: 50% 50%;
+      -webkit-filter: blur(0);
+      filter: blur(0);
+      opacity: 1;
+    }
+  }
+
   @keyframes firework {
+    0% {
+      transform: translate(var(--x), var(--initialY));
+      width: var(--initialSize);
+      opacity: 1;
+    }
+    50% {
+      width: 0.5vmin;
+      opacity: 1;
+    }
+    100% {
+      width: var(--finalSize);
+      opacity: 0;
+    }
+  }
+
+  /* @keyframes fireworkPseudo {
+    0% { transform: translate(-50%, -50%); width: var(--initialSize); opacity: 1; }
+    50% { width: 0.5vmin; opacity: 1; }
+    100% { width: var(--finalSize); opacity: 0; }
+  }
+   */
+  .firework,
+  .firework::before,
+  .firework::after {
+    --initialSize: 0.5vmin;
+    --finalSize: 45vmin;
+    --particleSize: 0.2vmin;
+    --color1: yellow;
+    --color2: khaki;
+    --color3: white;
+    --color4: lime;
+    --color5: gold;
+    --color6: mediumseagreen;
+    --y: -30vmin;
+    --x: -50%;
+    --initialY: 60vmin;
+    content: '';
+    animation: firework 2s infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, var(--y));
+    width: var(--initialSize);
+    aspect-ratio: 1;
+    background: 
+      /*
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 0% 0%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 100% 0%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 100% 100%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 0% 100%,
+      */ radial-gradient(
+          circle,
+          var(--color1) var(--particleSize),
+          #0000 0
+        )
+        50% 0%,
+      radial-gradient(circle, var(--color2) var(--particleSize), #0000 0) 100%
+        50%,
+      radial-gradient(circle, var(--color3) var(--particleSize), #0000 0) 50%
+        100%,
+      radial-gradient(circle, var(--color4) var(--particleSize), #0000 0) 0% 50%,
+      /* bottom right */
+        radial-gradient(circle, var(--color5) var(--particleSize), #0000 0) 80%
+        90%,
+      radial-gradient(circle, var(--color6) var(--particleSize), #0000 0) 95%
+        90%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 90%
+        70%,
+      radial-gradient(circle, var(--color2) var(--particleSize), #0000 0) 100%
+        60%,
+      radial-gradient(circle, var(--color3) var(--particleSize), #0000 0) 55%
+        80%,
+      radial-gradient(circle, var(--color4) var(--particleSize), #0000 0) 70%
+        77%,
+      /* bottom left */
+        radial-gradient(circle, var(--color5) var(--particleSize), #0000 0) 22%
+        90%,
+      radial-gradient(circle, var(--color6) var(--particleSize), #0000 0) 45%
+        90%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 33%
+        70%,
+      radial-gradient(circle, var(--color2) var(--particleSize), #0000 0) 10%
+        60%,
+      radial-gradient(circle, var(--color3) var(--particleSize), #0000 0) 31%
+        80%,
+      radial-gradient(circle, var(--color4) var(--particleSize), #0000 0) 28%
+        77%,
+      radial-gradient(circle, var(--color5) var(--particleSize), #0000 0) 13%
+        72%,
+      /* top left */
+        radial-gradient(circle, var(--color6) var(--particleSize), #0000 0) 80%
+        10%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 95%
+        14%,
+      radial-gradient(circle, var(--color2) var(--particleSize), #0000 0) 90%
+        23%,
+      radial-gradient(circle, var(--color3) var(--particleSize), #0000 0) 100%
+        43%,
+      radial-gradient(circle, var(--color4) var(--particleSize), #0000 0) 85%
+        27%,
+      radial-gradient(circle, var(--color5) var(--particleSize), #0000 0) 77%
+        37%,
+      radial-gradient(circle, var(--color6) var(--particleSize), #0000 0) 60% 7%,
+      /* top right */
+        radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 22%
+        14%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 45%
+        20%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 33%
+        34%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 10%
+        29%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 31%
+        37%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 28% 7%,
+      radial-gradient(circle, var(--color1) var(--particleSize), #0000 0) 13%
+        42%;
+    background-size: var(--initialSize) var(--initialSize);
+    background-repeat: no-repeat;
+  }
+
+  .firework::before {
+    --x: -50%;
+    --y: -50%;
+    --initialY: -50%;
+    /*   transform: translate(-20vmin, -2vmin) rotate(40deg) scale(1.3) rotateY(40deg); */
+    transform: translate(-50%, -50%) rotate(40deg) scale(1.3) rotateY(40deg);
+    /*   animation: fireworkPseudo 2s infinite; */
+  }
+
+  .firework::after {
+    --x: -50%;
+    --y: -50%;
+    --initialY: -50%;
+    /*   transform: translate(44vmin, -50%) rotate(170deg) scale(1.15) rotateY(-30deg); */
+    transform: translate(-50%, -50%) rotate(170deg) scale(1.15) rotateY(-30deg);
+    /*   animation: fireworkPseudo 2s infinite; */
+  }
+
+  .firework:nth-child(2) {
+    --x: 30vmin;
+  }
+
+  .firework:nth-child(2),
+  .firework:nth-child(2)::before,
+  .firework:nth-child(2)::after {
+    --color1: pink;
+    --color2: violet;
+    --color3: fuchsia;
+    --color4: orchid;
+    --color5: plum;
+    --color6: lavender;
+    --finalSize: 40vmin;
+    left: 30%;
+    top: 60%;
+    animation-delay: -0.25s;
+  }
+
+  .firework:nth-child(3) {
+    --x: -30vmin;
+    --y: -50vmin;
+  }
+
+  .firework:nth-child(3),
+  .firework:nth-child(3)::before,
+  .firework:nth-child(3)::after {
+    --color1: cyan;
+    --color2: lightcyan;
+    --color3: lightblue;
+    --color4: PaleTurquoise;
+    --color5: SkyBlue;
+    --color6: lavender;
+    --finalSize: 35vmin;
+    left: 70%;
+    top: 60%;
+    animation-delay: -0.4s;
+  }
+  @keyframes splash {
     0% {
       opacity: 1;
       box-shadow: 0 -5px 0 -1px var(--color), 0 -5px 0 -1px var(--color),
@@ -249,8 +542,9 @@
       box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
     }
   }
-  .pulse-border {
-    animation: pulse-border 2s infinite;
+
+  .animate-pulse-border {
+    animation: pulse-border 0.7s cubic-bezier(1, 0, 0, 1) forwards;
   }
 
   /* animate-shine */
@@ -274,6 +568,11 @@
     animation-delay: 1s;
   }
 
+  .translate-z-200 {
+    transform: translateZ(200px);
+    filter: drop-shadow(0 0 10px rgba(10, 10, 20, 0.2));
+  }
+
   .animate-delay-2 {
     animation-delay: 2s;
   }
@@ -289,15 +588,15 @@
 
   /* scroll bar */
   *::-webkit-scrollbar {
-    @apply w-1 h-1 bg-transparent opacity-0 hover:opacity-100;
+    @apply w-1 h-1 bg-transparent opacity-10 hover:opacity-100;
   }
 
   *::-webkit-scrollbar-track {
-    @apply bg-background/0 rounded-full border-none outline-none transition-colors duration-300 opacity-0 hover:opacity-100;
+    @apply bg-background/10 rounded-full border-none outline-none transition-colors duration-300 opacity-10 hover:opacity-100;
   }
 
   *::-webkit-scrollbar-thumb {
-    @apply bg-foreground/0 rounded-full transition-colors duration-300;
+    @apply bg-foreground/10 rounded-full transition-colors duration-300;
   }
 
   *::-webkit-scrollbar-thumb:hover {
@@ -306,6 +605,34 @@
 
   *::-webkit-scrollbar-thumb:active {
     @apply bg-foreground/50;
+  }
+
+  *::-webkit-scrollbar-corner {
+    @apply bg-background/0 rounded-full border-none outline-none transition-colors duration-300 opacity-0 hover:opacity-100;
+  }
+
+  .reset-scrollbar::-webkit-scrollbar {
+    @apply w-1 h-1 bg-foreground/20 opacity-100;
+  }
+
+  .reset-scrollbar::-webkit-scrollbar-track {
+    @apply bg-foreground/20 rounded-full border outline transition-colors duration-300 opacity-100;
+  }
+
+  .reset-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-foreground/40 rounded-full transition-colors duration-300;
+  }
+
+  .reset-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-foreground transition-colors duration-300;
+  }
+
+  .reset-scrollbar::-webkit-scrollbar-thumb:active {
+    @apply bg-foreground transition-colors duration-300;
+  }
+
+  .reset-scrollbar::-webkit-scrollbar-corner {
+    @apply bg-foreground rounded-full transition-colors duration-300 opacity-100;
   }
 
   /*

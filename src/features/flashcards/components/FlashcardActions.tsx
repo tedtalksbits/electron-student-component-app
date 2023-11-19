@@ -66,6 +66,8 @@ export const FlashcardActions = ({
       tags,
     } as FlashcardType;
 
+    console.log('handleUpdate', data);
+
     updateFlashcard<FlashcardType>(
       flashcard.id,
       data,
