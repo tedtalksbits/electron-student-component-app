@@ -11,15 +11,12 @@ import { DeckType } from '../types';
 import { useState } from 'react';
 import { createDeck } from '../api';
 import { USER_ID } from '@/constants';
-import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSelectorWithCategories';
-import { FilePlus2Icon } from 'lucide-react';
 
 type AddDeckProps = {
   onMutation: React.Dispatch<React.SetStateAction<DeckType[]>>;
 };
 export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
   const [open, setOpen] = useState(false);
-  const [image, setImage] = useState<string | null>('');
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -35,7 +32,6 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
       description,
       user_id: USER_ID,
       tags: tags || null,
-      image,
     } as DeckType;
     const refetchQuery = `SELECT * FROM decks`;
     createDeck<DeckType>(data, onMutation, refetchQuery);
@@ -46,27 +42,11 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
     <div>
       <Dialog open={open} onOpenChange={() => setOpen(!open)}>
         <DialogTrigger asChild>
-          <Button variant='default'>
-            {' '}
-            <FilePlus2Icon className='w-4 h-4 mr-1' /> Add Deck
-          </Button>
+          <Button variant='default'>Add Deck</Button>
         </DialogTrigger>
-        <DialogContent className='flex flex-col'>
+        <DialogContent>
           <DialogTitle>Add New Deck</DialogTitle>
-          <EmojiSelectorWithCategories
-            labelKey='addDeckEmoji'
-            onSelectEmoji={setImage}
-          />
           <form onSubmit={handleSubmit} className='form'>
-            {/* <EmojiSelector /> */}
-            <Label htmlFor='addDeckEmoji'>Deck Icon</Label>
-            <label htmlFor='addDeckEmoji' className='w-full'>
-              {image && (
-                <span className='text-7xl flex items-start justify-center text-center p-2 rounded-md border w-fit h-fit'>
-                  {image}
-                </span>
-              )}
-            </label>
             <div className='form-group'>
               <Label htmlFor='name'>name</Label>
               <Input

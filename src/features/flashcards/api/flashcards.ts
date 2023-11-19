@@ -99,7 +99,6 @@ export function updateFlashcard<T>(
   );
   window.electron.ipcRenderer.once('update-flashcard-response', (args) => {
     const response = args as ResponseData<T[]>;
-    console.log('update-flashcard-response', response);
     if (response.error) {
       alert(response.error);
       return;

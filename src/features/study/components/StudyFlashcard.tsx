@@ -23,21 +23,14 @@ export const StudyFlashcard = ({
     );
   };
   return (
-    <div
-      onClick={() => handleStudiedCard(flashcard.id)}
-      className='my-4 w-full'
-    >
+    <div onClick={() => handleStudiedCard(flashcard.id)} className='my-4'>
       <CollapseTrigger
-        className='font-medium text-lg bg-transparent'
+        className='font-medium'
         aria-labelledby={flashcard.id.toString()}
-        variant='ghost'
       >
         <Markdown>{flashcard.question}</Markdown>
       </CollapseTrigger>
-      <CollapseContent
-        className='w-full bg-card p-4 rounded-md text-card-foreground list-disc'
-        id={flashcard.id.toString()}
-      >
+      <CollapseContent id={flashcard.id.toString()}>
         <Markdown className=''>{flashcard.answer}</Markdown>
         <MasteryScale onSetMastery={handleSetMastery} />
       </CollapseContent>

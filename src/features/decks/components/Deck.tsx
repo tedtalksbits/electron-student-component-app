@@ -12,17 +12,18 @@ type DeckProps = {
   setSearch?: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const DeckCard = ({ deck, setDecks, setSearch }: DeckProps) => {
+export const Deck = ({ deck, setDecks, setSearch }: DeckProps) => {
   return (
     <Card className='col-span-3 border-none flex flex-col'>
       <CardHeader className='flex items-start gap-2 flex-row'>
         <div>
-          {deck.image && <span>{deck.image}</span>}
           <h2
             className='hover:text-primary text-xl font-medium underline'
             title={deck.name}
           >
-            <Link to={`/decks/${deck.id}/flashcards`}>{deck.name}</Link>
+            <Link to={`/decks/${deck.id}/flashcards?deck_name=${deck.name}`}>
+              {deck.name}
+            </Link>
           </h2>
           <p className='text-foreground/50'>{deck.description}</p>
         </div>

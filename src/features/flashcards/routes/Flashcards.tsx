@@ -12,18 +12,17 @@ import { USER_ID } from '@/constants';
 import { Progress } from '@/components/ui/progress';
 import { DeckType } from '@/features/decks/types';
 import { fetchDeckById } from '@/features/decks/api';
-import { useToast } from '@/components/ui/use-toast';
+import { Transition } from '@headlessui/react';
 import starImage from '@/assets/star.gif';
-import { motion } from 'framer-motion';
 
 function Flashcards() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { study: boolean };
   const { id } = useParams();
-  const { toast } = useToast();
-  const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
 
+  const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
+  const [showStudyAnimation, setShowStudyAnimation] = useState(false);
   const [deck, setDeck] = useState<DeckType | null>(null);
   useEffect(() => {
     fetchFlashcardsByDeckId<FlashcardType>(Number(id), setFlashcards);
@@ -32,12 +31,12 @@ function Flashcards() {
 
   useEffect(() => {
     if (state?.study) {
-      toast({
-        variant: 'success',
-        children: <CompletedStudySession />,
-      });
+      setShowStudyAnimation(true);
+      setTimeout(() => {
+        setShowStudyAnimation(false);
+      }, 3000);
     }
-  }, [state, toast]);
+  }, [state]);
 
   const handleStartStudy = () => {
     addStudySession(
@@ -62,6 +61,23 @@ function Flashcards() {
 
   return (
     <div className='relative'>
+      <Transition
+        as={Fragment}
+        show={showStudyAnimation}
+        enter='transform transition duration-[900ms]'
+        enterFrom='opacity-0 scale-50 translate-y-[-100%]'
+        enterTo='opacity-100 scale-125'
+        leave='transform duration-600 transition ease-in-out'
+        leaveFrom='opacity-100 scale-125 '
+        leaveTo='opacity-0 scale-95 translate-y-[-100%]'
+      >
+        <div className='absolute top-0 left-0 w-full h-full flex items-center justify-center z-10 select-none'>
+          <div className='bg-accent p-8 rounded-md text-center'>
+            <p className='font-black'>Nice work!</p>
+            <img src={starImage} alt='star' className='w-36 h-36' />
+          </div>
+        </div>
+      </Transition>
       <div className='flex items-center justify-between'>
         <NavLink to='/decks'>
           <Button variant='outline'>← Back</Button>
@@ -69,8 +85,7 @@ function Flashcards() {
         <h2 className='text-lg font-bold'>Deck Overview</h2>
         <div className='flex items-center gap-2'>
           <p>Overall Mastery:</p>
-          <div className='text-xs text-foreground/50 relative'>
-            <div className='absolute inset-0 bg-gradient-to-r from-primary/50 to-secondary rounded-md blur opacity-50 z-[-1]'></div>
+          <div className='text-foreground/50'>
             {averageMastery.toFixed(2)}%
             <Progress value={averageMastery} />
           </div>
@@ -86,31 +101,16 @@ function Flashcards() {
             onMutation={setFlashcards}
             deckId={Number(id)}
           />
-          <Button variant='success' onClick={handleStartStudy}>
+          <Button
+            className='bg-success/80 hover:bg-opacity-70 hover:bg-success border border-success border-opacity-40 hover:border-opacity-80 bg-opacity-40 text-foreground '
+            onClick={handleStartStudy}
+          >
             <PlayIcon className='h-5 w-5 mr-1' />
             Start Studying
           </Button>
         </div>
       </div>
-      <motion.div
-        className='flex flex-col gap-4'
-        initial='hidden'
-        animate='visible'
-        variants={{
-          visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-              type: 'spring',
-              bounce: 0,
-              duration: 0.7,
-              delayChildren: 0.3,
-              staggerChildren: 0.05,
-            },
-          },
-          hidden: { opacity: 0, y: 20, transition: { duration: 0.2 } },
-        }}
-      >
+      <div className='flex flex-col gap-4'>
         {flashcards.map((flashcard) => (
           <Flashcard
             key={flashcard.id}
@@ -118,20 +118,9 @@ function Flashcards() {
             setFlashcards={setFlashcards}
           />
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
-const CompletedStudySession = () => {
-  return (
-    <div className='flex flex-col items-center justify-center w-full'>
-      <h2 className='text-xl font-bold animate-in'>Great work!</h2>
-      <p className='text-center text-xs animate-in'>
-        Spaced repetition is a proven technique for learning new things. Keep it
-        up!
-      </p>
-      <img src={starImage} alt='star' className='w-32 h-32' />
-    </div>
-  );
-};
+
 export default Flashcards;
