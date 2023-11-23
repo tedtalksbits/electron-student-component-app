@@ -65,7 +65,7 @@ export const DeckRow = ({
           deck={deck}
           actions={{
             delete: {
-              icon: <TrashIcon />,
+              icon: <TrashIcon className='text-destructive' />,
               label: 'Delete',
               onMutate: setDecks,
             },

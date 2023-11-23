@@ -12,15 +12,15 @@ const buttonVariants = cva(
         default:
           'dark:bg-primary/50 bg-primary border-primary/50 border text-primary-foreground dark:hover:bg-primary/90 hover:bg-primary/90 hover:border-primary',
         destructive:
-          'dark:bg-destructive/50 bg-destructive border-destructive/50 border text-destructive-foreground hover:bg-destructive/90 hover:border-destructive',
+          'dark:bg-destructive/50 bg-destructive border-destructive/50 border text-destructive-foreground dark:hover:bg-destructive/90 hover:bg-destructive/90 hover:border-destructive',
         outline:
           'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
         secondary:
-          'dark:bg-secondary/50 bg-secondary border-secondary/50 border text-secondary-foreground hover:bg-secondary/80 hover:border-secondary',
+          'dark:bg-secondary/50 bg-secondary border-secondary/50 border text-secondary-foreground dark:hover:bg-secondary/80 hover:bg-secondary/80 hover:border-secondary',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         success:
-          'dark:bg-success/50 bg-success border-success/50 border text-success-foreground hover:bg-success/80 hover:border-success',
+          'dark:bg-success/50 bg-success border-success/50 border text-success-foreground dark:hover:bg-success/80 hover:bg-success/80 hover:border-success',
       },
       size: {
         default: 'h-10 px-4 py-2',

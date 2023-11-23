@@ -17,7 +17,15 @@ export function Toaster() {
         if (props.children) {
           return (
             <Toast key={id} {...props}>
-              {props.children}
+              {props.icon ? (
+                <div className='flex gap-4'>
+                  <div>{props.icon}</div>
+                  <div className='flex-1'>{props.children}</div>
+                </div>
+              ) : (
+                <>{props.children}</>
+              )}
+
               {action}
               <ToastClose />
             </Toast>
@@ -25,11 +33,15 @@ export function Toaster() {
         }
         return (
           <Toast key={id} {...props}>
-            <div className='grid gap-1'>
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && (
-                <ToastDescription>{description}</ToastDescription>
-              )}
+            <div className='flex gap-4 items-start'>
+              {props.icon && <div>{props.icon}</div>}
+
+              <div className='grid gap-1'>
+                {title && <ToastTitle>{title}</ToastTitle>}
+                {description && (
+                  <ToastDescription>{description}</ToastDescription>
+                )}
+              </div>
             </div>
             {action}
             <ToastClose />
