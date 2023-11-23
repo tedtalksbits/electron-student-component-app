@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeckType } from '../types';
 import { fetchDecks } from '../api';
 import { DeckCard, AddDeckDialogForm, DeckRow } from '../components';
-import { AllStudyData } from '@/features/study-analytics/components/AllStudyData';
 import { Input } from '@/components/ui/input';
 import { useShortcuts } from '@/hooks/useShortcuts';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Grid, List } from 'lucide-react';
-import GoBackButton from '@/components/navigation/GoBackButton';
 import { motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
 
