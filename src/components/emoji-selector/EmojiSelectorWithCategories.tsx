@@ -7,6 +7,7 @@ import { Label } from '../ui/label';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
+import { BackspaceIcon } from '@heroicons/react/solid';
 const filterEmojiData = (data: any, search: string) => {
   const flattenedEmoji = Object.values(emojiCategories.emojis).reduce(
     (acc, category) => acc.concat(category),
@@ -72,7 +73,7 @@ export const EmojiSelectorWithCategories = React.forwardRef<
 
   return (
     <div {...props} className={cn('relative', className)} ref={ref}>
-      <motion.div layout key='emojies'>
+      <motion.div>
         <input
           type='checkbox'
           name=''
@@ -82,7 +83,7 @@ export const EmojiSelectorWithCategories = React.forwardRef<
           checked={showPanel}
         />
         <div className='controls flex my-2'>
-          <Label htmlFor={labelKey || 'emojie-select'} className='text-lg'>
+          <Label htmlFor={labelKey || 'emojie-select'} className=''>
             Emojis
           </Label>
           <Button
@@ -102,8 +103,12 @@ export const EmojiSelectorWithCategories = React.forwardRef<
             <motion.div
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -10, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              exit={{
+                y: -10,
+                opacity: 0,
+                transition: { duration: 0.1 },
+              }}
+              layout
               key='content'
               className='flex flex-col border rounded-md p-2'
             >
@@ -138,7 +143,7 @@ export const EmojiSelectorWithCategories = React.forwardRef<
                   </button>
                 ))}
               </div>
-              <div className='flex gap-2'>
+              <div className='flex gap-2 mt-4 border-t pt-1'>
                 {favorites.map((emoji) => (
                   <div
                     key={emoji}
@@ -148,6 +153,17 @@ export const EmojiSelectorWithCategories = React.forwardRef<
                     {emoji}
                   </div>
                 ))}
+                <div className='ml-auto'>
+                  <Button
+                    className='rounded-full p-1 w-fit h-fit'
+                    variant='outline'
+                    onClick={() => {
+                      onSelectEmoji(null);
+                    }}
+                  >
+                    <BackspaceIcon className='w-4 h-4' />
+                  </Button>
+                </div>
               </div>
             </motion.div>
           )}
