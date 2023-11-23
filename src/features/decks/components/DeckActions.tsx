@@ -20,6 +20,8 @@ import { Label } from '@/components/ui/label';
 import { deleteDeck, updateDeck } from '../api';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSelectorWithCategories';
+import { useToast } from '@/components/ui/use-toast';
+import { LucideCheckCheck, LucideCheckCircle } from 'lucide-react';
 
 type DeckActionsProps = {
   deck: DeckType;
@@ -39,10 +41,20 @@ type DeckActionsProps = {
 export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState<string | null>(deck.image);
+  const { toast } = useToast();
   const refetchDecksQuery = `SELECT * FROM decks`;
 
   function handleDelete() {
+    const confirmDelete = confirm(
+      `Are you sure you want to delete ${deck.name}?`
+    );
+    if (!confirmDelete) return;
     deleteDeck(deck.id, actions.delete.onMutate, refetchDecksQuery);
+    toast({
+      title: 'Done!',
+      description: `You have successfully deleted deck: ${deck.name}`,
+      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+    });
   }
 
   const handleEdit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -65,6 +77,12 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
       actions.edit.onMutate,
       refetchDecksQuery
     );
+
+    toast({
+      title: 'Done!',
+      description: `You have successfully updated deck: ${name}`,
+      icon: <LucideCheckCheck className='h-5 w-5 text-success' />,
+    });
     setOpen(false);
     setImage('');
   };

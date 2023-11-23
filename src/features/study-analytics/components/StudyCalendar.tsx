@@ -1,12 +1,16 @@
-import React from 'react';
 import { DailyStudyAnalytics } from '../types';
 import dayjs, { Dayjs } from 'dayjs';
 import { Calendar } from 'antd';
-import { Badge } from '@/components/ui/badge';
+import { LucideFlame, LucideX } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export const StudyCalendar = ({ data }: { data: DailyStudyAnalytics[] }) => {
+export const StudyCalendar = ({
+  analyticsData,
+}: {
+  analyticsData: DailyStudyAnalytics[];
+}) => {
   const renderValue = (value: Dayjs) => {
-    const listData = data
+    const listData = analyticsData
       .filter((sd) => {
         const sdDate = dayjs(sd.study_date).format('MM/DD/YYYY');
         const date = value.format('MM/DD/YYYY');
@@ -19,39 +23,40 @@ export const StudyCalendar = ({ data }: { data: DailyStudyAnalytics[] }) => {
 
     return (
       <ul className=''>
-        {listData.map((studyData, i) => (
-          <span
-            key={studyData.study_date.toString() + i}
-            title={`1 session\n${studyData.total_flashcards_studied.toString()} flashcards studied`}
-          >
-            <TrendMeter value={studyData.total_flashcards_studied} />
-          </span>
-        ))}
+        {listData.map((studyData, i) =>
+          studyData ? (
+            <span
+              key={studyData.study_date.toString() + i}
+              title={`1 session\n${studyData.total_flashcards_studied.toString()} flashcards studied`}
+            >
+              <TrendMeter value={studyData.total_flashcards_studied} />
+            </span>
+          ) : (
+            <span key={i} title={`No sessions\n0 flashcards studied`}>
+              <TrendMeter value={0} />
+            </span>
+          )
+        )}
       </ul>
     );
   };
 
   return (
-    <div>
-      <Calendar
-        className='bg-transparent rounded-sm'
-        style={{ border: 'none', backgroundColor: 'transparent' }}
-        onChange={(value) => console.log(value)}
-        cellRender={renderValue}
-      />
-      {/* <Calendar
-        modifiers={modifiers}
-        // modifiersStyles={{
-        //   studied: {
-        //     backgroundColor: '#10B981',
-        //     color: '#fff',
-        //     borderRadius: '50%',
-        //     padding: '0.25rem',
-        //   },
-        // }}
-        modifiersStyles={modifiersStyles}
-      /> */}
-    </div>
+    <Card className='border-none'>
+      <CardHeader>
+        <CardTitle className='flex items-center text-orange-400 '>
+          <LucideFlame className='mr-1' /> <p>Study Sessions</p>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Calendar
+          className='bg-transparent rounded-sm'
+          style={{ border: 'none', backgroundColor: 'transparent' }}
+          onChange={(value) => console.log(value)}
+          cellRender={renderValue}
+        />
+      </CardContent>
+    </Card>
   );
 };
 
@@ -65,17 +70,38 @@ const TrendMeter = ({ value }: { value: number }) => {
   // cool = 20% or more
   const cool = value > 0;
   // cold = 0% or more
-  const cold = value === 0;
+  const cold = value === 0 || value === null;
 
   if (redHot) {
-    return <Badge className='w-2 h-5 rounded-sm bg-success'></Badge>;
+    return (
+      <div className='w-5 h-5 2xl:w-10 2xl:h-10 rounded-full bg-gradient-to-t from-red-400 to-orange-400 flex items-center justify-center'>
+        <span>
+          <LucideFlame className='w-4 h-4 2xl:h-8 2xl:w-8' />
+        </span>
+      </div>
+    );
   } else if (hot) {
-    return <Badge className='w-2 h-5 rounded-sm bg-success/80'></Badge>;
+    return (
+      <div className='w-5 h-5 2xl:w-10 2xl:h-10 rounded-full bg-gradient-to-t  from-red-400 to-orange-400'></div>
+    );
   } else if (warm) {
-    return <Badge className='w-2 h-5 rounded-sm bg-success/60'></Badge>;
+    return (
+      <div className='w-5 h-5 2xl:w-10 2xl:h-10 rounded-full bg-gradient-to-t  from-red-400 to-orange-400'></div>
+    );
   } else if (cool) {
-    return <Badge className='w-2 h-5 rounded-sm bg-success/40'></Badge>;
+    return (
+      <div className='w-5 h-5 2xl:w-10 2xl:h-10 rounded-full bg-gradient-to-t  from-red-400 to-orange-400'></div>
+    );
   } else if (cold) {
-    return <Badge className='w-2 h-5 rounded-sm bg-success/20'></Badge>;
-  } else return <Badge className='w-2 h-5 rounded-sm bg-secondary'></Badge>;
+    return (
+      <div className='w-5 h-5 2xl:w-10 2xl:h-10 rounded-full bg-gradient-to-t from-green-400 to-blue-400'></div>
+    );
+  } else
+    return (
+      <div className='w-5 h-5 2xl:w-10 2xl:h-10 rounded-full bg-secondary flex items-center justify-center'>
+        <span>
+          <LucideX className='w-4 h-4 2xl:h-8 2xl:w-8' />
+        </span>
+      </div>
+    );
 };

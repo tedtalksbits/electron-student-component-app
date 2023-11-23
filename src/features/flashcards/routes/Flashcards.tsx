@@ -1,6 +1,6 @@
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { FlashcardType } from '../types';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchFlashcardsByDeckId } from '../api/flashcards';
 import { useNavigate } from 'react-router-dom';
 import { addStudySession } from '../../study/api/studysessions';
@@ -61,65 +61,79 @@ function Flashcards() {
   const averageMastery = overallMastery / flashcards.length || 0;
 
   return (
-    <div className='relative'>
-      <div className='flex items-center justify-between'>
-        <NavLink to='/decks'>
-          <Button variant='outline'>← Back</Button>
-        </NavLink>
-        <h2 className='text-lg font-bold'>Deck Overview</h2>
-        <div className='flex items-center gap-2'>
-          <p>Overall Mastery:</p>
-          <div className='text-xs text-foreground/50 relative'>
-            <div className='absolute inset-0 bg-gradient-to-r from-primary/50 to-secondary rounded-md blur opacity-50 z-[-1]'></div>
-            {averageMastery.toFixed(2)}%
-            <Progress value={averageMastery} />
+    <>
+      <div
+        className='
+        bg-gradient-to-b
+        from-success/5
+        to-transparent
+        w-full
+        h-[200px]
+        left-0
+        top-0
+        absolute
+        z-[-1] animate-fade-in'
+      ></div>
+      <div className='relative'>
+        <div className='flex items-center justify-between'>
+          <NavLink to='/decks'>
+            <Button variant='outline'>← Back</Button>
+          </NavLink>
+          <h2 className='text-lg font-bold'>Deck Overview</h2>
+          <div className='flex items-center gap-2'>
+            <p>Overall Mastery:</p>
+            <div className='text-xs text-foreground/50 relative'>
+              <div className='absolute inset-0 bg-gradient-to-r from-primary/50 to-secondary rounded-md blur opacity-50 z-[-1]'></div>
+              {averageMastery.toFixed(2)}%
+              <Progress value={averageMastery} />
+            </div>
           </div>
         </div>
-      </div>
-      <div className='flex items-center justify-between my-8'>
-        <div>
-          <h2 className='text-lg font-bold'>{deck?.name}</h2>
-          <small className='text-foreground/50'>{deck?.description}</small>
+        <div className='flex items-center justify-between my-8'>
+          <div>
+            <h2 className='text-lg font-bold'>{deck?.name}</h2>
+            <small className='text-foreground/50'>{deck?.description}</small>
+          </div>
+          <div className='flex items-center gap-2'>
+            <AddDeckFlashcardDialogForm
+              onMutation={setFlashcards}
+              deckId={Number(id)}
+            />
+            <Button variant='success' onClick={handleStartStudy}>
+              <PlayIcon className='h-5 w-5 mr-1' />
+              Start Studying
+            </Button>
+          </div>
         </div>
-        <div className='flex items-center gap-2'>
-          <AddDeckFlashcardDialogForm
-            onMutation={setFlashcards}
-            deckId={Number(id)}
-          />
-          <Button variant='success' onClick={handleStartStudy}>
-            <PlayIcon className='h-5 w-5 mr-1' />
-            Start Studying
-          </Button>
-        </div>
-      </div>
-      <motion.div
-        className='flex flex-col gap-4'
-        initial='hidden'
-        animate='visible'
-        variants={{
-          visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-              type: 'spring',
-              bounce: 0,
-              duration: 0.7,
-              delayChildren: 0.3,
-              staggerChildren: 0.05,
+        <motion.div
+          className='flex flex-col gap-4'
+          initial='hidden'
+          animate='visible'
+          variants={{
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: {
+                type: 'spring',
+                bounce: 0,
+                duration: 0.7,
+                delayChildren: 0.3,
+                staggerChildren: 0.05,
+              },
             },
-          },
-          hidden: { opacity: 0, y: 20, transition: { duration: 0.2 } },
-        }}
-      >
-        {flashcards.map((flashcard) => (
-          <Flashcard
-            key={flashcard.id}
-            flashcard={flashcard}
-            setFlashcards={setFlashcards}
-          />
-        ))}
-      </motion.div>
-    </div>
+            hidden: { opacity: 0, y: 20, transition: { duration: 0.2 } },
+          }}
+        >
+          {flashcards.map((flashcard) => (
+            <Flashcard
+              key={flashcard.id}
+              flashcard={flashcard}
+              setFlashcards={setFlashcards}
+            />
+          ))}
+        </motion.div>
+      </div>
+    </>
   );
 }
 const CompletedStudySession = () => {

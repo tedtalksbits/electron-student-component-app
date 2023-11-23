@@ -12,7 +12,8 @@ import { useState } from 'react';
 import { createDeck } from '../api';
 import { USER_ID } from '@/constants';
 import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSelectorWithCategories';
-import { FilePlus2Icon } from 'lucide-react';
+import { FilePlus2Icon, LucideCheckCircle } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 type AddDeckProps = {
   onMutation: React.Dispatch<React.SetStateAction<DeckType[]>>;
@@ -20,6 +21,7 @@ type AddDeckProps = {
 export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState<string | null>('');
+  const { toast } = useToast();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -40,6 +42,12 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
     const refetchQuery = `SELECT * FROM decks`;
     createDeck<DeckType>(data, onMutation, refetchQuery);
     setOpen(false);
+
+    toast({
+      title: 'Done!',
+      description: `You have successfully created deck: ${name}`,
+      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+    });
   };
 
   return (

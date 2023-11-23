@@ -9,6 +9,7 @@ import { StudyFlashcard, StudyHeader } from '../components';
 import { StudyFlashcardNavItems } from '../components/StudyFlashcardNavItems';
 import { Button } from '@/components/ui/button';
 import { USER_ID } from '@/constants';
+import { CodeSandboxLogoIcon } from '@radix-ui/react-icons';
 
 export default function Study() {
   const navigate = useNavigate();
@@ -78,59 +79,73 @@ export default function Study() {
   if (!flashcards.length) return <div>Loading...</div>;
 
   return (
-    <div className='overflow-hidden' id='study-session'>
-      <StudyHeader onDone={handleDone} />
+    <>
+      <div
+        className='
+        bg-gradient-to-b
+        from-destructive/5
+        to-transparent
+        w-full
+        h-[200px]
+        left-0
+        top-0
+        absolute
+        z-[-1] animate-fade-in'
+      ></div>
+      <div className='overflow-hidden max-w-7xl mx-auto' id='study-session'>
+        <StudyHeader onDone={handleDone} />
 
-      <div className='study-container' ref={flashcardContainerRef}>
-        {flashcards.map((flashcard) => (
-          <div key={flashcard.id} className='study-item'>
-            <div className='study-item-inner'>
-              <StudyFlashcard
-                flashcard={flashcard}
-                handleStudiedCard={handleStudiedCard}
-                setFlashcards={setFlashcards}
-              />
-              <div className='w-full flex items-center justify-between'>
-                <Button
-                  variant='outline'
-                  className='disabled:opacity-50 disabled:cursor-not-allowed'
-                  onClick={() =>
-                    setCurrentFlashcardIndex(currentFlashcardIndex - 1)
-                  }
-                  disabled={currentFlashcardIndex === 0}
-                >
-                  &larr; Previous
-                </Button>
-                <StudyFlashcardNavItems
-                  flashcards={flashcards}
-                  navItemClickHandler={navClickHandler}
-                  currentFlashcardIndex={currentFlashcardIndex}
+        <div className='study-container' ref={flashcardContainerRef}>
+          {flashcards.map((flashcard) => (
+            <div key={flashcard.id} className='study-item'>
+              <div className='study-item-inner'>
+                <StudyFlashcard
+                  flashcard={flashcard}
+                  handleStudiedCard={handleStudiedCard}
+                  setFlashcards={setFlashcards}
                 />
-                <Button
-                  onClick={() =>
-                    setCurrentFlashcardIndex(currentFlashcardIndex + 1)
-                  }
-                  disabled={currentFlashcardIndex === flashcards.length - 1}
-                  className='disabled:opacity-50 disabled:cursor-not-allowed'
-                  variant='outline'
-                >
-                  Next &rarr;
-                </Button>
+                <div className='w-full flex items-center justify-between'>
+                  <Button
+                    variant='outline'
+                    className='disabled:opacity-50 disabled:cursor-not-allowed'
+                    onClick={() =>
+                      setCurrentFlashcardIndex(currentFlashcardIndex - 1)
+                    }
+                    disabled={currentFlashcardIndex === 0}
+                  >
+                    &larr; Previous
+                  </Button>
+                  <StudyFlashcardNavItems
+                    flashcards={flashcards}
+                    navItemClickHandler={navClickHandler}
+                    currentFlashcardIndex={currentFlashcardIndex}
+                  />
+                  <Button
+                    onClick={() =>
+                      setCurrentFlashcardIndex(currentFlashcardIndex + 1)
+                    }
+                    disabled={currentFlashcardIndex === flashcards.length - 1}
+                    className='disabled:opacity-50 disabled:cursor-not-allowed'
+                    variant='outline'
+                  >
+                    Next &rarr;
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <a
+          className=''
+          target='_blank'
+          href='https://leetcode.com/playground/new/empty'
+          title='Leetcode Playground'
+        >
+          <Button>
+            <CodeSandboxLogoIcon className='mr-1' /> Playground
+          </Button>
+        </a>
       </div>
-      {/* embedd leetcodes playground */}
-      {/* 
-      <a
-        className='text-primary hover:underline'
-        target='_blank'
-        href='https://leetcode.com/playground/new/empty'
-        title='Leetcode Playground'
-      >
-        Playground
-      </a> */}
-    </div>
+    </>
   );
 }

@@ -3,7 +3,6 @@ import GoBackButton from './GoBackButton';
 import logo from '@/assets/icon.png';
 import { AppGridPopover } from './AppGridPopover';
 import { ThemeToggler } from '../theme/ThemeToggler';
-import { MedalsPopover } from './MedalsPopover';
 
 const Navbar = ({ showBackButton = true }: { showBackButton?: boolean }) => {
   const location = useLocation();
@@ -20,7 +19,6 @@ const Navbar = ({ showBackButton = true }: { showBackButton?: boolean }) => {
           <img src={logo} alt='logo' className='h-10 w-10' />
         </div>
         <div className='flex gap-2'>
-          <MedalsPopover />
           <AppGridPopover />
           <ThemeToggler />
         </div>

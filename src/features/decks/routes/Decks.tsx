@@ -67,7 +67,19 @@ function Decks() {
     );
 
   return (
-    <div>
+    <div className=''>
+      <div
+        className='
+        bg-gradient-to-b
+        from-primary/5
+        to-transparent
+        w-full
+        h-[200px]
+        left-0
+        top-0
+        absolute
+        z-[-1] animate-fade-in'
+      ></div>
       <div className='flex items-center justify-between'>
         <div className='space-x-2 flex items-center'>
           <NavLink to='/'>
@@ -131,8 +143,6 @@ function Decks() {
           </Table>
         </div>
       )}
-      <hr className='my-10' />
-      <AllStudyData />
     </div>
   );
 }

@@ -2,11 +2,13 @@ import { Decks } from '@/features/decks/routes';
 import { Flashcards } from '@/features/flashcards/routes';
 import { Home } from '@/features/home/routes';
 import { Skedrool } from '@/features/skedrool/routes';
+import { Analytics } from '@/features/study-analytics/routes/Analytics';
 import { Study } from '@/features/study/routes';
 import {
   Book,
   CalendarCheck2Icon,
   HomeIcon,
+  LucideFlame,
   LucideIcon,
   PlayIcon,
 } from 'lucide-react';
@@ -54,19 +56,7 @@ export const routes: Routes = {
       },
     ],
   },
-  skedrool: {
-    routes: [
-      {
-        title: 'Skedrool',
-        href: '/skedrool',
-        target: null,
-        description: 'Skedrool App',
-        element: <Skedrool />,
-        icon: CalendarCheck2Icon,
-        index: true,
-      },
-    ],
-  },
+
   playground: {
     routes: [
       {
@@ -76,6 +66,19 @@ export const routes: Routes = {
         description: 'Playground',
         element: <div>Playground</div>,
         icon: PlayIcon,
+        index: true,
+      },
+    ],
+  },
+  analytics: {
+    routes: [
+      {
+        title: 'Analytics',
+        href: '/analytics',
+        target: null,
+        description: 'Analytics',
+        element: <Analytics />,
+        icon: LucideFlame,
         index: true,
       },
     ],
