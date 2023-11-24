@@ -1,4 +1,4 @@
-import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { FlashcardType } from '../types';
 import { useEffect, useState } from 'react';
 import { fetchFlashcardsByDeckId } from '../api/flashcards';
@@ -12,16 +12,11 @@ import { USER_ID } from '@/constants';
 import { Progress } from '@/components/ui/progress';
 import { DeckType } from '@/features/decks/types';
 import { fetchDeckById } from '@/features/decks/api';
-import { useToast } from '@/components/ui/use-toast';
-import starImage from '@/assets/star.gif';
 import { motion } from 'framer-motion';
 
 function Flashcards() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const state = location.state as { study: boolean };
   const { id } = useParams();
-  const { toast } = useToast();
   const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
 
   const [deck, setDeck] = useState<DeckType | null>(null);
@@ -29,15 +24,6 @@ function Flashcards() {
     fetchFlashcardsByDeckId<FlashcardType>(Number(id), setFlashcards);
     fetchDeckById<DeckType>(Number(id), setDeck);
   }, [id]);
-
-  useEffect(() => {
-    if (state?.study) {
-      toast({
-        variant: 'success',
-        children: <CompletedStudySession />,
-      });
-    }
-  }, [state, toast]);
 
   const handleStartStudy = () => {
     addStudySession(
@@ -136,16 +122,5 @@ function Flashcards() {
     </>
   );
 }
-const CompletedStudySession = () => {
-  return (
-    <div className='flex flex-col items-center justify-center w-full'>
-      <h2 className='text-xl font-bold animate-in'>Great work!</h2>
-      <p className='text-center text-xs animate-in'>
-        Spaced repetition is a proven technique for learning new things. Keep it
-        up!
-      </p>
-      <img src={starImage} alt='star' className='w-32 h-32' />
-    </div>
-  );
-};
+
 export default Flashcards;
