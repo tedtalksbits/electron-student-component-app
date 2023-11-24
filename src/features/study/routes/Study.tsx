@@ -10,6 +10,8 @@ import { StudyFlashcardNavItems } from '../components/StudyFlashcardNavItems';
 import { Button } from '@/components/ui/button';
 import { USER_ID } from '@/constants';
 import { CodeSandboxLogoIcon } from '@radix-ui/react-icons';
+import { useAppSelector } from '@/hooks/redux';
+import { getLevelByXp } from '@/utils/gamification.engine';
 
 export default function Study() {
   const navigate = useNavigate();
@@ -19,6 +21,8 @@ export default function Study() {
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
   const [cardsStudied, setCardsStudied] = useState<number[]>([]);
   const flashcardContainerRef = useRef<HTMLDivElement>(null);
+
+  const totalXp = useAppSelector((state) => state.studyAnalytics.totalXp);
 
   const getFlashcardsByDeckId = useCallback(() => {
     fetchFlashcardsByDeckId(Number(id), setFlashcards);
@@ -58,10 +62,18 @@ export default function Study() {
         console.log('study session updated');
         console.log(data);
 
+        const prevLevel = getLevelByXp(totalXp.total_xp);
+
         // if > 1 card studied, go to /decks/:id/flashcards?study=true
         if (data.flashcards_studied >= 1) {
           console.log('more than 1 card studied');
-          navigate(`/decks/${id}/flashcards`, { state: { study: true } });
+          navigate(`/analytics`, {
+            state: {
+              study: true,
+              prevXp: totalXp,
+              prevLevel: prevLevel?.level,
+            },
+          });
         } else {
           console.log('less than 1 card studied');
           navigate(`/decks/${id}/flashcards`);
@@ -83,7 +95,7 @@ export default function Study() {
       <div
         className='
         bg-gradient-to-b
-        from-destructive/5
+        from-destructive/20
         to-transparent
         w-full
         h-[200px]

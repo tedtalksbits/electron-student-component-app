@@ -180,3 +180,31 @@ export function getTotalAnalytics(
     callback(response.data);
   });
 }
+
+/**
+ * @param userId
+ * @param callback
+ * @returns void
+ * @description
+ * This function is used to get the totals xp for a user.
+ * */
+
+export function getTotalXp(
+  userId: number,
+  callback: (data: { total_xp: number }) => void
+) {
+  window.electron.ipcRenderer.sendMessage('get-total-xp', userId);
+
+  window.electron.ipcRenderer.on('get-total-xp-response', (arg) => {
+    const response = arg as {
+      data: { total_xp: number };
+      error?: string;
+    };
+    if (response.error) {
+      alert(response.error);
+      return;
+    }
+
+    callback(response.data);
+  });
+}

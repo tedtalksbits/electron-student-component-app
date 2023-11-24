@@ -1,6 +1,10 @@
-import { TotalStudyAnalytics } from '@/features/study-analytics/types';
+import {
+  DailyStudyAnalytics,
+  StudyAnalyticsState,
+  TotalStudyAnalytics,
+} from '@/features/study-analytics/types';
 import { icons } from './icons';
-
+import levelsJson from '../../dist-electron/levels.json';
 export interface Level {
   level: number;
   currentLevelXp: number;
@@ -16,49 +20,12 @@ export interface Badge {
 export class TotalStudyAnalyticsGamificationEngine {
   #currentXp: number;
   #badges;
-  constructor(totalStudyAnalytics: TotalStudyAnalytics) {
-    console.log('totalStudyAnalytics', totalStudyAnalytics);
-    this.#buildLevels(100000);
-    this.#currentXp = this.#calculateXp(
-      totalStudyAnalytics.total_flashcards_studied,
-      totalStudyAnalytics.total_time_studied
-    );
-    this.#badges = this.#buildBadges(totalStudyAnalytics);
-  }
-  #calculateXp(
-    total_flashcards_studied: number,
-    total_time_studied: number
-  ): number {
-    console.table({
-      total_flashcards_studied,
-      total_time_studied,
-    });
-    const flashcardXp = Number(total_flashcards_studied * 10); // 10 XP per flashcard
-    const timeXp = Math.floor(total_time_studied / 6); // 10 XP per 6 seconds
-    console.table({
-      flashcardXp,
-      timeXp,
-    });
-    return flashcardXp + timeXp;
-  }
-  #buildLevels(totalXp: number): Level[] {
-    const levels = [];
-    let currentLevel = 1;
-    let currentLevelXp = 0;
-    let nextLevelXp = 10 * Math.pow(2, currentLevel);
-    while (currentLevelXp < totalXp) {
-      const level = {
-        level: currentLevel,
-        currentLevelXp,
-        nextLevelXp,
-      };
-      levels.push(level);
-      currentLevelXp = nextLevelXp;
-      currentLevel++;
-      nextLevelXp = 10 * Math.pow(2, currentLevel);
-    }
-
-    return levels;
+  #state: StudyAnalyticsState;
+  constructor(state: StudyAnalyticsState) {
+    console.log('constructor called');
+    this.#state = state;
+    this.#currentXp = state.totalXp.total_xp;
+    this.#badges = this.#buildBadges(state.totalStudyAnalytics);
   }
 
   #buildBadges(totalStudyAnalytics: TotalStudyAnalytics) {
@@ -84,7 +51,7 @@ export class TotalStudyAnalyticsGamificationEngine {
       {
         image: icons.globalEducationIcon,
         name: 'Worldly Student',
-        description: 'Studied continuously for 3 hours in one session.',
+        description: 'Studied for over 500 minutes.',
         condition: totalStudyAnalytics.total_time_studied >= 500 * 60, // in minutes
       },
       {
@@ -103,33 +70,79 @@ export class TotalStudyAnalyticsGamificationEngine {
         image: icons.ninjaIcon,
         name: 'Locked In',
         description: 'Reach level 10.',
-        condition: this.getLevel().level >= 10,
+        condition: this.getLevel()?.level >= 10,
       },
       {
         image: icons.goldMedalIcon,
         name: 'Flashcard Champion',
         description: 'Reach level 20.',
-        condition: this.getLevel().level >= 20,
+        condition: this.getLevel()?.level >= 20,
       },
       {
         image: icons.fireIcon,
         name: "Er'day",
         description: 'Study 7 days in a row.',
-        condition: false,
+        condition: this.getStreaks().longestStreak >= 7,
       },
       {
         image: icons.smileIcon,
         name: 'No life.com',
         description: 'Study 30 days in a row.',
-        condition: false,
+        condition: this.getStreaks().longestStreak >= 30,
       },
     ];
     return badges;
   }
 
+  #calculateStreaks(studySessions: DailyStudyAnalytics[]) {
+    if (studySessions.length === 0) {
+      return {
+        currentStreak: 0,
+        longestStreak: 0,
+      };
+    }
+
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let currentDate = new Date(studySessions[0].study_date);
+
+    for (let i = 0; i < studySessions.length; i++) {
+      const { study_date, total_flashcards_studied } = studySessions[i];
+
+      // Check if the date is consecutive
+      const isConsecutiveDate =
+        new Date(currentDate.getTime() + 24 * 60 * 60 * 1000).toDateString() ===
+        new Date(study_date).toDateString();
+
+      if (isConsecutiveDate && total_flashcards_studied > 0) {
+        // Increase the current streak
+        currentStreak++;
+      } else {
+        // Reset current streak if the streak is broken
+        currentStreak = total_flashcards_studied > 0 ? 1 : 0;
+      }
+
+      // Update the longest streak
+      longestStreak = Math.max(longestStreak, currentStreak);
+
+      // Update current date for the next iteration
+      currentDate = new Date(study_date);
+    }
+
+    return {
+      currentStreak,
+      longestStreak,
+    };
+  }
+
+  getStreaks() {
+    return this.#calculateStreaks(this.#state.dailyStudyAnalytics);
+  }
+
   getLevel(): Level {
-    const levels = this.#buildLevels(this.#currentXp);
-    return levels[levels.length - 1];
+    // const levels = this.#buildLevels(this.#currentXp);
+    // return levels[levels.length - 1];
+    return getLevelByXp(this.#currentXp) as Level;
   }
 
   getCurrentXp(): number {
@@ -138,8 +151,14 @@ export class TotalStudyAnalyticsGamificationEngine {
 
   getProgress(): number {
     const level = this.getLevel();
-    const progress = this.#currentXp / level.nextLevelXp;
-    return Number((progress * 100).toFixed(2));
+    const { currentLevelXp, nextLevelXp } = level;
+    const progress = Number(
+      (
+        ((this.#currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp)) *
+        100
+      ).toFixed(2)
+    );
+    return progress;
   }
 
   getBadges() {
@@ -159,4 +178,12 @@ export class TotalStudyAnalyticsGamificationEngine {
   getAllBadges() {
     return this.#badges;
   }
+}
+
+export function getLevelByXp(xp: number): Level | undefined {
+  const levels = levelsJson;
+  const level = levels.find((level) => {
+    return xp >= level.currentLevelXp && xp < level.nextLevelXp;
+  });
+  return level;
 }

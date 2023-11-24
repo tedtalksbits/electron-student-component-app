@@ -3,9 +3,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import { TotalStudyAnalytics } from '@/features/study-analytics/types';
 import { TotalStudyAnalyticsGamificationEngine } from '@/utils/gamification.engine';
-import { useMemo } from 'react';
 import { Tilt } from 'react-tilt';
 
 const defaultOptions = {
@@ -21,14 +19,10 @@ const defaultOptions = {
   glare: true, // if it should have a "glare" effect
 };
 export const Achievments = ({
-  analyticsData,
+  gamificationEngine,
 }: {
-  analyticsData: TotalStudyAnalytics;
+  gamificationEngine: TotalStudyAnalyticsGamificationEngine | null;
 }) => {
-  const gamificationEngine = useMemo(() => {
-    return new TotalStudyAnalyticsGamificationEngine(analyticsData);
-  }, [analyticsData]);
-
   if (!gamificationEngine)
     return (
       <div className='animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-500'></div>
