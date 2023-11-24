@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .cb-label {
+    @apply flex items-center gap-2 cursor-pointer px-2 py-1 rounded-md transition-colors duration-300 border text-foreground/50;
+  }
+  .cb-label:has(input:checked) {
+    @apply text-foreground bg-secondary;
+  }
+
+  /* hide checkbox */
+  .cb-label input {
+    @apply sr-only;
+  }
+}
 @layer base {
   :root {
     --background: 300 9% 97%;
