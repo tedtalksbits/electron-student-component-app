@@ -1,4 +1,4 @@
-import { indexRoutes, routes } from '@/routes';
+import { indexRoutes } from '@/routes';
 import { Link } from 'react-router-dom';
 
 export const AppsGrid = ({

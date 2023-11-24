@@ -1,5 +1,4 @@
 import analyticsReduces from './analytics-slice';
-import coursesReducer from './courses-slice';
 import studyAnalyticsReducer from './analytics-slice';
 import { combineReducers } from '@reduxjs/toolkit';
 // import authReducer from './auth-slice';
@@ -11,7 +10,6 @@ const rootReducer = combineReducers({
   // flashcard: flashcardReducer,
   // user: userReducer,
   analytics: analyticsReduces,
-  courses: coursesReducer,
   studyAnalytics: studyAnalyticsReducer,
 });
 

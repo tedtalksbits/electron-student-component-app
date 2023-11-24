@@ -1,4 +1,3 @@
-import { app, ipcMain } from 'electron';
 import fs from 'fs/promises';
 import path from 'path';
 export interface Level {
@@ -7,7 +6,7 @@ export interface Level {
   nextLevelXp: number;
 }
 
-const MAX_XP = 100000;
+// const MAX_XP = 100000;
 const BASE_XP = 1000;
 const EXP = 0.5;
 

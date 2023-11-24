@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Notification, screen } from 'electron';
+import { app, BrowserWindow, ipcMain, screen } from 'electron';
 
 import path from 'node:path';
 import crudRepository from './crudRepository';

@@ -1,12 +1,10 @@
 import { Decks } from '@/features/decks/routes';
 import { Flashcards } from '@/features/flashcards/routes';
 import { Home } from '@/features/home/routes';
-import { Skedrool } from '@/features/skedrool/routes';
 import { Analytics } from '@/features/study-analytics/routes/Analytics';
 import { Study } from '@/features/study/routes';
 import {
   Book,
-  CalendarCheck2Icon,
   HomeIcon,
   LucideFlame,
   LucideIcon,
