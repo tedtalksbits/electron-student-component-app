@@ -1,36 +1,28 @@
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { Metric, Divider } from '@tremor/react';
-import { useEffect } from 'react';
-import { getLastStudiedDeck } from '../api';
-import { USER_ID } from '@/constants';
-import { setLastStudySession } from '@/features/slice/analytics-slice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { secondsToMinutes } from '@/lib/utils';
+import { LucideClock } from 'lucide-react';
+import { LastStudySession } from '../types';
 
-export const StudyHistory = () => {
-  const dispatch = useAppDispatch();
-  const lastStudySession = useAppSelector(
-    (state) => state.studyAnalytics.lastStudySession
-  );
-
-  useEffect(() => {
-    getLastStudiedDeck(USER_ID, (data) =>
-      dispatch(setLastStudySession(data[0]))
-    );
-  }, [dispatch]);
+export const StudyHistory = ({
+  analyticsData,
+}: {
+  analyticsData: LastStudySession;
+}) => {
   return (
     <Card className='border-none'>
       <CardHeader>
-        <CardTitle>Study History</CardTitle>
+        <CardTitle className='flex items-center text-orange-400'>
+          <LucideClock className='mr-1' /> <p>Study History</p>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <small className='text-foreground/50'>
           Last Study Session:{' '}
-          <span className='text-foreground'>{lastStudySession?.name}</span>
+          <span className='text-foreground'>{analyticsData?.name}</span>
         </small>
-
         <Metric>
-          {new Date(lastStudySession?.end_time).toLocaleDateString('en-US', {
+          {new Date(analyticsData?.end_time).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             hour: 'numeric',
@@ -40,11 +32,11 @@ export const StudyHistory = () => {
         </Metric>
         <Divider />
         <small className='text-foreground/50'>Flashcards Studied</small>
-        <Metric>{lastStudySession?.flashcards_studied}</Metric>
+        <Metric>{analyticsData?.flashcards_studied}</Metric>
         <Divider />
         <small className='text-foreground/50'>Time Spent Studying</small>
         <Metric>
-          {secondsToMinutes(Number(lastStudySession?.duration_sec))} minutes
+          {secondsToMinutes(Number(analyticsData?.duration_sec))} minutes
         </Metric>
       </CardContent>
     </Card>

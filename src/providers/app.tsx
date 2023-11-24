@@ -43,6 +43,17 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         <ConfigProvider
           theme={{
             algorithm: antdTheme,
+            token: {
+              colorPrimary: '#1890ff',
+              borderRadius: 2,
+              colorBgContainer: 'bg-primary',
+            },
+            components: {
+              Calendar: {
+                colorBgBase: '#fff',
+                colorPrimary: '#1890ff',
+              },
+            },
           }}
         >
           <Provider store={store}>{children}</Provider>

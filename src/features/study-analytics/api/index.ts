@@ -1,10 +1,10 @@
 import { StudySession } from '@/features/study/types';
-import { DailyStudyAnalytics } from '../components/MostStudied';
 import {
+  DailyStudyAnalytics,
   LastStudySession,
   MostStudiedDeck,
   TotalStudyAnalytics,
-} from '@/features/slice/analytics-slice';
+} from '../types';
 
 type ResponseData = {
   data: StudySession[];
@@ -69,7 +69,7 @@ export function getDailyStudyAnalytics(
       const dataWithDatesAsString = response.data.map((task) => {
         return {
           ...task,
-          study_date: task.study_date.toString() as any,
+          study_date: task.study_date?.toString(),
         };
       });
       callback(dataWithDatesAsString);
@@ -106,8 +106,8 @@ export function getMostStudiedDecks(
     const dataWithDatesAsString = response.data.map((task) => {
       return {
         ...task,
-        created_at: task.created_at.toString() as any,
-        updated_at: task.updated_at.toString() as any,
+        created_at: task.created_at?.toString(),
+        updated_at: task.updated_at?.toString(),
       };
     });
     callback(dataWithDatesAsString);
@@ -142,10 +142,10 @@ export function getLastStudiedDeck(
     const dataWithDatesAsString = response.data.map((task) => {
       return {
         ...task,
-        created_at: task.created_at.toString() as any,
-        updated_at: task.updated_at.toString() as any,
-        end_time: task.end_time.toString() as any,
-        start_time: task.start_time.toString() as any,
+        created_at: task.created_at?.toString(),
+        updated_at: task.updated_at?.toString(),
+        end_time: task.end_time?.toString(),
+        start_time: task.start_time?.toString(),
       };
     });
     callback(dataWithDatesAsString);
@@ -170,6 +170,34 @@ export function getTotalAnalytics(
   window.electron.ipcRenderer.on('get-total-analytics-response', (arg) => {
     const response = arg as {
       data: TotalStudyAnalytics[];
+      error?: string;
+    };
+    if (response.error) {
+      alert(response.error);
+      return;
+    }
+
+    callback(response.data);
+  });
+}
+
+/**
+ * @param userId
+ * @param callback
+ * @returns void
+ * @description
+ * This function is used to get the totals xp for a user.
+ * */
+
+export function getTotalXp(
+  userId: number,
+  callback: (data: { total_xp: number }) => void
+) {
+  window.electron.ipcRenderer.sendMessage('get-total-xp', userId);
+
+  window.electron.ipcRenderer.on('get-total-xp-response', (arg) => {
+    const response = arg as {
+      data: { total_xp: number };
       error?: string;
     };
     if (response.error) {

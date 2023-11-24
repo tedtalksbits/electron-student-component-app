@@ -58,6 +58,7 @@ export function getCurrentSemesterByDate(date: Date) {
 }
 
 export function secondsToMinutes(seconds: number) {
+  if (!seconds) return 0;
   const mins = seconds / 60;
   return mins.toFixed(2);
 }

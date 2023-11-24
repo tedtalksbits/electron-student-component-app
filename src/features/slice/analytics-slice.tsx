@@ -1,58 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { DeckTypeDTO } from '../decks/types';
-
-export type DailyStudyAnalytics = {
-  study_date: string;
-  total_flashcards_studied: number;
-};
-
-export type StudySession = {
-  id: number;
-  user_id: number;
-  deck_id: number;
-  flashcards_studied: number;
-  duration_sec: number;
-  start_time: string;
-  end_time: string;
-};
-
-export type MostStudiedDeck = {
-  created_at: string;
-  deck_id: number;
-  description: string;
-  id: number;
-  image: string | null;
-  name: string;
-  tags: string;
-  total_duration: string;
-  total_flashcards_studied: string;
-  updated_at: string;
-  user_id: number;
-  visibility: string | null;
-};
-
-export type TotalStudyAnalytics = {
-  total_flashcards_studied: number;
-  total_completed_sessions: number;
-  total_time_studied: number;
-  average_study_duration: number;
-};
-
-export type LastStudySession = DeckTypeDTO & {
-  flashcards_studied: number;
-  duration_sec: number;
-  start_time: string;
-  end_time: string;
-  study_session_id: number | null;
-};
-
-export type StudyAnalyticsState = {
-  dailyStudyAnalytics: DailyStudyAnalytics[];
-  studySessions: StudySession[];
-  mostStudiedDecks: MostStudiedDeck[];
-  totalStudyAnalytics: TotalStudyAnalytics;
-  lastStudySession: LastStudySession;
-};
+import {
+  DailyStudyAnalytics,
+  LastStudySession,
+  MostStudiedDeck,
+  StudyAnalyticsState,
+  TotalStudyAnalytics,
+} from '../study-analytics/types';
 
 const initialState: StudyAnalyticsState = {
   dailyStudyAnalytics: [],
@@ -80,6 +33,9 @@ const initialState: StudyAnalyticsState = {
     start_time: '',
     end_time: '',
   },
+  totalXp: {
+    total_xp: 0,
+  },
 };
 
 const studyAnalyticsSlice = createSlice({
@@ -101,6 +57,9 @@ const studyAnalyticsSlice = createSlice({
     setLastStudySession(state, action: PayloadAction<LastStudySession>) {
       state.lastStudySession = action.payload;
     },
+    setTotalXp(state, action: PayloadAction<{ total_xp: number }>) {
+      state.totalXp = action.payload;
+    },
   },
 });
 
@@ -109,6 +68,7 @@ export const {
   setMostStudiedDecks,
   setTotalStudyAnalytics,
   setLastStudySession,
+  setTotalXp,
 } = studyAnalyticsSlice.actions;
 
 export default studyAnalyticsSlice.reducer;

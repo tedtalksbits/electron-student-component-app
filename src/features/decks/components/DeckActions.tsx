@@ -19,6 +19,9 @@ import { DeckType } from '../types';
 import { Label } from '@/components/ui/label';
 import { deleteDeck, updateDeck } from '../api';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSelectorWithCategories';
+import { useToast } from '@/components/ui/use-toast';
+import { LucideCheckCheck, LucideCheckCircle } from 'lucide-react';
 
 type DeckActionsProps = {
   deck: DeckType;
@@ -37,10 +40,21 @@ type DeckActionsProps = {
 };
 export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
   const [open, setOpen] = useState(false);
+  const [image, setImage] = useState<string | null>(deck.image);
+  const { toast } = useToast();
   const refetchDecksQuery = `SELECT * FROM decks`;
 
   function handleDelete() {
+    const confirmDelete = confirm(
+      `Are you sure you want to delete ${deck.name}?`
+    );
+    if (!confirmDelete) return;
     deleteDeck(deck.id, actions.delete.onMutate, refetchDecksQuery);
+    toast({
+      title: 'Done!',
+      description: `You have successfully deleted deck: ${deck.name}`,
+      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+    });
   }
 
   const handleEdit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -53,7 +67,8 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
     const data = {
       name,
       description,
-      tags,
+      tags: tags ? tags : null,
+      image,
     } as DeckType;
 
     updateDeck<DeckType>(
@@ -62,7 +77,14 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
       actions.edit.onMutate,
       refetchDecksQuery
     );
+
+    toast({
+      title: 'Done!',
+      description: `You have successfully updated deck: ${name}`,
+      icon: <LucideCheckCheck className='h-5 w-5 text-success' />,
+    });
     setOpen(false);
+    setImage('');
   };
 
   return (
@@ -87,9 +109,15 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DialogContent>
+      <DialogContent className='flex flex-col'>
         <DialogTitle>Edit</DialogTitle>
         <form onSubmit={handleEdit} className='form'>
+          <EmojiSelectorWithCategories
+            labelKey='updateDeckEmoji'
+            onSelectEmoji={setImage}
+          />
+          <DeckImage image={image || deck.image} />
+
           <div className='form-group'>
             <Label htmlFor='name-edit'>Name</Label>
             <Input
@@ -130,5 +158,28 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
         </form>
       </DialogContent>
     </Dialog>
+  );
+};
+
+const DeckImage = ({ image }: { image: string | null }) => {
+  return (
+    <>
+      <Button variant='secondary' className='w-fit' type='button'>
+        <Label htmlFor='updateDeckEmoji'>Deck Icon</Label>
+      </Button>
+
+      {/* <div
+        className={`deck-image flex items-start justify-center text-center p-2 rounded-xl border w-12 h-12`}
+      >
+        <span className='text-3xl font-semibold '>{image ? image : ''}</span>
+      </div> */}
+      <label htmlFor='updateDeckEmoji' className='w-full'>
+        {image && (
+          <span className='text-7xl flex items-start justify-center text-center p-2 rounded-md border w-fit h-fit'>
+            {image}
+          </span>
+        )}
+      </label>
+    </>
   );
 };

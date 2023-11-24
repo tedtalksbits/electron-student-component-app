@@ -13,6 +13,8 @@ import React, { useState } from 'react';
 import { FlashcardDTO, FlashcardType } from '../types';
 import { createFlashcard } from '../api/flashcards';
 import { USER_ID } from '@/constants';
+import { useToast } from '@/components/ui/use-toast';
+import { LucideCheckCircle } from 'lucide-react';
 
 type AddFlashCardProps = {
   onMutation: React.Dispatch<React.SetStateAction<FlashcardType[]>>;
@@ -23,6 +25,7 @@ export const AddDeckFlashcardDialogForm = ({
   deckId,
 }: AddFlashCardProps) => {
   const [open, setOpen] = useState(false);
+  const { toast } = useToast();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -50,7 +53,14 @@ export const AddDeckFlashcardDialogForm = ({
     console.log(data);
     const refetchQuery = `SELECT * FROM flashcards WHERE deck_id = ${deckId}`;
     createFlashcard<FlashcardType>(data, onMutation, refetchQuery);
+
     setOpen(false);
+
+    toast({
+      title: 'Done!',
+      description: `You have successfully added a flashcard`,
+      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+    });
   };
   return (
     <Dialog open={open} onOpenChange={() => setOpen(!open)}>
@@ -66,6 +76,7 @@ export const AddDeckFlashcardDialogForm = ({
           <div className='form-group'>
             <Label htmlFor='question'>Question</Label>
             <Textarea
+              autoFocus
               name='question'
               id='question'
               placeholder='question'

@@ -29,9 +29,10 @@ function App() {
               />
             ))}
           </Route>
+
           <Route element={<AppLayout />}>
-            {/* Skedrool Routes */}
-            {routes.skedrool.routes.map((route) => (
+            {/* Playground Routes */}
+            {routes.playground.routes.map((route) => (
               <Route
                 key={route.href}
                 path={route.href}
@@ -39,6 +40,20 @@ function App() {
               />
             ))}
           </Route>
+
+          <Route element={<AnkiLayout />}>
+            {/* Analytics Routes */}
+            {routes.analytics.routes.map((route) => (
+              <Route
+                key={route.href}
+                path={route.href}
+                element={route.element}
+              />
+            ))}
+          </Route>
+
+          {/* 404 */}
+          <Route path='*' element={<h1>404</h1>} />
         </Routes>
       </Router>
     </AppProvider>

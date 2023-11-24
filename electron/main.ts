@@ -1,9 +1,11 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron';
+import { app, BrowserWindow, ipcMain, Notification, screen } from 'electron';
+
 import path from 'node:path';
 import crudRepository from './crudRepository';
 import connection from './sql';
 import { FlashcardDTO } from '../src/features/flashcards/types/index';
 import { RowDataPacket } from 'mysql2';
+import { buildLevelsJSON } from './config/buildLevelsJSON';
 type Error = {
   code: string;
   errno: number;
@@ -29,6 +31,7 @@ process.env.PUBLIC = app.isPackaged
 let win: BrowserWindow | null;
 const isMac = process.platform === 'darwin';
 const isProd = process.env.NODE_ENV === 'production' || app.isPackaged;
+
 ipcMain.on('renderer-process-message', (event, arg) => {
   console.log('this came from the renderer', arg);
   event.reply('main-process-reply', 'pong');
@@ -166,7 +169,7 @@ ipcMain.on(
       event.reply('update-flashcard-response', { data: rows });
     } catch (error) {
       const err = error as Error;
-      event.reply('delete-deck-response', {
+      event.reply('update-flashcard-response', {
         error: err.sqlMessage,
       });
     }
@@ -301,172 +304,24 @@ ipcMain.on('get-total-analytics', async (event, userId) => {
   }
 });
 
-ipcMain.on('get-current-courses', async (event, year, term) => {
-  console.log('get-courses', year, term);
+/*
+  ========================================
+  XP LEVELS
+  ========================================
+*/
+
+ipcMain.on('get-total-xp', async (event, userId) => {
+  console.log('get-total-xp', userId);
   try {
-    const rows = await crudRepository.select('semesters', ['id'], {
-      term_year: year,
-      term,
-    });
-    const semester_id = rows[0].id as number;
-    const courses = await crudRepository.select('courses', ['*'], {
-      semester_id,
-    });
-    const coursesWithDaysAsNumberArray = courses.map((course) => {
-      if (course.days === null || !course.days)
-        return {
-          ...course,
-          days: [],
-        };
-      return {
-        ...course,
-        days: course.days.split(',').map((day: string) => Number(day)),
-      };
-    });
-    event.reply('get-current-courses-response', {
-      data: coursesWithDaysAsNumberArray,
-    });
+    const [rows] = await connection.execute<RowDataPacket[]>(
+      'CALL get_user_total_xp(?)',
+      [userId]
+    );
+    console.log('total xp', rows[0][0]);
+    event.reply('get-total-xp-response', { data: rows[0][0] });
   } catch (error) {
     const err = error as Error;
-    event.reply('get-current-courses-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('get-projects', async (event, userId) => {
-  console.log('get-projects');
-  try {
-    const rows = await crudRepository.select('projects', ['*'], {
-      user_id: userId,
-    });
-
-    event.reply('get-projects-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('get-projects-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('create-project', async (event, data, refetchQuery: string) => {
-  console.log('create-project', data);
-  console.log('refetchQuery', refetchQuery);
-  try {
-    await crudRepository.createOne('projects', data);
-    const [rows] = await connection.execute(refetchQuery);
-    event.reply('create-project-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('create-project-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('delete-project', async (event, id, refetchQuery: string) => {
-  console.log('delete-project', id);
-  console.log('refetchQuery', refetchQuery);
-  try {
-    await crudRepository.deleteOne('projects', id);
-    await crudRepository.deleteMany('project_tasks', { project_id: id });
-    const [rows] = await connection.execute(refetchQuery);
-    event.reply('delete-project-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('delete-project-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('update-project', async (event, id, data, refetchQuery: string) => {
-  console.log('update-project', data);
-  try {
-    await crudRepository.updateOne('projects', id, data);
-    const [rows] = await connection.execute(refetchQuery);
-
-    event.reply('update-project-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('update-project-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('get-tasks', async (event, userId) => {
-  console.log('get-tasks');
-  try {
-    const rows = await crudRepository.select('project_tasks', ['*'], {
-      user_id: userId,
-    });
-
-    event.reply('get-tasks-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('get-tasks-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('get-tasks-by-projectId', async (event, projectId) => {
-  console.log('get-tasks-by-projectId', projectId);
-  try {
-    const rows = await crudRepository.select('project_tasks', ['*'], {
-      project_id: projectId,
-    });
-
-    event.reply('get-tasks-by-projectId-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('get-tasks-by-projectId-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('create-task', async (event, data, refetchQuery: string) => {
-  console.log('create-task', data);
-  console.log('refetchQuery', refetchQuery);
-  try {
-    await crudRepository.createOne('project_tasks', data);
-    const [rows] = await connection.execute(refetchQuery);
-    event.reply('create-task-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('create-task-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('delete-task', async (event, id, refetchQuery: string) => {
-  console.log('delete-task', id);
-  console.log('refetchQuery', refetchQuery);
-  try {
-    await crudRepository.deleteOne('project_tasks', id);
-    const [rows] = await connection.execute(refetchQuery);
-    event.reply('delete-task-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('delete-task-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('update-task', async (event, id, data, refetchQuery: string) => {
-  console.log('update-task', data);
-  try {
-    await crudRepository.updateOne('project_tasks', id, data);
-    const [rows] = await connection.execute(refetchQuery);
-    event.reply('update-task-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('update-task-response', {
+    event.reply('get-total-xp-response', {
       error: err.sqlMessage,
     });
   }
@@ -514,10 +369,24 @@ function createWindow() {
   if (display) {
     win.setBounds(display.bounds);
   }
-}
 
+  win?.webContents.on('did-finish-load', async () => {
+    console.log('did-finish-load');
+    win?.webContents.send('app-loaded');
+    await buildLevelsJSON();
+  });
+}
+const NOTIFICATION_TITLE = 'Basic Notification';
+const NOTIFICATION_BODY = 'Notification from the Main process';
+
+function showNotification() {
+  new Notification({
+    title: NOTIFICATION_TITLE,
+    body: NOTIFICATION_BODY,
+  }).show();
+}
 app.on('window-all-closed', () => {
   win = null;
 });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createWindow).then(showNotification);

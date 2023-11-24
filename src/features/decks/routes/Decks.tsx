@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeckType } from '../types';
 import { fetchDecks } from '../api';
-import { Deck, AddDeckDialogForm, DeckActions } from '../components';
-import { AllStudyData } from '@/features/study-analytics/components/AllStudyData';
+import { DeckCard, AddDeckDialogForm, DeckRow } from '../components';
 import { Input } from '@/components/ui/input';
 import { useShortcuts } from '@/hooks/useShortcuts';
 import { Button } from '@/components/ui/button';
@@ -13,14 +12,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
-import { Link } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
+import { Grid, List } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { NavLink } from 'react-router-dom';
 
 function Decks() {
   const [decks, setDecks] = useState<DeckType[]>([]);
   const [search, setSearch] = useState('');
-  const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
+  const [viewType, setViewType] = useState<'grid' | 'list'>(
+    (localStorage.getItem('viewType') as 'grid' | 'list') || 'grid'
+  );
+  const handleViewTypeChange = (viewType: 'grid' | 'list') => {
+    setViewType(viewType);
+    localStorage.setItem('viewType', viewType);
+  };
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     fetchDecks<DeckType>(setDecks);
@@ -45,33 +50,66 @@ function Decks() {
 
   useShortcuts(handleSearchShortcut);
 
-  if (!decks || decks.length === 0) return <div>loading...</div>;
+  if (!decks || decks.length === 0)
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{
+          scale: [1, 2, 2, 1, 1],
+          rotate: [0, 0, 270, 270, 0],
+          borderRadius: ['20%', '20%', '50%', '50%', '20%'],
+        }}
+      >
+        loading...
+      </motion.div>
+    );
 
   return (
-    <div>
-      <Input
-        type='search'
-        placeholder='Search'
-        onChange={(e) => setSearch(e.target.value)}
-        value={search || ''}
-        ref={inputRef}
-      />
-      <div className='flex items-center justify-between my-8'>
-        <h3 className='text-2xl font-bold'>Your Decks</h3>
-        <AddDeckDialogForm onMutation={setDecks} />
+    <div className=''>
+      <div
+        className='
+        bg-gradient-to-b
+        from-primary/5
+        to-transparent
+        w-full
+        h-[200px]
+        left-0
+        top-0
+        absolute
+        z-[-1] animate-fade-in'
+      ></div>
+      <div className='flex items-center justify-between'>
+        <div className='space-x-2 flex items-center'>
+          <NavLink to='/'>
+            <Button variant='outline'>← Back</Button>
+          </NavLink>
+          <Input
+            type='search'
+            placeholder='Search'
+            onChange={(e) => setSearch(e.target.value)}
+            value={search || ''}
+            ref={inputRef}
+            className='w-34'
+          />
+        </div>
         <Button
           variant='outline'
           onClick={() =>
-            setViewType((prev) => (prev === 'grid' ? 'list' : 'grid'))
+            handleViewTypeChange(viewType === 'grid' ? 'list' : 'grid')
           }
         >
-          {viewType === 'grid' ? 'list' : 'grid'}
+          {viewType === 'grid' ? <List /> : <Grid />}
         </Button>
+      </div>
+      <div className='flex items-center justify-between my-8'>
+        <h3 className='text-2xl font-bold'>Your Decks</h3>
+
+        <AddDeckDialogForm onMutation={setDecks} />
       </div>
       {viewType === 'grid' ? (
         <div className='grid md:grid-cols-12 gap-2'>
           {filteredDecks.map((deck) => (
-            <Deck
+            <DeckCard
               key={deck.id}
               deck={deck}
               setDecks={setDecks}
@@ -80,71 +118,29 @@ function Decks() {
           ))}
         </div>
       ) : (
-        <div>
-          <Table className='bg-accent rounded-lg overflow-hidden'>
+        <div className='border rounded-lg overflow-hidden'>
+          <Table className='bg-card '>
             <TableHeader>
-              <TableRow className='hover:bg-foreground/5 bg-foreground/5 font-semibold'>
+              <TableRow className='hover:bg-accent bg-accent [&>td]:p-4 text-foreground/30'>
                 <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Last Updated</TableCell>
+                <TableCell>Updated</TableCell>
                 <TableCell>Tags</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredDecks.map((deck) => (
-                <TableRow key={deck.id} className='[&>td]:py-5'>
-                  <TableCell>
-                    <h2
-                      className='hover:text-primary font-medium underline'
-                      title={deck.name}
-                    >
-                      <Link to={`/decks/${deck.id}/flashcards`}>
-                        {deck.name}
-                      </Link>
-                    </h2>
-                  </TableCell>
-                  <TableCell>{deck.description}</TableCell>
-                  <TableCell>
-                    {new Date(deck.updated_at).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {deck.tags?.split(',').map((tag, i) => (
-                      <Badge
-                        key={i}
-                        variant='outline'
-                        className='whitespace-nowrap text-[10px] cursor-pointer'
-                        onClick={() => setSearch(tag)}
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    <DeckActions
-                      deck={deck}
-                      actions={{
-                        delete: {
-                          icon: <TrashIcon />,
-                          label: 'Delete',
-                          onMutate: setDecks,
-                        },
-                        edit: {
-                          icon: <PencilIcon />,
-                          label: 'Edit',
-                          onMutate: setDecks,
-                        },
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
+                <DeckRow
+                  key={deck.id}
+                  deck={deck}
+                  setDecks={setDecks}
+                  setSearch={setSearch}
+                />
               ))}
             </TableBody>
           </Table>
         </div>
       )}
-      <hr className='my-10' />
-      <AllStudyData />
     </div>
   );
 }

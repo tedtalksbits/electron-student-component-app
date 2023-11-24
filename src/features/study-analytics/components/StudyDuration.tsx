@@ -1,44 +1,36 @@
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { Metric, Divider } from '@tremor/react';
-import { getTotalAnalytics } from '../api';
-import { setTotalStudyAnalytics } from '@/features/slice/analytics-slice';
-import { USER_ID } from '@/constants';
-import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { secondsToMinutes } from '@/lib/utils';
+import { LucideTimer } from 'lucide-react';
+import { TotalStudyAnalytics } from '../types';
 
-export const StudyDuration = () => {
-  const dispatch = useAppDispatch();
-  const totalAnalytics = useAppSelector(
-    (state) => state.studyAnalytics.totalStudyAnalytics
-  );
-
-  useEffect(() => {
-    getTotalAnalytics(USER_ID, (data) =>
-      dispatch(setTotalStudyAnalytics(data[0]))
-    );
-  }, [dispatch]);
-
+export const StudyDuration = ({
+  analyticsData,
+}: {
+  analyticsData: TotalStudyAnalytics;
+}) => {
   return (
-    <Card className='border-none'>
+    <Card className='border-none h-fit'>
       <CardHeader>
-        <CardTitle>Study Duration</CardTitle>
+        <CardTitle className='flex items-center text-orange-400'>
+          <LucideTimer className='mr-1' /> <p>Study Duration</p>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <small className='text-foreground/50'>Total Study Time</small>
         <Metric>
-          {Math.floor(totalAnalytics.total_time_studied / 60)} minutes
+          {Math.floor(analyticsData.total_time_studied / 60)} minutes
         </Metric>
         <Divider />
         <small className='text-foreground/50'>Total Flashcards Studied</small>
-        <Metric>{totalAnalytics.total_flashcards_studied}</Metric>
+        <Metric>{analyticsData.total_flashcards_studied}</Metric>
         <Divider />
         <small className='text-foreground/50'>Total Study Sessions</small>
-        <Metric>{totalAnalytics.total_completed_sessions}</Metric>
+        <Metric>{analyticsData.total_completed_sessions}</Metric>
         <Divider />
         <small className='text-foreground/50'>Average Study Duration</small>
         <Metric>
-          {secondsToMinutes(totalAnalytics.average_study_duration)} minutes
+          {secondsToMinutes(analyticsData.average_study_duration)} minutes
         </Metric>
       </CardContent>
     </Card>

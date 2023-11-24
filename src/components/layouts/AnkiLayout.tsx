@@ -7,7 +7,7 @@ export function AnkiLayout() {
       <header>
         <Navbar />
       </header>
-      <div className='p-4 max-w-7xl mx-auto'>
+      <div className='p-4 max-w-screen-8xl mx-auto'>
         <Outlet />
       </div>
     </main>

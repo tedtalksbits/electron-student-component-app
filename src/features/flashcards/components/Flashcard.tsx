@@ -6,6 +6,7 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
 import { Progress } from '@/components/ui/progress';
 import ContentEditor from '@/components/ui/contentEditor';
 import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
+import { motion } from 'framer-motion';
 
 type FlashcardProps = {
   flashcard: FlashcardType;
@@ -13,12 +14,21 @@ type FlashcardProps = {
 };
 export const Flashcard = ({ flashcard, setFlashcards }: FlashcardProps) => {
   return (
-    <div
+    <motion.div
+      variants={{
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { type: 'spring', stiffness: 300, damping: 24 },
+        },
+        hidden: { opacity: 0, y: 20, transition: { duration: 0.2 } },
+      }}
       key={flashcard.id}
-      className='border rounded-md p-4 flex flex-col relative'
+      className='border rounded-md p-4 flex flex-col relative shadow-md'
     >
       <Progress
         className='absolute top-0 left-0'
+        variant={flashcard.mastery_level >= 100 ? 'success' : 'default'}
         value={flashcard.mastery_level}
         title={`${flashcard.mastery_level ?? 0}%`}
       />
@@ -50,13 +60,15 @@ export const Flashcard = ({ flashcard, setFlashcards }: FlashcardProps) => {
             variant='ghost'
             aria-labelledby={flashcard.id.toString()}
           >
-            {flashcard.question}
+            <p className='text-lg text-foreground font-normal'>
+              {flashcard.question}
+            </p>
           </CollapseTrigger>
           <CollapseContent id={flashcard.id.toString()}>
             <Markdown>{flashcard.answer}</Markdown>
           </CollapseContent>
         </article>
       )}
-    </div>
+    </motion.div>
   );
 };

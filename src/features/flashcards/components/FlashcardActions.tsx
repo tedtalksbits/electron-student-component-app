@@ -20,6 +20,8 @@ import { FlashcardType } from '../types';
 import { useState } from 'react';
 import { deleteFlashcard, updateFlashcard } from '../api/flashcards';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { useToast } from '@/components/ui/use-toast';
+import { LucideCheckCircle } from 'lucide-react';
 
 type FlashcardActionsProps = {
   flashcard: FlashcardType;
@@ -42,14 +44,26 @@ export const FlashcardActions = ({
   actions,
 }: FlashcardActionsProps) => {
   const [open, setOpen] = useState(false);
+  const { toast } = useToast();
   const refetchFlashcardsByDeckIdQuery = `SELECT * FROM flashcards WHERE deck_id = ${flashcard.deck_id}`;
 
   function handleDelete() {
+    const confirmDelete = confirm(
+      `Are you sure you want to delete ${flashcard.question}?`
+    );
+
+    if (!confirmDelete) return;
     deleteFlashcard(
       flashcard.id,
       actions.delete.onMutate,
       refetchFlashcardsByDeckIdQuery
     );
+
+    toast({
+      title: 'Done!',
+      description: `You have successfully deleted flashcard: ${flashcard.question}`,
+      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+    });
   }
 
   function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
@@ -66,6 +80,8 @@ export const FlashcardActions = ({
       tags,
     } as FlashcardType;
 
+    console.log('handleUpdate', data);
+
     updateFlashcard<FlashcardType>(
       flashcard.id,
       data,
@@ -73,6 +89,12 @@ export const FlashcardActions = ({
       refetchFlashcardsByDeckIdQuery
     );
     setOpen(false);
+
+    toast({
+      title: 'Done!',
+      description: `You have successfully updated flashcard: ${question}`,
+      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+    });
   }
 
   return (
