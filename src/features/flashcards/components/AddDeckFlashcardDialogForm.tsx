@@ -76,6 +76,7 @@ export const AddDeckFlashcardDialogForm = ({
           <div className='form-group'>
             <Label htmlFor='question'>Question</Label>
             <Textarea
+              autoFocus
               name='question'
               id='question'
               placeholder='question'

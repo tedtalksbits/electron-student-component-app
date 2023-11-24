@@ -67,7 +67,7 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
     const data = {
       name,
       description,
-      tags,
+      tags: tags ? tags : null,
       image,
     } as DeckType;
 
@@ -111,12 +111,12 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
       </DropdownMenu>
       <DialogContent className='flex flex-col'>
         <DialogTitle>Edit</DialogTitle>
-        <EmojiSelectorWithCategories
-          labelKey='updateDeckEmoji'
-          onSelectEmoji={setImage}
-        />
         <form onSubmit={handleEdit} className='form'>
-          <DeckImage image={image} />
+          <EmojiSelectorWithCategories
+            labelKey='updateDeckEmoji'
+            onSelectEmoji={setImage}
+          />
+          <DeckImage image={image || deck.image} />
 
           <div className='form-group'>
             <Label htmlFor='name-edit'>Name</Label>
@@ -164,13 +164,22 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
 const DeckImage = ({ image }: { image: string | null }) => {
   return (
     <>
-      <Label htmlFor='updateDeckEmoji'>Deck Icon</Label>
+      <Button variant='secondary' className='w-fit' type='button'>
+        <Label htmlFor='updateDeckEmoji'>Deck Icon</Label>
+      </Button>
 
-      <div
+      {/* <div
         className={`deck-image flex items-start justify-center text-center p-2 rounded-xl border w-12 h-12`}
       >
         <span className='text-3xl font-semibold '>{image ? image : ''}</span>
-      </div>
+      </div> */}
+      <label htmlFor='updateDeckEmoji' className='w-full'>
+        {image && (
+          <span className='text-7xl flex items-start justify-center text-center p-2 rounded-md border w-fit h-fit'>
+            {image}
+          </span>
+        )}
+      </label>
     </>
   );
 };

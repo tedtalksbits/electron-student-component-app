@@ -87,9 +87,13 @@ export const EmojiSelectorWithCategories = React.forwardRef<
             Emojis
           </Label>
           <Button
+            type='button'
             variant='outline'
             className='rounded-full p-1 w-fit h-fit ml-auto'
-            onClick={() => setShowPanel(!showPanel)}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowPanel(!showPanel);
+            }}
           >
             {showPanel ? (
               <XIcon className='h-4 w-4' />
@@ -136,7 +140,10 @@ export const EmojiSelectorWithCategories = React.forwardRef<
                   <button
                     type='button'
                     key={key.name}
-                    onClick={() => handleOnSelect(key.emoji)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleOnSelect(key.emoji);
+                    }}
                     className=' hover:bg-secondary w-fit h-fit rounded-md hover:outline cursor-pointer'
                   >
                     {key.emoji}
@@ -155,9 +162,11 @@ export const EmojiSelectorWithCategories = React.forwardRef<
                 ))}
                 <div className='ml-auto'>
                   <Button
+                    type='button'
                     className='rounded-full p-1 w-fit h-fit'
                     variant='outline'
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       onSelectEmoji(null);
                     }}
                   >

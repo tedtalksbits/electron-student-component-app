@@ -61,13 +61,15 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
         </DialogTrigger>
         <DialogContent className='flex flex-col'>
           <DialogTitle>Add New Deck</DialogTitle>
-          <EmojiSelectorWithCategories
-            labelKey='addDeckEmoji'
-            onSelectEmoji={setImage}
-          />
           <form onSubmit={handleSubmit} className='form'>
+            <EmojiSelectorWithCategories
+              labelKey='addDeckEmoji'
+              onSelectEmoji={setImage}
+            />
             {/* <EmojiSelector /> */}
-            <Label htmlFor='addDeckEmoji'>Deck Icon</Label>
+            <Button variant='secondary' className='w-fit' type='button'>
+              <Label htmlFor='addDeckEmoji'>Select Icon</Label>
+            </Button>
             <label htmlFor='addDeckEmoji' className='w-full'>
               {image && (
                 <span className='text-7xl flex items-start justify-center text-center p-2 rounded-md border w-fit h-fit'>
@@ -78,6 +80,7 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
             <div className='form-group'>
               <Label htmlFor='name'>name</Label>
               <Input
+                autoFocus
                 type='text'
                 name='name'
                 id='name'
