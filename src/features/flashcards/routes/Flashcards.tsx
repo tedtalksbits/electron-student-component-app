@@ -26,6 +26,8 @@ function Flashcards() {
   }, [id]);
 
   const handleStartStudy = () => {
+    if (flashcards.length === 0)
+      return alert('You need to add flashcards to this deck first!');
     addStudySession(
       {
         deck_id: Number(id),
@@ -85,7 +87,11 @@ function Flashcards() {
               onMutation={setFlashcards}
               deckId={Number(id)}
             />
-            <Button variant='success' onClick={handleStartStudy}>
+            <Button
+              variant='success'
+              onClick={handleStartStudy}
+              disabled={flashcards.length === 0}
+            >
               <PlayIcon className='h-5 w-5 mr-1' />
               Start Studying
             </Button>
