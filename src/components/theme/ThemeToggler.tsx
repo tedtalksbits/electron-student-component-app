@@ -1,9 +1,9 @@
 import { Button } from '../ui/button';
 import { MoonIcon, SunIcon } from 'lucide-react';
-import { useToggleTheme } from '@/hooks/theme';
+import { useToggleConfig } from '@/hooks/theme';
 
 export const ThemeToggler = () => {
-  const { theme, toggleTheme } = useToggleTheme();
+  const { theme, toggleTheme } = useToggleConfig();
   return (
     <Button variant='secondary' onClick={toggleTheme}>
       {theme === 'light' ? (

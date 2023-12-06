@@ -3,7 +3,7 @@ import { Loader } from 'lucide-react';
 import { ConfigProvider, theme } from 'antd';
 import React, { useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { useToggleTheme } from '@/hooks/theme';
+import { useToggleConfig } from '@/hooks/theme';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
 import { Toaster } from '@/components/ui/toaster';
@@ -31,7 +31,7 @@ type AppProviderProps = {
   children: React.ReactNode;
 };
 export const AppProvider = ({ children }: AppProviderProps) => {
-  const { theme: currTheme } = useToggleTheme();
+  const { theme: currTheme } = useToggleConfig();
   const antdTheme =
     currTheme === 'light' ? theme.defaultAlgorithm : theme.darkAlgorithm;
   useEffect(() => {
