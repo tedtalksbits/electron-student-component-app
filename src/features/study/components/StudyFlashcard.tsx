@@ -7,20 +7,18 @@ import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
 type StudyFlashcardProps = {
   flashcard: FlashcardType;
   handleStudiedCard: (id: number) => void;
-  setFlashcards: React.Dispatch<React.SetStateAction<FlashcardType[]>>;
 };
 export const StudyFlashcard = ({
   flashcard,
   handleStudiedCard,
-  setFlashcards,
 }: StudyFlashcardProps) => {
   const handleSetMastery = (mastery: number) => {
-    updateFlashcard(
-      flashcard.id,
-      { mastery_level: flashcard.mastery_level + mastery },
-      setFlashcards,
-      'SELECT * FROM flashcards WHERE deck_id = ' + flashcard.deck_id
-    );
+    let newMastery = flashcard.mastery_level + mastery;
+    // dont allow mastery to go below 0 or above 100
+    if (newMastery < 0) newMastery = 0;
+    if (newMastery > 100) newMastery = 100;
+
+    updateFlashcard(flashcard.id, { mastery_level: newMastery });
   };
   return (
     <div
