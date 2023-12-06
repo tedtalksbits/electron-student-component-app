@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { projectDir } from '.';
 export interface Level {
   level: number;
   currentLevelXp: number;
@@ -10,7 +11,6 @@ export interface Level {
 const BASE_XP = 1000;
 const EXP = 0.5;
 
-const projectDir = path.dirname(require.main?.filename ?? '');
 const dataFolder = path.join(projectDir, 'levels.json');
 function calculateNextLevelXp(baseXp: number, exponent: number, level: number) {
   // Use a dynamic exponent to increase the XP range with each level
@@ -61,13 +61,13 @@ export async function buildLevelsJSON() {
 
   const levelsJSON = JSON.stringify(levels, null, 2);
 
-  console.log('levelsJSON', levelsJSON);
-  console.log('dataFolder', dataFolder);
+  // console.log('levelsJSON', levelsJSON);
+  // console.log('dataFolder', dataFolder);
 
   try {
     // create file only if it doesn't exist
     await fs.writeFile(dataFolder, levelsJSON, { flag: 'wx' });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
   }
 }
