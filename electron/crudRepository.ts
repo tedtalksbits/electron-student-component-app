@@ -41,6 +41,19 @@ const crudRepository = {
     return rows;
   },
 
+  async insertMany(table: string, data: any[]) {
+    const keys = Object.keys(data[0]);
+    const values = data.map((item) => Object.values(item));
+    await connection.execute(
+      `INSERT INTO ${table} (${keys.join(', ')}) VALUES ${values
+        .map(() => `(${keys.map(() => '?').join(', ')})`)
+        .join(', ')}`,
+      values.flat()
+    );
+    const rows = await crudRepository.selectAll(table);
+    return rows;
+  },
+
   async updateOne(table: string, id: number, data: any) {
     console.log('updateOne', id, table, data);
     const keys = Object.keys(data);
@@ -59,6 +72,26 @@ const crudRepository = {
   },
 
   async createOne(table: string, data: any) {
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+    const [rows] = await connection.execute(
+      `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${keys
+        .map(() => '?')
+        .join(', ')})`,
+      values
+    );
+
+    // get the last inserted id from the rows array
+    const { insertId } = rows as any;
+
+    // get the newly created row
+    const [newRow] = await connection.execute(
+      `SELECT * FROM ${table} WHERE id = ${insertId}`
+    );
+
+    return newRow as any[];
+  },
+  async insertOne(table: string, data: any) {
     const keys = Object.keys(data);
     const values = Object.values(data);
     const [rows] = await connection.execute(
