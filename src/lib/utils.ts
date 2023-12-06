@@ -1,5 +1,8 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -62,3 +65,13 @@ export function secondsToMinutes(seconds: number) {
   const mins = seconds / 60;
   return mins.toFixed(2);
 }
+
+const timeFromNow = (
+  date: string | number | Date | dayjs.Dayjs | null | undefined
+) => {
+  return dayjs(date).fromNow();
+};
+
+export const dayjsUtils = {
+  timeFromNow,
+};
