@@ -70,7 +70,7 @@ export const DailyStudy = ({
   const barchartData = filteredAnalyticsData?.map((studySession) => {
     return {
       ...studySession,
-      'Flashcards Studied': studySession.total_flashcards_studied,
+      'Flashcards Studied': studySession.total_flashcards_studied || 0,
       study_date: new Date(studySession.study_date).toLocaleDateString(
         'en-US',
         {
