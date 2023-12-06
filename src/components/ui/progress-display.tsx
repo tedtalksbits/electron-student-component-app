@@ -22,7 +22,7 @@ const ProgressDisplay = React.forwardRef<
     VariantProps<typeof ProgressDisplayVariants> &
     DailyStudyProps
 >(({ className, label, progress, total, ...props }, ref) => {
-  const isComplete = progress === total;
+  const isComplete = progress >= total;
 
   return (
     <div
