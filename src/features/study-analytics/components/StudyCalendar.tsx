@@ -27,9 +27,11 @@ export const StudyCalendar = ({
           studyData ? (
             <span
               key={studyData.study_date.toString() + i}
-              title={`1 session\n${studyData.total_flashcards_studied.toString()} flashcards studied`}
+              title={`${
+                studyData?.total_flashcards_studied?.toString() ?? 0
+              } flashcards studied`}
             >
-              <TrendMeter value={studyData.total_flashcards_studied} />
+              <TrendMeter value={studyData?.total_flashcards_studied} />
             </span>
           ) : (
             <span key={i} title={`No sessions\n0 flashcards studied`}>
