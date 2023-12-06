@@ -6,7 +6,7 @@ const crudRepository = {
     return rows;
   },
 
-  async select<T extends Record<string, any>>(
+  async select<T extends Record<string, unknown>>(
     table: string,
     fields: string[],
     where: T

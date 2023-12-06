@@ -16,12 +16,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { FlashcardType } from '../types';
+import { FlashcardDTO, FlashcardType } from '../types';
 import { useState } from 'react';
-import { deleteFlashcard, updateFlashcard } from '../api/flashcards';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useToast } from '@/components/ui/use-toast';
-import { LucideCheckCircle } from 'lucide-react';
+import { LucideCheckCircle, LucideXOctagon } from 'lucide-react';
 
 type FlashcardActionsProps = {
   flashcard: FlashcardType;
@@ -47,26 +46,33 @@ export const FlashcardActions = ({
   const { toast } = useToast();
   const refetchFlashcardsByDeckIdQuery = `SELECT * FROM flashcards WHERE deck_id = ${flashcard.deck_id}`;
 
-  function handleDelete() {
+  async function handleDelete() {
     const confirmDelete = confirm(
       `Are you sure you want to delete ${flashcard.question}?`
     );
 
     if (!confirmDelete) return;
-    deleteFlashcard(
-      flashcard.id,
-      actions.delete.onMutate,
-      refetchFlashcardsByDeckIdQuery
-    );
 
-    toast({
-      title: 'Done!',
-      description: `You have successfully deleted flashcard: ${flashcard.question}`,
-      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-    });
+    await window.electron.ipcRenderer.flashcard
+      .deleteFlashcard(flashcard.id, refetchFlashcardsByDeckIdQuery)
+      .then(({ data, error }) => {
+        if (!data || error)
+          return toast({
+            title: 'Error!',
+            description: `Something went wrong: ${error}`,
+            icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
+          });
+
+        actions.delete.onMutate(data);
+        return toast({
+          title: 'Done!',
+          description: `You have successfully deleted flashcard: ${flashcard.question}`,
+          icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+        });
+      });
   }
 
-  function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
+  async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const question = formData.get('question') as string;
@@ -78,23 +84,28 @@ export const FlashcardActions = ({
       answer,
       hint,
       tags,
-    } as FlashcardType;
+    } as Partial<FlashcardDTO>;
 
     console.log('handleUpdate', data);
 
-    updateFlashcard<FlashcardType>(
-      flashcard.id,
-      data,
-      actions.edit.onMutate,
-      refetchFlashcardsByDeckIdQuery
-    );
-    setOpen(false);
+    await window.electron.ipcRenderer.flashcard
+      .updateFlashcard(flashcard.id, data, refetchFlashcardsByDeckIdQuery)
+      .then(({ data, error }) => {
+        if (!data || error)
+          return toast({
+            title: 'Done!',
+            description: `Something went wrong: ${error}`,
+            icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
+          });
 
-    toast({
-      title: 'Done!',
-      description: `You have successfully updated flashcard: ${question}`,
-      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-    });
+        actions.edit.onMutate(data);
+        return toast({
+          title: 'Done!',
+          description: `You have successfully updated flashcard: ${question}`,
+          icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+        });
+      });
+    setOpen(false);
   }
 
   return (

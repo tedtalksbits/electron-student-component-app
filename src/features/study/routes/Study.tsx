@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { FlashcardType } from '../../flashcards/types';
 import { useEffect, useState, useRef } from 'react';
-import { fetchFlashcardsByDeckId } from '../../flashcards/api/flashcards';
 import { useCallback } from 'react';
 import { updateStudySession } from '../api/studysessions';
 import { getSessionId } from '../../../utils/setSessionId';
@@ -12,6 +11,7 @@ import { USER_ID } from '@/constants';
 import { CodeSandboxLogoIcon } from '@radix-ui/react-icons';
 import { useAppSelector } from '@/hooks/redux';
 import { getLevelByXp } from '@/utils/gamification.engine';
+import GoBackButton from '@/components/navigation/GoBackButton';
 
 export default function Study() {
   const navigate = useNavigate();
@@ -24,8 +24,14 @@ export default function Study() {
 
   const totalXp = useAppSelector((state) => state.studyAnalytics.totalXp);
 
-  const getFlashcardsByDeckId = useCallback(() => {
-    fetchFlashcardsByDeckId(Number(id), setFlashcards);
+  const getFlashcardsByDeckId = useCallback(async () => {
+    await window.electron.ipcRenderer.flashcard
+      .getRandomFlashcards(Number(id))
+      .then(({ data }) => {
+        if (!data) return console.log('no data');
+        console.log(data);
+        setFlashcards(data);
+      });
   }, [id]);
 
   useEffect(() => {
@@ -88,7 +94,12 @@ export default function Study() {
     setCardsStudied([...cardsStudied, id]);
   };
 
-  if (!flashcards.length) return <div>Loading...</div>;
+  if (!flashcards.length)
+    return (
+      <div>
+        Loading... <GoBackButton />
+      </div>
+    );
 
   return (
     <>
@@ -114,7 +125,6 @@ export default function Study() {
                 <StudyFlashcard
                   flashcard={flashcard}
                   handleStudiedCard={handleStudiedCard}
-                  setFlashcards={setFlashcards}
                 />
                 <div className='w-full flex items-center justify-between'>
                   <Button

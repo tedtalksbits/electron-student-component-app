@@ -42,7 +42,7 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState<string | null>(deck.image);
   const { toast } = useToast();
-  const refetchDecksQuery = `SELECT * FROM decks`;
+  const refetchDecksQuery = `SELECT * FROM decks ORDER BY updated_at DESC`;
 
   function handleDelete() {
     const confirmDelete = confirm(
@@ -121,6 +121,7 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
           <div className='form-group'>
             <Label htmlFor='name-edit'>Name</Label>
             <Input
+              autoFocus
               type='text'
               name='name'
               id='name-edit'

@@ -1,8 +1,34 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { AppConfig } from './config/appConfig';
+import {
+  DECK_CHANNELS,
+  APP_CONFIG_CHANNELS,
+  FLASHCARD_CHANNELS,
+} from './config/channels';
+import { DeckTypeWithAvgMastery } from '@/features/decks/types';
+import { FlashcardServicesMain } from './flashcard/types';
+import { FlashcardDTO } from '../src/features/flashcards/types/index';
 
 export type Channels = string;
-
-const electronHandler = {
+export interface ElectronHandler {
+  ipcRenderer: {
+    sendMessage(channel: Channels, ...args: unknown[]): void;
+    on(channel: Channels, func: (...args: unknown[]) => void): () => void;
+    once(channel: Channels, func: (...args: unknown[]) => void): void;
+    invoke(channel: Channels, ...args: unknown[]): Promise<unknown>;
+    appConfig: {
+      get(): Promise<AppConfig>;
+      set(config: AppConfig): Promise<void>;
+    };
+    deck: {
+      getByAvgMastery(
+        userId: string | number
+      ): Promise<DeckTypeWithAvgMastery[]>;
+    };
+    flashcard: FlashcardServicesMain;
+  };
+}
+const electronHandler: ElectronHandler = {
   ipcRenderer: {
     sendMessage(channel: Channels, ...args: unknown[]) {
       ipcRenderer.send(channel, ...args);
@@ -22,11 +48,66 @@ const electronHandler = {
     invoke(channel: Channels, ...args: unknown[]) {
       return ipcRenderer.invoke(channel, ...args);
     },
+    appConfig: {
+      get() {
+        return ipcRenderer.invoke(
+          APP_CONFIG_CHANNELS.GET_CONFIG
+        ) as Promise<AppConfig>;
+      },
+      set(config: AppConfig) {
+        return ipcRenderer.invoke(APP_CONFIG_CHANNELS.SET_CONFIG, config);
+      },
+    },
+    deck: {
+      async getByAvgMastery(userId: string | number) {
+        return ipcRenderer.invoke(
+          DECK_CHANNELS.GET_BY_AVG_MASTERY,
+          userId
+        ) as Promise<DeckTypeWithAvgMastery[]>;
+      },
+    },
+    flashcard: {
+      async getFlashcardsByDeckId(deckId: number) {
+        return ipcRenderer.invoke(FLASHCARD_CHANNELS.GET_BY_DECK_ID, deckId);
+      },
+      async createFlashcard(
+        flashcard: Partial<FlashcardDTO>,
+        refetchQuery?: string
+      ) {
+        return ipcRenderer.invoke(
+          FLASHCARD_CHANNELS.CREATE,
+          flashcard,
+          refetchQuery
+        );
+      },
+      async deleteFlashcard(flashcardId: number, refetchQuery?: string) {
+        return ipcRenderer.invoke(
+          FLASHCARD_CHANNELS.DELETE,
+          flashcardId,
+          refetchQuery
+        );
+      },
+      async updateFlashcard(
+        flashcardId: number,
+        flashcard: Partial<FlashcardDTO>,
+        refetchQuery?: string
+      ) {
+        return ipcRenderer.invoke(
+          FLASHCARD_CHANNELS.UPDATE,
+          flashcardId,
+          flashcard,
+          refetchQuery
+        );
+      },
+      async getRandomFlashcards(deckId: number, limit = 20) {
+        return ipcRenderer.invoke(FLASHCARD_CHANNELS.GET_RANDOM, deckId, limit);
+      },
+    },
   },
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
-export type ElectronHandler = typeof electronHandler;
+// export type ElectronHandler = typeof electronHandler;
 
 function domReady(
   condition: DocumentReadyState[] = ['complete', 'interactive']

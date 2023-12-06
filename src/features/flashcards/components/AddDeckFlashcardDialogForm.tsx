@@ -11,10 +11,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { PlusCircleIcon } from '@heroicons/react/solid';
 import React, { useState } from 'react';
 import { FlashcardDTO, FlashcardType } from '../types';
-import { createFlashcard } from '../api/flashcards';
 import { USER_ID } from '@/constants';
 import { useToast } from '@/components/ui/use-toast';
-import { LucideCheckCircle } from 'lucide-react';
+import { LucideCheckCircle, LucideXOctagon } from 'lucide-react';
 
 type AddFlashCardProps = {
   onMutation: React.Dispatch<React.SetStateAction<FlashcardType[]>>;
@@ -26,7 +25,7 @@ export const AddDeckFlashcardDialogForm = ({
 }: AddFlashCardProps) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const question = formData.get('question') as string;
@@ -44,16 +43,31 @@ export const AddDeckFlashcardDialogForm = ({
       user_id: USER_ID,
       audio: null,
       image: null,
-      tags,
-      hint,
+      tags: tags ? tags : null,
+      hint: hint ? hint : null,
       type,
-      mastery_level: null,
       video: null,
-    } as FlashcardDTO;
+    } as Partial<FlashcardDTO>;
     console.log(data);
     const refetchQuery = `SELECT * FROM flashcards WHERE deck_id = ${deckId}`;
-    createFlashcard<FlashcardType>(data, onMutation, refetchQuery);
+    // createFlashcard<FlashcardType>(data, onMutation, refetchQuery);
+    await window.electron.ipcRenderer.flashcard
+      .createFlashcard(data, refetchQuery)
+      .then(({ data, error }) => {
+        if (!data || error)
+          return toast({
+            title: 'Done!',
+            description: `Something went wrong: ${error}`,
+            icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
+          });
 
+        onMutation(data);
+        return toast({
+          title: 'Done!',
+          description: `You have successfully updated flashcard: ${question}`,
+          icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+        });
+      });
     setOpen(false);
 
     toast({
