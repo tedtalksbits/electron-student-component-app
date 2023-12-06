@@ -4,7 +4,6 @@ import Markdown from '../../../components/markdown/Markdown';
 import { FlashcardActions } from '.';
 import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
 import { Progress } from '@/components/ui/progress';
-import ContentEditor from '@/components/ui/contentEditor';
 import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
 import { motion } from 'framer-motion';
 
@@ -49,26 +48,20 @@ export const Flashcard = ({ flashcard, setFlashcards }: FlashcardProps) => {
           }}
         />
       </header>
-      {flashcard.type === 'advanced' ? (
-        <>
-          <ContentEditor value={flashcard.question} />
-          <ContentEditor value={flashcard.answer} />
-        </>
-      ) : (
-        <article className='my-4'>
-          <CollapseTrigger
-            variant='ghost'
-            aria-labelledby={flashcard.id.toString()}
-          >
-            <p className='text-lg text-foreground font-normal'>
-              {flashcard.question}
-            </p>
-          </CollapseTrigger>
-          <CollapseContent id={flashcard.id.toString()}>
-            <Markdown>{flashcard.answer}</Markdown>
-          </CollapseContent>
-        </article>
-      )}
+
+      <article className='my-4'>
+        <CollapseTrigger
+          variant='ghost'
+          aria-labelledby={flashcard.id.toString()}
+        >
+          <p className='text-lg text-foreground font-normal'>
+            {flashcard.question}
+          </p>
+        </CollapseTrigger>
+        <CollapseContent id={flashcard.id.toString()}>
+          <Markdown>{flashcard.answer}</Markdown>
+        </CollapseContent>
+      </article>
     </motion.div>
   );
 };

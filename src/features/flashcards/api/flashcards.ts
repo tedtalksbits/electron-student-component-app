@@ -1,3 +1,5 @@
+import { FlashcardType } from '../types';
+
 type ResponseData<T> = {
   data: T;
   error?: string;
@@ -75,21 +77,19 @@ export function deleteFlashcard<T>(
 /**
  *
  *
- * @param flashcardId
- * @param data
+ * @param flashcardId number
+ * @param data FlashcardType
  * @param setFlashcards- React hook state setter
  * @param refetchQuery - string: SQL query to refetch data after mutation
- * This function is used to update a flashcard by id.
- * keys: 'update-flashcard' and 'update-flashcard-response'
  *
  *
  * */
 
 export function updateFlashcard<T>(
   flashcardId: number,
-  data: unknown,
-  setFlashcards: React.Dispatch<React.SetStateAction<T[]>>,
-  refetchQuery: string
+  data: Partial<FlashcardType>,
+  setFlashcards?: React.Dispatch<React.SetStateAction<T[]>>,
+  refetchQuery?: string
 ) {
   window.electron.ipcRenderer.sendMessage(
     'update-flashcard',
@@ -104,7 +104,7 @@ export function updateFlashcard<T>(
       alert(response.error);
       return;
     }
-    setFlashcards(response.data);
+    setFlashcards && setFlashcards(response.data);
   });
 }
 
