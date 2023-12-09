@@ -14,14 +14,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { DeckType } from '../types';
 import { Label } from '@/components/ui/label';
 import { deleteDeck, updateDeck } from '../api';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSelectorWithCategories';
 import { useToast } from '@/components/ui/use-toast';
-import { LucideCheckCheck, LucideCheckCircle } from 'lucide-react';
+import { LucideCheckCheck, LucideCheckCircle, Trash2Icon } from 'lucide-react';
+import { NativeDialog } from '@/components/ui/native-dialog';
 
 type DeckActionsProps = {
   deck: DeckType;
@@ -45,10 +46,6 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
   const refetchDecksQuery = `SELECT * FROM decks ORDER BY updated_at DESC`;
 
   function handleDelete() {
-    const confirmDelete = confirm(
-      `Are you sure you want to delete ${deck.name}?`
-    );
-    if (!confirmDelete) return;
     deleteDeck(deck.id, actions.delete.onMutate, refetchDecksQuery);
     toast({
       title: 'Done!',
@@ -86,81 +83,168 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
     setOpen(false);
     setImage('');
   };
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  function handleShowDeleteDialog(): void {
+    setShowDeleteDialog(true);
+  }
 
   return (
-    <Dialog open={open} onOpenChange={() => setOpen(!open)}>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant='secondary' className='w-fit h-fit p-1'>
-            <DotsVerticalIcon className='h-5 w-5' />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DialogTrigger asChild>
-            <DropdownMenuItem>
-              <span className='h-5 w-5 mr-1'>{actions.edit.icon}</span>{' '}
-              {actions.edit.label}
-            </DropdownMenuItem>
-          </DialogTrigger>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleDelete}>
-            <span className='h-5 w-5 mr-1'>{actions.delete.icon}</span>{' '}
-            {actions.delete.label}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <DialogContent className='flex flex-col'>
-        <DialogTitle>Edit</DialogTitle>
-        <form onSubmit={handleEdit} className='form'>
-          <EmojiSelectorWithCategories
-            labelKey='updateDeckEmoji'
-            onSelectEmoji={setImage}
-          />
-          <DeckImage image={image || deck.image} />
-
-          <div className='form-group'>
-            <Label htmlFor='name-edit'>Name</Label>
-            <Input
-              autoFocus
-              type='text'
-              name='name'
-              id='name-edit'
-              defaultValue={deck.name}
-              placeholder='name'
-              required
-            />
-          </div>
-          <div className='form-group'>
-            <Label htmlFor='description-edit'>Description</Label>
-            <Textarea
-              name='description'
-              id='description-edit'
-              defaultValue={deck.description ?? ''}
-              placeholder='description'
-            />
-          </div>
-          <div className='form-group'>
-            <Label htmlFor='tags-edit'>Tags</Label>
-            <Input
-              type='text'
-              name='tags'
-              id='tags-edit'
-              defaultValue={deck.tags ?? ''}
-              placeholder='tags'
-            />
-          </div>
-          <div className='form-footer'>
-            <Button variant='outline' onClick={() => setOpen(false)}>
-              Cancel
+    <>
+      <Dialog open={open} onOpenChange={() => setOpen(!open)}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='secondary' className='w-fit h-fit p-1'>
+              <DotsVerticalIcon className='h-5 w-5' />
             </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DialogTrigger asChild>
+              <DropdownMenuItem>
+                <span className='h-5 w-5 mr-1'>{actions.edit.icon}</span>{' '}
+                {actions.edit.label}
+              </DropdownMenuItem>
+            </DialogTrigger>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleShowDeleteDialog}>
+              <span className='h-5 w-5 mr-1'>{actions.delete.icon}</span>{' '}
+              {actions.delete.label}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DialogContent className='flex flex-col'>
+          <DialogTitle>Edit</DialogTitle>
+          <form onSubmit={handleEdit} className='form'>
+            <EmojiSelectorWithCategories
+              labelKey='updateDeckEmoji'
+              onSelectEmoji={setImage}
+            />
+            <DeckImage image={image || deck.image} />
 
-            <Button type='submit'>Save</Button>
+            <div className='form-group'>
+              <Label htmlFor='name-edit'>Name</Label>
+              <Input
+                autoFocus
+                type='text'
+                name='name'
+                id='name-edit'
+                defaultValue={deck.name}
+                placeholder='name'
+                required
+              />
+            </div>
+            <div className='form-group'>
+              <Label htmlFor='description-edit'>Description</Label>
+              <Textarea
+                name='description'
+                id='description-edit'
+                defaultValue={deck.description ?? ''}
+                placeholder='description'
+              />
+            </div>
+            <div className='form-group'>
+              <Label htmlFor='tags-edit'>Tags</Label>
+              <Input
+                type='text'
+                name='tags'
+                id='tags-edit'
+                defaultValue={deck.tags ?? ''}
+                placeholder='tags'
+              />
+            </div>
+            <div className='form-footer'>
+              <Button variant='outline' onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+
+              <Button type='submit'>Save</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <NativeDialog
+        open={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        dialogTitle={
+          <div className='flex items-center'>
+            <Trash2Icon className='h-8 w-8 text-destructive' /> Are you sure?
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        }
+        variant='medium'
+      >
+        <div>
+          <div>
+            <p>
+              Delete:{' '}
+              <span className='bg-secondary/50 border-secondary border font-bold rounded-md px-1'>
+                {deck.name}
+              </span>
+              ?
+            </p>
+            <div className='flex justify-end gap-2 mt-8'>
+              <Button
+                variant='outline'
+                onClick={() => setShowDeleteDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button variant='destructive' onClick={handleDelete}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      </NativeDialog>
+    </>
   );
 };
+// type DialogProps = {
+//   open: boolean;
+//   onClose: () => void;
+//   children: React.ReactNode;
+// };
+
+// const NativeDialog = ({ open, onClose, children }: DialogProps) => {
+//   const ref = React.useRef<HTMLDialogElement>(null);
+//   const openDialog = () => {
+//     if (ref.current) {
+//       ref.current.showModal();
+//     }
+//   };
+
+//   const closeDialog = () => {
+//     if (ref.current) {
+//       ref.current.close();
+//     }
+//   };
+
+//   React.useEffect(() => {
+//     if (open) {
+//       openDialog();
+//     } else {
+//       closeDialog();
+//     }
+
+//     return () => {
+//       closeDialog();
+//     };
+//   }, [open]);
+
+//   return (
+//     <dialog ref={ref} onClose={onClose}>
+//       <header className='dialog-header'>
+//         <Button
+//           variant='outline'
+//           onClick={onClose}
+//           type='button'
+//           className='dialog-close'
+//         >
+//           <XIcon className='dialog-close-icon' />
+//         </Button>
+//       </header>
+//       {children}
+//     </dialog>
+//   );
+// };
 
 const DeckImage = ({ image }: { image: string | null }) => {
   return (

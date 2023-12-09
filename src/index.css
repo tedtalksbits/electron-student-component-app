@@ -85,7 +85,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border text-base;
   }
   body {
     @apply bg-background text-foreground;
@@ -93,6 +93,27 @@
 
   code {
     @apply p-1 text-sm font-mono;
+  }
+
+  dialog {
+    @apply bg-background p-4 rounded-lg [&>*]:text-foreground transition-all duration-200 ease-in-out;
+  }
+  dialog::backdrop {
+    @apply bg-background backdrop-blur-sm;
+  }
+  /* animate dialog when open */
+  html:has(dialog[open]) {
+    @apply overflow-hidden;
+  }
+
+  dialog .dialog-header {
+    @apply flex;
+  }
+  dialog .dialog-close {
+    @apply p-0 m-0 px-1 py-1 ml-auto w-fit h-fit border-none text-foreground/50 hover:text-foreground/80 hover:bg-transparent;
+  }
+  dialog .dialog-close-icon {
+    @apply w-4 h-4;
   }
 
   /* study flashcard */

@@ -20,7 +20,8 @@ import { FlashcardDTO, FlashcardType } from '../types';
 import { useState } from 'react';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useToast } from '@/components/ui/use-toast';
-import { LucideCheckCircle, LucideXOctagon } from 'lucide-react';
+import { LucideCheckCircle, LucideXOctagon, Trash2Icon } from 'lucide-react';
+import { NativeDialog } from '@/components/ui/native-dialog';
 
 type FlashcardActionsProps = {
   flashcard: FlashcardType;
@@ -47,12 +48,6 @@ export const FlashcardActions = ({
   const refetchFlashcardsByDeckIdQuery = `SELECT * FROM flashcards WHERE deck_id = ${flashcard.deck_id}`;
 
   async function handleDelete() {
-    const confirmDelete = confirm(
-      `Are you sure you want to delete ${flashcard.question}?`
-    );
-
-    if (!confirmDelete) return;
-
     await window.electron.ipcRenderer.flashcard
       .deleteFlashcard(flashcard.id, refetchFlashcardsByDeckIdQuery)
       .then(({ data, error }) => {
@@ -70,6 +65,11 @@ export const FlashcardActions = ({
           icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
         });
       });
+  }
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  function handleShowDeleteDialog(): void {
+    setShowDeleteDialog(true);
   }
 
   async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
@@ -124,7 +124,7 @@ export const FlashcardActions = ({
             </DropdownMenuItem>
           </DialogTrigger>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleDelete}>
+          <DropdownMenuItem onClick={handleShowDeleteDialog}>
             <span className='h-5 w-5 mr-1'>{actions.delete.icon}</span>{' '}
             {actions.delete.label}
           </DropdownMenuItem>
@@ -186,6 +186,39 @@ export const FlashcardActions = ({
           </div>
         </form>
       </DialogContent>
+      <NativeDialog
+        open={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        dialogTitle={
+          <div className='flex items-center'>
+            <Trash2Icon className='h-8 w-8 text-destructive' /> Are you sure?
+          </div>
+        }
+        variant='medium'
+      >
+        <div>
+          <div>
+            <p>
+              Delete{' '}
+              <span className='bg-secondary/50 border-secondary border font-bold rounded-md px-1'>
+                {flashcard.question}
+              </span>
+              ?
+            </p>
+            <div className='flex justify-end gap-2 mt-8'>
+              <Button
+                variant='outline'
+                onClick={() => setShowDeleteDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button variant='destructive' onClick={handleDelete}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      </NativeDialog>
     </Dialog>
   );
 };
