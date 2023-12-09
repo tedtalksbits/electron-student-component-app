@@ -39,7 +39,7 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
       tags: tags || null,
       image,
     } as DeckType;
-    const refetchQuery = `SELECT * FROM decks`;
+    const refetchQuery = `SELECT * FROM decks ORDER BY updated_at DESC`;
     createDeck<DeckType>(data, onMutation, refetchQuery);
     setOpen(false);
 
