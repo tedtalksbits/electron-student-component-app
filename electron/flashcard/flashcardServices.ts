@@ -1,34 +1,28 @@
-import { FlashcardType } from '@/features/flashcards/types';
-
 import { FlashcardRepository } from './FlashcardRepository';
 
-const flashcardRepository = new FlashcardRepository();
+export const flashcardRepository = new FlashcardRepository();
 
 export const getFlashcardsByDeckId = async (
   _event: Electron.IpcMainInvokeEvent,
-  deckId: number
-) => flashcardRepository.getFlashcardsByDeckId(deckId);
+  ...args: Parameters<typeof flashcardRepository.getFlashcardsByDeckId>
+) => flashcardRepository.getFlashcardsByDeckId(...args);
 
 export const createFlashcard = async (
   _event: Electron.IpcMainInvokeEvent,
-  flashcard: Partial<FlashcardType>,
-  refetchQuery?: string
-) => flashcardRepository.createOne(flashcard, refetchQuery);
+  ...args: Parameters<typeof flashcardRepository.createOne>
+) => flashcardRepository.createOne(...args);
 
 export const deleteFlashcard = async (
   _event: Electron.IpcMainInvokeEvent,
-  flashcardId: number,
-  refetchQuery?: string
-) => flashcardRepository.deleteOne(flashcardId, refetchQuery);
+  ...args: Parameters<typeof flashcardRepository.deleteOne>
+) => flashcardRepository.deleteOne(...args);
 
 export const updateFlashcard = async (
   _event: Electron.IpcMainInvokeEvent,
-  flashcardId: number,
-  data: Partial<FlashcardType>,
-  refetchQuery?: string
-) => flashcardRepository.updateOne(flashcardId, data, refetchQuery);
+  ...args: Parameters<typeof flashcardRepository.updateOne>
+) => flashcardRepository.updateOne(...args);
 
 export const getRandomFlashcards = async (
   _event: Electron.IpcMainInvokeEvent,
-  deckId: number
-) => flashcardRepository.getRandomFlashcardsByDeckId(deckId);
+  ...args: Parameters<typeof flashcardRepository.getRandomFlashcardsByDeckId>
+) => flashcardRepository.getRandomFlashcardsByDeckId(...args);
