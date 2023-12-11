@@ -7,7 +7,6 @@ import { RowDataPacket } from 'mysql2';
 import { buildLevelsJSON } from './config/buildLevelsJSON';
 import { getIpcListeners } from './config/ipc';
 import { setAppDefaultConfig } from './config/appConfig';
-import { DECK_CHANNELS } from './config/channels';
 import { setUpListeners } from './ipcListeners';
 type Error = {
   code: string;
@@ -49,8 +48,6 @@ ipcMain.on('get-decks', async (event) => {
       'SELECT * FROM decks ORDER BY updated_at DESC'
     );
 
-    console.log(rows);
-
     event.reply('get-decks-response', { data: rows });
   } catch (error) {
     const err = error as Error;
@@ -60,25 +57,25 @@ ipcMain.on('get-decks', async (event) => {
   }
 });
 
-ipcMain.handle(DECK_CHANNELS.GET_BY_AVG_MASTERY, async (event, userId) => {
-  try {
-    const [rows] = await connection.execute<RowDataPacket[]>(
-      'CALL get_decks_by_mastery_avg(?)',
-      [userId]
-    );
-    console.log(rows);
-    return rows[0];
-  } catch (error) {
-    const err = error as Error;
-    return err.sqlMessage;
-  }
-});
+// ipcMain.handle(DECK_CHANNELS.GET_BY_AVG_MASTERY, async (event, userId) => {
+//   try {
+//     const [rows] = await connection.execute<RowDataPacket[]>(
+//       'CALL get_decks_by_mastery_avg(?)',
+//       [userId]
+//     );
+//
+//     return rows[0];
+//   } catch (error) {
+//     const err = error as Error;
+//     return err.sqlMessage;
+//   }
+// });
 
 ipcMain.on('get-deck-by-id', async (event, id) => {
   console.log('get-deck-by-id', id);
   try {
     const [rows] = await crudRepository.select('decks', ['*'], { id });
-    console.log(rows);
+
     event.reply('get-deck-by-id-response', { data: rows });
   } catch (error) {
     const err = error as Error;
@@ -222,7 +219,6 @@ ipcMain.on('update-deck', async (event, id, data, refetchQuery: string) => {
 // );
 
 ipcMain.on('add-study-session', async (event, data, refetchQuery?: string) => {
-  console.log('add-study-session', data);
   try {
     const [rows] = await crudRepository.createOne('study_sessions', data);
 

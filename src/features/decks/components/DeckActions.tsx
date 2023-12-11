@@ -14,14 +14,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { DeckType } from '../types';
 import { Label } from '@/components/ui/label';
-import { deleteDeck, updateDeck } from '../api';
+import { deckApi } from '../api';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSelectorWithCategories';
 import { useToast } from '@/components/ui/use-toast';
-import { LucideCheckCheck, LucideCheckCircle, Trash2Icon } from 'lucide-react';
+import { LucideCheckCircle, LucideXOctagon, Trash2Icon } from 'lucide-react';
 import { NativeDialog } from '@/components/ui/native-dialog';
 
 type DeckActionsProps = {
@@ -42,48 +42,72 @@ type DeckActionsProps = {
 export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState<string | null>(deck.image);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { toast } = useToast();
   const refetchDecksQuery = `SELECT * FROM decks ORDER BY updated_at DESC`;
 
-  function handleDelete() {
-    deleteDeck(deck.id, actions.delete.onMutate, refetchDecksQuery);
-    toast({
-      title: 'Done!',
-      description: `You have successfully deleted deck: ${deck.name}`,
-      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-    });
+  async function handleDelete() {
+    const { data, error } = await deckApi.deleteDeck(
+      deck.id,
+      refetchDecksQuery
+    );
+    setShowDeleteDialog(false);
+    if (error) {
+      return toast({
+        title: 'Error!',
+        description: `Something went wrong: ${error}`,
+        icon: <LucideXOctagon className='h-5 w-5 text-error' />,
+      });
+    }
+
+    if (data) {
+      actions.delete.onMutate(data);
+      toast({
+        title: 'Done!',
+        description: `You have successfully deleted deck: ${deck.name}`,
+        icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+      });
+    }
   }
 
-  const handleEdit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
     const tags = formData.get('tags') as string;
     if (!name) return;
-    const data = {
+    const update = {
       name,
       description,
       tags: tags ? tags : null,
       image,
     } as DeckType;
 
-    updateDeck<DeckType>(
+    const { data, error } = await deckApi.updateDeck(
       deck.id,
-      data,
-      actions.edit.onMutate,
+      update,
       refetchDecksQuery
     );
-
-    toast({
-      title: 'Done!',
-      description: `You have successfully updated deck: ${name}`,
-      icon: <LucideCheckCheck className='h-5 w-5 text-success' />,
-    });
+    if (error) {
+      return toast({
+        title: 'Error!',
+        description: `Something went wrong: ${error}`,
+        icon: <LucideXOctagon className='h-5 w-5 text-error' />,
+      });
+    }
+    if (data) {
+      actions.edit.onMutate(data);
+      toast({
+        title: 'Done!',
+        description: `You have successfully updated deck: ${name}`,
+        icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+      });
+    }
     setOpen(false);
     setImage('');
   };
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   function handleShowDeleteDialog(): void {
     setShowDeleteDialog(true);
   }
@@ -152,7 +176,11 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
               />
             </div>
             <div className='form-footer'>
-              <Button variant='outline' onClick={() => setOpen(false)}>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => setOpen(false)}
+              >
                 Cancel
               </Button>
 
@@ -165,7 +193,7 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
         open={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
         dialogTitle={
-          <div className='flex items-center'>
+          <div className='flex items-center text-2xl'>
             <Trash2Icon className='h-8 w-8 text-destructive' /> Are you sure?
           </div>
         }
@@ -197,54 +225,6 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
     </>
   );
 };
-// type DialogProps = {
-//   open: boolean;
-//   onClose: () => void;
-//   children: React.ReactNode;
-// };
-
-// const NativeDialog = ({ open, onClose, children }: DialogProps) => {
-//   const ref = React.useRef<HTMLDialogElement>(null);
-//   const openDialog = () => {
-//     if (ref.current) {
-//       ref.current.showModal();
-//     }
-//   };
-
-//   const closeDialog = () => {
-//     if (ref.current) {
-//       ref.current.close();
-//     }
-//   };
-
-//   React.useEffect(() => {
-//     if (open) {
-//       openDialog();
-//     } else {
-//       closeDialog();
-//     }
-
-//     return () => {
-//       closeDialog();
-//     };
-//   }, [open]);
-
-//   return (
-//     <dialog ref={ref} onClose={onClose}>
-//       <header className='dialog-header'>
-//         <Button
-//           variant='outline'
-//           onClick={onClose}
-//           type='button'
-//           className='dialog-close'
-//         >
-//           <XIcon className='dialog-close-icon' />
-//         </Button>
-//       </header>
-//       {children}
-//     </dialog>
-//   );
-// };
 
 const DeckImage = ({ image }: { image: string | null }) => {
   return (
@@ -252,12 +232,6 @@ const DeckImage = ({ image }: { image: string | null }) => {
       <Button variant='secondary' className='w-fit' type='button'>
         <Label htmlFor='updateDeckEmoji'>Deck Icon</Label>
       </Button>
-
-      {/* <div
-        className={`deck-image flex items-start justify-center text-center p-2 rounded-xl border w-12 h-12`}
-      >
-        <span className='text-3xl font-semibold '>{image ? image : ''}</span>
-      </div> */}
       <label htmlFor='updateDeckEmoji' className='w-full'>
         {image && (
           <span className='text-7xl flex items-start justify-center text-center p-2 rounded-md border w-fit h-fit'>

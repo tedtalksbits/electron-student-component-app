@@ -1,4 +1,4 @@
-import { FlashcardType } from '@/features/flashcards/types';
+import { FlashcardDTO, FlashcardType } from '@/features/flashcards/types';
 import { CRUDRepository } from '../repository/Repository';
 import connection from '../sql';
 import crudRepository from '../crudRepository';
@@ -7,7 +7,10 @@ const FLASHCARDTABLE = 'flashcards';
 export class FlashcardRepository
   implements CRUDRepository<FlashcardType, number>
 {
-  async createOne(data: Partial<FlashcardType>, refetchQuery?: string) {
+  async createOne(
+    data: Partial<FlashcardType | FlashcardDTO>,
+    refetchQuery?: string
+  ) {
     try {
       await crudRepository.createOne(`${FLASHCARDTABLE}`, data);
       if (refetchQuery) {
@@ -41,7 +44,7 @@ export class FlashcardRepository
   }
   async updateOne(
     id: number,
-    data: Partial<FlashcardType>,
+    data: Partial<FlashcardType | FlashcardDTO>,
     refetchQuery?: string | undefined
   ) {
     try {

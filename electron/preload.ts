@@ -5,8 +5,8 @@ import {
   APP_CONFIG_CHANNELS,
   FLASHCARD_CHANNELS,
 } from './config/channels';
-import { DeckTypeWithAvgMastery } from '@/features/decks/types';
 import { flashcardRepository } from './flashcard/flashcardServices';
+import { deckRepository } from './deck/deckServices';
 
 export type Channels = string;
 
@@ -41,11 +41,53 @@ const electronHandler = {
       },
     },
     deck: {
-      async getByAvgMastery(userId: string | number) {
-        return ipcRenderer.invoke(
-          DECK_CHANNELS.GET_BY_AVG_MASTERY,
-          userId
-        ) as Promise<DeckTypeWithAvgMastery[]>;
+      // async getByAvgMastery(userId: string | number) {
+      //   return ipcRenderer.invoke(
+      //     DECK_CHANNELS.GET_BY_AVG_MASTERY,
+      //     userId
+      //   ) as Promise<DeckTypeWithAvgMastery[]>;
+      // },
+
+      async getDecks() {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.getAll>>(
+          DECK_CHANNELS.GET
+        );
+      },
+
+      async createDeck(...args: Parameters<typeof deckRepository.createOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.createOne>>(
+          DECK_CHANNELS.CREATE,
+          ...args
+        );
+      },
+
+      async deleteDeck(...args: Parameters<typeof deckRepository.deleteOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.deleteOne>>(
+          DECK_CHANNELS.DELETE,
+          ...args
+        );
+      },
+
+      async updateDeck(...args: Parameters<typeof deckRepository.updateOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.updateOne>>(
+          DECK_CHANNELS.UPDATE,
+          ...args
+        );
+      },
+
+      async getDeckById(...args: Parameters<typeof deckRepository.getOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.getOne>>(
+          DECK_CHANNELS.GET_BY_ID,
+          ...args
+        );
+      },
+
+      async getLowestMasteredDecks(
+        ...args: Parameters<typeof deckRepository.getByLowestMastered>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof deckRepository.getByLowestMastered>
+        >(DECK_CHANNELS.GET_BY_AVG_MASTERY, ...args);
       },
     },
     flashcard: {

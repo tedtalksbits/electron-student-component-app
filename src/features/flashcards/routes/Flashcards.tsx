@@ -5,40 +5,42 @@ import { useNavigate } from 'react-router-dom';
 import { addStudySession } from '../../study/api/studysessions';
 import { getSessionId, setSessionId } from '../../../utils/setSessionId';
 import { Button } from '@/components/ui/button';
-import { ExclamationCircleIcon, PlayIcon } from '@heroicons/react/solid';
+import { PlayIcon } from '@heroicons/react/solid';
 import { AddDeckFlashcardDialogForm, Flashcard } from '../components';
 import { USER_ID } from '@/constants';
 import { Progress } from '@/components/ui/progress';
 import { DeckType } from '@/features/decks/types';
-import { fetchDeckById } from '@/features/decks/api';
 import { motion } from 'framer-motion';
-import { useToast } from '@/components/ui/use-toast';
+import { flashcardApi } from '../api';
+import { deckApi } from '@/features/decks/api';
 
 function Flashcards() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
-  const { toast } = useToast();
 
   const [deck, setDeck] = useState<DeckType | null>(null);
+
   useEffect(() => {
-    window.electron.ipcRenderer.flashcard
-      .getFlashcardsByDeckId(Number(id))
-      .then(({ data, error }) => {
-        if (error)
-          return toast({
-            title: 'Error',
-            description: error,
-            icon: (
-              <ExclamationCircleIcon className='h-5 w-5 text-destructive' />
-            ),
-            variant: 'destructive',
-          });
-        if (!data) return console.log('no data');
+    flashcardApi.getFlashcardsByDeckId(Number(id)).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
         setFlashcards(data);
-      });
-    fetchDeckById<DeckType>(Number(id), setDeck);
-  }, [id, toast]);
+      }
+    });
+    deckApi.getDeckById(Number(id)).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setDeck(data);
+      }
+    });
+  }, [id]);
 
   const handleStartStudy = () => {
     if (flashcards.length === 0)

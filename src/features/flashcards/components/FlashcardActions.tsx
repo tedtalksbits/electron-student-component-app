@@ -19,9 +19,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { FlashcardDTO, FlashcardType } from '../types';
 import { useState } from 'react';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
-import { useToast } from '@/components/ui/use-toast';
 import { LucideCheckCircle, LucideXOctagon, Trash2Icon } from 'lucide-react';
 import { NativeDialog } from '@/components/ui/native-dialog';
+import { flashcardApi } from '../api';
+import { useToast } from '@/components/ui/use-toast';
 
 type FlashcardActionsProps = {
   flashcard: FlashcardType;
@@ -48,23 +49,27 @@ export const FlashcardActions = ({
   const refetchFlashcardsByDeckIdQuery = `SELECT * FROM flashcards WHERE deck_id = ${flashcard.deck_id}`;
 
   async function handleDelete() {
-    await window.electron.ipcRenderer.flashcard
-      .deleteFlashcard(flashcard.id, refetchFlashcardsByDeckIdQuery)
-      .then(({ data, error }) => {
-        if (!data || error)
-          return toast({
-            title: 'Error!',
-            description: `Something went wrong: ${error}`,
-            icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
-          });
-
-        actions.delete.onMutate(data);
-        return toast({
-          title: 'Done!',
-          description: `You have successfully deleted flashcard: ${flashcard.question}`,
-          icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-        });
+    const { data, error } = await flashcardApi.deleteFlashcard(
+      flashcard.id,
+      refetchFlashcardsByDeckIdQuery
+    );
+    setShowDeleteDialog(false);
+    if (error) {
+      return toast({
+        title: 'Error!',
+        description: `Something went wrong: ${error}`,
+        icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
       });
+    }
+
+    if (data) {
+      actions.delete.onMutate(data);
+      toast({
+        title: 'Success!',
+        description: `Flashcard deleted successfully`,
+        icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+      });
+    }
   }
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -79,32 +84,35 @@ export const FlashcardActions = ({
     const answer = formData.get('answer') as string;
     const hint = formData.get('hint') as string;
     const tags = formData.get('tags') as string;
-    const data = {
+    const update = {
       question,
       answer,
       hint,
       tags,
     } as Partial<FlashcardDTO>;
 
-    console.log('handleUpdate', data);
+    const { data, error } = await flashcardApi.updateFlashcard(
+      flashcard.id,
+      update,
+      refetchFlashcardsByDeckIdQuery
+    );
 
-    await window.electron.ipcRenderer.flashcard
-      .updateFlashcard(flashcard.id, data, refetchFlashcardsByDeckIdQuery)
-      .then(({ data, error }) => {
-        if (!data || error)
-          return toast({
-            title: 'Done!',
-            description: `Something went wrong: ${error}`,
-            icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
-          });
-
-        actions.edit.onMutate(data);
-        return toast({
-          title: 'Done!',
-          description: `You have successfully updated flashcard: ${question}`,
-          icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-        });
+    if (error) {
+      return toast({
+        title: 'Error!',
+        description: `Something went wrong: ${error}`,
+        icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
       });
+    }
+
+    if (data) {
+      actions.edit.onMutate(data);
+      toast({
+        title: 'Success!',
+        description: `Flashcard updated successfully`,
+        icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+      });
+    }
     setOpen(false);
   }
 
@@ -178,7 +186,11 @@ export const FlashcardActions = ({
             />
           </div>
           <div className='form-footer'>
-            <Button variant='outline' onClick={() => setOpen(false)}>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
 
@@ -190,7 +202,7 @@ export const FlashcardActions = ({
         open={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
         dialogTitle={
-          <div className='flex items-center'>
+          <div className='flex items-center text-2xl'>
             <Trash2Icon className='h-8 w-8 text-destructive' /> Are you sure?
           </div>
         }
@@ -209,10 +221,15 @@ export const FlashcardActions = ({
               <Button
                 variant='outline'
                 onClick={() => setShowDeleteDialog(false)}
+                type='button'
               >
                 Cancel
               </Button>
-              <Button variant='destructive' onClick={handleDelete}>
+              <Button
+                type='button'
+                variant='destructive'
+                onClick={handleDelete}
+              >
                 Delete
               </Button>
             </div>

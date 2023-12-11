@@ -1,8 +1,8 @@
 import Markdown from '../../../components/markdown/Markdown';
 import MasteryScale from './MasteryScale';
 import { FlashcardType } from '../../flashcards/types';
-import { updateFlashcard } from '../../flashcards/api/flashcards';
 import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
+import { flashcardApi } from '../../flashcards/api/index';
 
 type StudyFlashcardProps = {
   flashcard: FlashcardType;
@@ -12,13 +12,15 @@ export const StudyFlashcard = ({
   flashcard,
   handleStudiedCard,
 }: StudyFlashcardProps) => {
-  const handleSetMastery = (mastery: number) => {
+  const handleSetMastery = async (mastery: number) => {
     let newMastery = flashcard.mastery_level + mastery;
     // dont allow mastery to go below 0 or above 100
     if (newMastery < 0) newMastery = 0;
     if (newMastery > 100) newMastery = 100;
 
-    updateFlashcard(flashcard.id, { mastery_level: newMastery });
+    await flashcardApi.updateFlashcard(flashcard.id, {
+      mastery_level: newMastery,
+    });
   };
   return (
     <div

@@ -14,6 +14,7 @@ import { FlashcardDTO, FlashcardType } from '../types';
 import { USER_ID } from '@/constants';
 import { useToast } from '@/components/ui/use-toast';
 import { LucideCheckCircle, LucideXOctagon } from 'lucide-react';
+import { flashcardApi } from '../api';
 
 type AddFlashCardProps = {
   onMutation: React.Dispatch<React.SetStateAction<FlashcardType[]>>;
@@ -33,10 +34,9 @@ export const AddDeckFlashcardDialogForm = ({
     const hint = formData.get('hint') as string;
     const tags = formData.get('tags') as string;
     const type = formData.get('type') as string;
-    console.log(type);
 
     if (!question || !answer) return console.log('question or answer is null');
-    const data = {
+    const newFlashcard = {
       question,
       answer,
       deck_id: Number(deckId),
@@ -48,33 +48,28 @@ export const AddDeckFlashcardDialogForm = ({
       type,
       video: null,
     } as Partial<FlashcardDTO>;
-    console.log(data);
+
     const refetchQuery = `SELECT * FROM flashcards WHERE deck_id = ${deckId}`;
-    // createFlashcard<FlashcardType>(data, onMutation, refetchQuery);
-    await window.electron.ipcRenderer.flashcard
-      .createFlashcard(data, refetchQuery)
-      .then(({ data, error }) => {
-        if (!data || error)
-          return toast({
-            title: 'Done!',
-            description: `Something went wrong: ${error}`,
-            icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
-          });
-
-        onMutation(data);
-        return toast({
-          title: 'Done!',
-          description: `You have successfully updated flashcard: ${question}`,
-          icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-        });
+    const { data, error } = await flashcardApi.createFlashcard(
+      newFlashcard,
+      refetchQuery
+    );
+    if (error) {
+      return toast({
+        title: 'Done!',
+        description: `Something went wrong: ${error}`,
+        icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
       });
+    }
+    if (data) {
+      onMutation(data);
+      toast({
+        title: 'Done!',
+        description: `You have successfully added a flashcard`,
+        icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+      });
+    }
     setOpen(false);
-
-    toast({
-      title: 'Done!',
-      description: `You have successfully added a flashcard`,
-      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-    });
   };
   return (
     <Dialog open={open} onOpenChange={() => setOpen(!open)}>

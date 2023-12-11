@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeckType, DeckTypeWithAvgMastery } from '../types';
-import { fetchDecks, fetchDecksByAvgMastery } from '../api';
+import { deckApi } from '../api';
 import { DeckCard, AddDeckDialogForm, DeckRow } from '../components';
 import { Input } from '@/components/ui/input';
 import { useShortcuts } from '@/hooks/useShortcuts';
@@ -25,18 +25,30 @@ function Decks() {
     DeckTypeWithAvgMastery[]
   >([]);
   const [search, setSearch] = useState('');
-  // const [viewType, setViewType] = useState<'grid' | 'list'>(
-  //   (localStorage.getItem('viewType') as 'grid' | 'list') || 'grid'
-  // );
-
   const { deckViewType, toggleDeckViewType } = useToggleConfig();
   const handleViewTypeChange = (type: 'grid' | 'list') => {
     toggleDeckViewType(type);
   };
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    fetchDecks<DeckType>(setDecks);
-    fetchDecksByAvgMastery(USER_ID, setDecksByMastery);
+    deckApi.getDecks().then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setDecks(data);
+      }
+    });
+    deckApi.getLowestMasteredDecks(USER_ID).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setDecksByMastery(data);
+      }
+    });
   }, []);
 
   const filteredDecks = decks.filter((deck) => {
