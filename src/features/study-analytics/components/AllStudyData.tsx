@@ -3,7 +3,7 @@ import { MostStudied } from './MostStudied';
 import { StudyHistory } from './StudyHistory';
 import { DailyStudy } from './DailyStudy';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   getDailyStudyAnalytics,
   getLastStudiedDeck,
@@ -47,12 +47,15 @@ export const AllStudyData = () => {
     getTotalXp(USER_ID, (data) => dispatch(setTotalXp(data)));
   }, [dispatch]);
 
-  useEffect(() => {
-    if (!totalAnalyticsState) return;
-    setGamificationEngine(
-      new TotalStudyAnalyticsGamificationEngine(totalAnalyticsState)
-    );
-  }, [totalAnalyticsState]);
+  // const memoizedGamificationEngine = useCallback(() => {
+  //   if (!totalAnalyticsState) return null;
+  //   return new TotalStudyAnalyticsGamificationEngine(totalAnalyticsState);
+  // }, [totalAnalyticsState]);
+
+  // useEffect(() => {
+  //   if (!memoizedGamificationEngine) return;
+  //   setGamificationEngine(memoizedGamificationEngine);
+  // }, [memoizedGamificationEngine]);
 
   return (
     <div>
@@ -71,7 +74,7 @@ export const AllStudyData = () => {
       <div className='flex items-center justify-between my-8'>
         <h3 className='text-2xl font-bold'>Progression</h3>
       </div>
-      <div className='flex justify-between'>
+      {/* <div className='flex justify-between'>
         <div className='xp w-[400px]'>
           <XpBar gamificationEngine={gamificationEngine} />
         </div>
@@ -79,7 +82,7 @@ export const AllStudyData = () => {
           <h4>Achievement</h4>
           <Achievments gamificationEngine={gamificationEngine} />
         </div>
-      </div>
+      </div> */}
 
       <div className='flex items-center justify-between my-8 '>
         <h3 className='text-2xl font-bold'>Study Analytics</h3>
