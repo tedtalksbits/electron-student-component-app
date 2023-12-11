@@ -18,6 +18,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { useToggleConfig } from '@/hooks/theme';
 import { USER_ID } from '../../../constants/index';
 import { dayjsUtils } from '@/lib/utils';
+import { ProgressCircle } from '@tremor/react';
 
 function Decks() {
   const [decks, setDecks] = useState<DeckType[]>([]);
@@ -131,7 +132,6 @@ function Decks() {
       </div>
       <div className='flex items-center justify-between my-8'>
         <h3 className='text-2xl font-bold'>Your Decks</h3>
-
         <AddDeckDialogForm onMutation={setDecks} />
       </div>
 
@@ -139,15 +139,15 @@ function Decks() {
         <h3 className='text-md font-bold text-foreground/80'>
           These Decks Need Some Attention
         </h3>
-        <div className='flex gap-4'>
+        <div className='grid grid-cols-12 gap-2'>
           {decksByMastery &&
             decksByMastery.map((deck) => (
               <div
                 key={deck.id}
-                className='p-4 flex-col flex rounded-md border-orange-800/20 border bg-orange-800/10 relative hover:bg-orange-800/20 transition-colors'
+                className='col-span-3 p-4 flex-col gap-4 flex rounded-md border-primary/20 border bg-primary/10 relative hover:bg-primary/20 transition-colors'
               >
                 <Link
-                  className='group font-normal text-sm text-orange-100 hover:text-foreground transition-colors'
+                  className='group font-semibold text-sm text-foreground/70 hover:text-foreground transition-colors'
                   to={`/decks/${deck.id}/flashcards`}
                 >
                   {deck.name}
@@ -155,23 +155,22 @@ function Decks() {
                     &rarr;
                   </span>
                 </Link>
-                <div
-                  className='border rounded-full bg-orange-800 text-orange-100 border-orange-800 text-[.75rem] transition-all ease-in-out duration-200'
-                  style={{
-                    width: `${Number(deck.avg_mastery_level).toFixed()}%`,
-                  }}
+
+                <ProgressCircle
+                  showAnimation
+                  value={Number(Number(deck.avg_mastery_level).toFixed())}
+                  tooltip='Average Mastery Level'
                 >
-                  <small className='flex items-center '>
-                    <span> Mastery:</span>{' '}
-                    <span>{Number(deck.avg_mastery_level).toFixed()}%</span>
-                  </small>
-                </div>
-                <span
-                  className='text-[.75rem] text-orange-100'
+                  <p className='text-foreground/50 text-[.65rem]'>
+                    {Number(Number(deck.avg_mastery_level).toFixed())}%
+                  </p>
+                </ProgressCircle>
+                <p
+                  className='text-[.65rem] text-foreground/50'
                   title={deck.last_studied.toLocaleDateString()}
                 >
                   Studied: {dayjsUtils.timeFromNow(deck.last_studied)}
-                </span>
+                </p>
               </div>
             ))}
         </div>

@@ -7,6 +7,7 @@ import ProgressDisplay from '@/components/ui/progress-display';
 import { LucideFlame, LucideGanttChart, LucideMedal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
+import { AchievmentDialog } from '@/features/gamification/components/AchievmentDialog';
 
 export const DailyStudy = ({
   analyticsData,
@@ -16,7 +17,7 @@ export const DailyStudy = ({
   const [filteredAnalyticsData, setFilteredAnalyticsData] = useState<
     DailyStudyAnalytics[]
   >([]);
-  const lastStudySession = filterByCurrentDate(analyticsData);
+  const currStudySession = filterByCurrentDate(analyticsData);
   const [selectedRange, setSelectedRange] = useState('');
   useEffect(() => {
     setFilteredAnalyticsData(analyticsData);
@@ -30,7 +31,7 @@ export const DailyStudy = ({
 
   const isStudied20Cards = goals.flashcards.isCompleted(
     'medium',
-    lastStudySession?.total_flashcards_studied
+    currStudySession?.total_flashcards_studied
   );
 
   /*
@@ -41,7 +42,7 @@ export const DailyStudy = ({
 
   const isStudied10Minutes = goals.duration.isCompleted(
     'medium',
-    lastStudySession?.total_duration_sec
+    currStudySession?.total_duration_sec
   );
 
   /*
@@ -52,19 +53,19 @@ export const DailyStudy = ({
 
   const studyProgress10Cards = goals.flashcards.calculateProgress(
     'easy',
-    lastStudySession?.total_flashcards_studied
+    currStudySession?.total_flashcards_studied
   );
   const studyProgress20Cards = goals.flashcards.calculateProgress(
     'medium',
-    lastStudySession?.total_flashcards_studied
+    currStudySession?.total_flashcards_studied
   );
   const studyProgress5Min = goals.duration.calculateProgress(
     'easy',
-    lastStudySession?.total_duration_sec
+    currStudySession?.total_duration_sec
   );
   const studyProgress10Min = goals.duration.calculateProgress(
     'medium',
-    lastStudySession?.total_duration_sec
+    currStudySession?.total_duration_sec
   );
 
   const barchartData = filteredAnalyticsData?.map((studySession) => {
@@ -161,6 +162,7 @@ export const DailyStudy = ({
 
   return (
     <div className='flex flex-col gap-4'>
+      {isStudied20Cards && isStudied10Minutes && <AchievmentDialog />}
       <Card className='border-none relative'>
         <CardHeader>
           <CardTitle className='flex items-center text-orange-400'>
@@ -169,7 +171,7 @@ export const DailyStudy = ({
         </CardHeader>
         <CardContent>
           <small className='text-foreground/50'>Daily Tasks</small>
-
+          {/* 
           <span className='text-foreground block text-center'>
             {isStudied20Cards && isStudied10Minutes && (
               <div
@@ -198,50 +200,54 @@ export const DailyStudy = ({
                 <div className='firework'></div>
               </div>
             )}
-          </span>
+          </span> */}
 
           <ProgressDisplay
-            title={`${lastStudySession?.total_flashcards_studied}/10 cards studied`}
+            progressDisplayType='cricle'
             label='Study 10 Cards'
             progress={studyProgress10Cards}
             total={100}
             className='relative [animation-delay:.45s]'
           >
-            <span className='text-foreground/50 absolute text-xs right-1 top-4'>
-              {lastStudySession?.total_flashcards_studied ?? 0}/10 Cards
+            <span className='text-foreground/80'>
+              {currStudySession?.total_flashcards_studied ?? 0}/10 Cards
             </span>
           </ProgressDisplay>
 
           <ProgressDisplay
+            progressDisplayType='cricle'
             label='Study 20 Cards'
             progress={studyProgress20Cards}
             total={100}
             className='relative [animation-delay:.6s]'
           >
-            <span className='text-foreground/50 absolute text-xs right-1 top-4'>
-              {lastStudySession?.total_flashcards_studied ?? 0}/20 Cards
+            <span className='text-foreground/80'>
+              {currStudySession?.total_flashcards_studied ?? 0}/20 Cards
             </span>
           </ProgressDisplay>
 
           <ProgressDisplay
+            progressDisplayType='cricle'
             label='Study 5 Minutes'
             progress={studyProgress5Min}
             total={100}
-            className='relative [animation-delay:.75s]'
+            className='[animation-delay:.75s]'
           >
-            <span className='text-foreground/50 absolute text-xs right-1 top-4'>
-              {secondsToMinutes(lastStudySession?.total_duration_sec ?? 0)}/5
+            <span className='text-foreground/80 text-sm'>
+              {secondsToMinutes(currStudySession?.total_duration_sec ?? 0)}/5
               mins
             </span>
           </ProgressDisplay>
+
           <ProgressDisplay
+            progressDisplayType='cricle'
             label='Study 10 Minutes'
             progress={studyProgress10Min}
             total={100}
-            className='relative'
+            className=''
           >
-            <span className='text-foreground/50 absolute text-xs right-1 top-4'>
-              {secondsToMinutes(lastStudySession?.total_duration_sec ?? 0)}/10
+            <span className='text-foreground/80 text-sm'>
+              {secondsToMinutes(currStudySession?.total_duration_sec ?? 0)}/10
               mins
             </span>
           </ProgressDisplay>
@@ -334,6 +340,7 @@ export const DailyStudy = ({
         </CardHeader>
         <CardContent>
           <BarChart
+            showAnimation
             className='mt-6 '
             data={barchartData}
             categories={['Flashcards Studied']}
