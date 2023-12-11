@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { FlashcardType } from '../../flashcards/types';
 import { useEffect, useState, useRef } from 'react';
-import { useCallback } from 'react';
 import { updateStudySession } from '../api/studysessions';
 import { getSessionId } from '../../../utils/setSessionId';
 import { StudyFlashcard, StudyHeader } from '../components';
@@ -12,6 +11,7 @@ import { CodeSandboxLogoIcon } from '@radix-ui/react-icons';
 import { useAppSelector } from '@/hooks/redux';
 import { getLevelByXp } from '@/utils/gamification.engine';
 import GoBackButton from '@/components/navigation/GoBackButton';
+import { flashcardApi } from '../../flashcards/api/index';
 
 export default function Study() {
   const navigate = useNavigate();
@@ -24,19 +24,17 @@ export default function Study() {
 
   const totalXp = useAppSelector((state) => state.studyAnalytics.totalXp);
 
-  const getFlashcardsByDeckId = useCallback(async () => {
-    await window.electron.ipcRenderer.flashcard
-      .getRandomFlashcards(Number(id))
-      .then(({ data }) => {
-        if (!data) return console.log('no data');
-        console.log(data);
-        setFlashcards(data);
-      });
-  }, [id]);
-
   useEffect(() => {
-    getFlashcardsByDeckId();
-  }, [getFlashcardsByDeckId]);
+    flashcardApi.getRandomFlashcards(Number(id)).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setFlashcards(data);
+      }
+    });
+  }, [id]);
 
   const navClickHandler = (index: number) => {
     setCurrentFlashcardIndex(index);
