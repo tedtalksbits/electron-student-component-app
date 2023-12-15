@@ -35,10 +35,12 @@ export const StudyFlashcard = ({
         <Markdown>{flashcard.question}</Markdown>
       </CollapseTrigger>
       <CollapseContent
-        className='w-full bg-card p-4 rounded-md text-card-foreground list-disc'
+        className='w-full list-disc'
         id={flashcard.id.toString()}
       >
-        <Markdown className=''>{flashcard.answer}</Markdown>
+        <div className='answer border bg-card p-4 rounded-md text-card-foreground'>
+          <Markdown className=''>{flashcard.answer}</Markdown>
+        </div>
         <MasteryScale onSetMastery={handleSetMastery} />
       </CollapseContent>
     </div>

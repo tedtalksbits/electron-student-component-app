@@ -50,9 +50,9 @@ const ProgressDisplay = React.forwardRef<
           <ProgressCircle
             showAnimation
             value={progress}
-            color={`${isComplete ? '' : color}`}
+            color={`${isComplete ? 'green' : color}`}
           >
-            {(progress / total) * 100 > 100 ? '100' : (progress / total) * 100}%
+            {calcPercentage(progress, total)}%
           </ProgressCircle>
           <header className='m-0 p-0 flex-col flex gap-1'>
             <span className='font-semibold'>
@@ -84,6 +84,12 @@ const ProgressDisplay = React.forwardRef<
     );
   }
 );
+
+function calcPercentage(progress: number, total: number) {
+  if (isNaN(progress / total)) return 0;
+  const percentage = Number((progress / total) * 100).toFixed(0);
+  return Number(percentage) > 100 ? 100 : percentage;
+}
 
 export interface DailyStudyProps {
   label: string;
