@@ -15,10 +15,10 @@ import {
 import { Grid, List } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link, NavLink } from 'react-router-dom';
-import { useToggleConfig } from '@/hooks/theme';
 import { USER_ID } from '../../../constants/index';
 import { dayjsUtils } from '@/lib/utils';
 import { ProgressCircle } from '@tremor/react';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 
 function Decks() {
   const [decks, setDecks] = useState<DeckType[]>([]);
@@ -26,9 +26,9 @@ function Decks() {
     DeckTypeWithAvgMastery[]
   >([]);
   const [search, setSearch] = useState('');
-  const { deckViewType, toggleDeckViewType } = useToggleConfig();
+  const { deckViewType, setDeckViewType } = useUserPreferences();
   const handleViewTypeChange = (type: 'grid' | 'list') => {
-    toggleDeckViewType(type);
+    setDeckViewType(type);
   };
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -113,7 +113,6 @@ function Decks() {
             className='w-34'
           />
         </div>
-
         {deckViewType === 'grid' ? (
           <Button
             variant='outline'
