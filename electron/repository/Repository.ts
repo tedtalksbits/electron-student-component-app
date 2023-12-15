@@ -16,7 +16,7 @@ export interface CRUDRepository<T, ID extends number | string> {
   deleteOne: (...args: DeleteArgs<ID>) => RepositoryReturnType<T>;
   updateOne: (...args: UpdateArgs<T, ID>) => RepositoryReturnType<T>;
   getOne: (...args: GetByIdArgs<ID>) => RepositoryReturnType<T>;
-  getAll: () => RepositoryReturnType<T>;
+  getAll?: () => RepositoryReturnType<T>;
 }
 
 export type RepositoryReturnType<T> = Promise<{

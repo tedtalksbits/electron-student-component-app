@@ -71,6 +71,27 @@ const crudRepository = {
     return update as any[];
   },
 
+  async updateMany<T extends Record<string, any>>(
+    table: string,
+    data: T,
+    where: T
+  ) {
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+    const whereKeys = Object.keys(where);
+    const whereValues = Object.values(where);
+
+    await connection.execute(
+      `UPDATE ${table} SET ${keys
+        .map((key) => `${key} = ?`)
+        .join(', ')} WHERE ${whereKeys.join(' = ? AND ')} = ?`,
+      [...values, ...whereValues]
+    );
+
+    const rows = await crudRepository.selectAll(table);
+    return rows;
+  },
+
   async createOne(table: string, data: any) {
     const keys = Object.keys(data);
     const values = Object.values(data);

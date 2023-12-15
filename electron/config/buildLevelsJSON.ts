@@ -7,7 +7,6 @@ export interface Level {
   nextLevelXp: number;
 }
 
-// const MAX_XP = 100000;
 const BASE_XP = 1000;
 const EXP = 0.5;
 
@@ -20,7 +19,11 @@ function calculateNextLevelXp(baseXp: number, exponent: number, level: number) {
   return Math.floor(baseXp * Math.pow(level, exponent));
 }
 
-function buildLevels(totalLevels: number, baseXp: number, exponent: number) {
+export function buildLevels(
+  totalLevels: number,
+  baseXp: number,
+  exponent: number
+) {
   const levels = [] as Level[];
 
   for (let level = 1; level <= totalLevels; level++) {
@@ -41,29 +44,9 @@ function buildLevels(totalLevels: number, baseXp: number, exponent: number) {
 }
 
 export async function buildLevelsJSON() {
-  // const levels: Level[] = [];
-  // let currentLevel = 1;
-  // let currentLevelXp = 0;
-  // let nextLevelXp = BASE_XP * Number(Math.pow(currentLevel, EXP).toFixed(0));
-  // while (currentLevelXp < MAX_XP) {
-  //   const level = {
-  //     level: currentLevel,
-  //     currentLevelXp,
-  //     nextLevelXp,
-  //   };
-  //   levels.push(level);
-  //   currentLevelXp = nextLevelXp;
-  //   currentLevel++;
-  //   nextLevelXp = BASE_XP * Number(Math.pow(currentLevel, EXP).toFixed(0));
-  // }
-
   const levels = buildLevels(100, BASE_XP, EXP);
 
   const levelsJSON = JSON.stringify(levels, null, 2);
-
-  // console.log('levelsJSON', levelsJSON);
-  // console.log('dataFolder', dataFolder);
-
   try {
     // create file only if it doesn't exist
     await fs.writeFile(dataFolder, levelsJSON, { flag: 'wx' });
