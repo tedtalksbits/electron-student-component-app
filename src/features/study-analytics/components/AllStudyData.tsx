@@ -3,32 +3,29 @@ import { MostStudied } from './MostStudied';
 import { StudyHistory } from './StudyHistory';
 import { DailyStudy } from './DailyStudy';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   getDailyStudyAnalytics,
   getLastStudiedDeck,
   getMostStudiedDecks,
   getTotalAnalytics,
-  getTotalXp,
 } from '../api';
 import {
   setDailyStudyAnalytics,
   setLastStudySession,
   setMostStudiedDecks,
   setTotalStudyAnalytics,
-  setTotalXp,
 } from '@/features/slice/analytics-slice';
 import { USER_ID } from '@/constants';
 import { StudyCalendar } from './StudyCalendar';
 import { Achievments } from '@/features/gamification/components/Achievments';
 import { XpBar } from '@/features/gamification/components/XpBar';
-import { TotalStudyAnalyticsGamificationEngine } from '@/utils/gamification.engine';
+import { userApi } from '@/features/user/api';
+import { UserLevel } from '@/features/user/types';
 
 export const AllStudyData = () => {
   const dispatch = useAppDispatch();
   const totalAnalyticsState = useAppSelector((state) => state.studyAnalytics);
-  const [gamificationEngine, setGamificationEngine] =
-    useState<TotalStudyAnalyticsGamificationEngine | null>(null);
 
   useEffect(() => {
     console.log('all study data mounted');
@@ -42,20 +39,20 @@ export const AllStudyData = () => {
       dispatch(setLastStudySession(data[0]))
     );
     getMostStudiedDecks(USER_ID, (data) => dispatch(setMostStudiedDecks(data)));
-
-    // get total xp
-    getTotalXp(USER_ID, (data) => dispatch(setTotalXp(data)));
   }, [dispatch]);
+  const [userLevlAndXp, setUserLevelAndXp] = useState<UserLevel | null>(null);
 
-  // const memoizedGamificationEngine = useCallback(() => {
-  //   if (!totalAnalyticsState) return null;
-  //   return new TotalStudyAnalyticsGamificationEngine(totalAnalyticsState);
-  // }, [totalAnalyticsState]);
-
-  // useEffect(() => {
-  //   if (!memoizedGamificationEngine) return;
-  //   setGamificationEngine(memoizedGamificationEngine);
-  // }, [memoizedGamificationEngine]);
+  useEffect(() => {
+    userApi.getUserLevelAndXp(USER_ID).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setUserLevelAndXp(data);
+      }
+    });
+  }, []);
 
   return (
     <div>
@@ -74,15 +71,18 @@ export const AllStudyData = () => {
       <div className='flex items-center justify-between my-8'>
         <h3 className='text-2xl font-bold'>Progression</h3>
       </div>
-      {/* <div className='flex justify-between'>
+      <div className='flex justify-between'>
         <div className='xp w-[400px]'>
-          <XpBar gamificationEngine={gamificationEngine} />
+          <XpBar userLevelAndXp={userLevlAndXp} />
         </div>
         <div className='flex flex-col gap-4'>
           <h4>Achievement</h4>
-          <Achievments gamificationEngine={gamificationEngine} />
+          <Achievments
+            userLevelAndXp={userLevlAndXp}
+            analyticsData={totalAnalyticsState}
+          />
         </div>
-      </div> */}
+      </div>
 
       <div className='flex items-center justify-between my-8 '>
         <h3 className='text-2xl font-bold'>Study Analytics</h3>
