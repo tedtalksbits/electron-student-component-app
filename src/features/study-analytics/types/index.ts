@@ -52,7 +52,4 @@ export type StudyAnalyticsState = {
   mostStudiedDecks: MostStudiedDeck[];
   totalStudyAnalytics: TotalStudyAnalytics;
   lastStudySession: LastStudySession;
-  totalXp: {
-    total_xp: number;
-  };
 };
