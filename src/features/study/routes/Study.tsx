@@ -8,11 +8,13 @@ import { StudyFlashcardNavItems } from '../components/StudyFlashcardNavItems';
 import { Button } from '@/components/ui/button';
 import { USER_ID } from '@/constants';
 import { CodeSandboxLogoIcon } from '@radix-ui/react-icons';
-import { useAppSelector } from '@/hooks/redux';
-import { getLevelByXp } from '@/utils/gamification.engine';
 import GoBackButton from '@/components/navigation/GoBackButton';
 import { flashcardApi } from '../../flashcards/api/index';
-
+export interface StudyUrlState {
+  study: boolean;
+  prevXp: number;
+  prevLevel: number;
+}
 export default function Study() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -21,8 +23,6 @@ export default function Study() {
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
   const [cardsStudied, setCardsStudied] = useState<number[]>([]);
   const flashcardContainerRef = useRef<HTMLDivElement>(null);
-
-  const totalXp = useAppSelector((state) => state.studyAnalytics.totalXp);
 
   useEffect(() => {
     flashcardApi.getRandomFlashcards(Number(id)).then(({ data, error }) => {
@@ -49,10 +49,15 @@ export default function Study() {
     flashcardContainerRef.current.style.opacity = '1';
   }, [currentFlashcardIndex]);
 
-  const handleDone = (timeElapsed: number) => {
+  const handleDone = async (timeElapsed: number) => {
     console.log('done', timeElapsed);
     const sessionId = Number(getSessionId());
     if (!sessionId) return;
+    const { data: userLevelData, error } =
+      await window.electron.ipcRenderer.user.getUserLevelAndXp(USER_ID);
+    if (error) {
+      console.log(error);
+    }
     updateStudySession(
       {
         deck_id: Number(id),
@@ -66,17 +71,15 @@ export default function Study() {
         console.log('study session updated');
         console.log(data);
 
-        const prevLevel = getLevelByXp(totalXp.total_xp);
-
         // if > 1 card studied, go to /decks/:id/flashcards?study=true
         if (data.flashcards_studied >= 1) {
           console.log('more than 1 card studied');
           navigate(`/analytics`, {
             state: {
               study: true,
-              prevXp: totalXp,
-              prevLevel: prevLevel?.level,
-            },
+              prevXp: userLevelData?.total_xp || 0,
+              prevLevel: userLevelData?.level || 0,
+            } as StudyUrlState,
           });
         } else {
           console.log('less than 1 card studied');
@@ -119,7 +122,7 @@ export default function Study() {
         <div className='study-container' ref={flashcardContainerRef}>
           {flashcards.map((flashcard) => (
             <div key={flashcard.id} className='study-item'>
-              <div className='study-item-inner'>
+              <div className='study-item-inner h-min w-[98%]'>
                 <StudyFlashcard
                   flashcard={flashcard}
                   handleStudiedCard={handleStudiedCard}
