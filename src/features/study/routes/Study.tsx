@@ -1,8 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { FlashcardType } from '../../flashcards/types';
 import { useEffect, useState, useRef } from 'react';
-import { fetchFlashcardsByDeckId } from '../../flashcards/api/flashcards';
-import { useCallback } from 'react';
 import { updateStudySession } from '../api/studysessions';
 import { getSessionId } from '../../../utils/setSessionId';
 import { StudyFlashcard, StudyHeader } from '../components';
@@ -10,9 +8,13 @@ import { StudyFlashcardNavItems } from '../components/StudyFlashcardNavItems';
 import { Button } from '@/components/ui/button';
 import { USER_ID } from '@/constants';
 import { CodeSandboxLogoIcon } from '@radix-ui/react-icons';
-import { useAppSelector } from '@/hooks/redux';
-import { getLevelByXp } from '@/utils/gamification.engine';
-
+import GoBackButton from '@/components/navigation/GoBackButton';
+import { flashcardApi } from '../../flashcards/api/index';
+export interface StudyUrlState {
+  study: boolean;
+  prevXp: number;
+  prevLevel: number;
+}
 export default function Study() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -22,15 +24,17 @@ export default function Study() {
   const [cardsStudied, setCardsStudied] = useState<number[]>([]);
   const flashcardContainerRef = useRef<HTMLDivElement>(null);
 
-  const totalXp = useAppSelector((state) => state.studyAnalytics.totalXp);
-
-  const getFlashcardsByDeckId = useCallback(() => {
-    fetchFlashcardsByDeckId(Number(id), setFlashcards);
-  }, [id]);
-
   useEffect(() => {
-    getFlashcardsByDeckId();
-  }, [getFlashcardsByDeckId]);
+    flashcardApi.getRandomFlashcards(Number(id)).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setFlashcards(data);
+      }
+    });
+  }, [id]);
 
   const navClickHandler = (index: number) => {
     setCurrentFlashcardIndex(index);
@@ -45,10 +49,15 @@ export default function Study() {
     flashcardContainerRef.current.style.opacity = '1';
   }, [currentFlashcardIndex]);
 
-  const handleDone = (timeElapsed: number) => {
+  const handleDone = async (timeElapsed: number) => {
     console.log('done', timeElapsed);
     const sessionId = Number(getSessionId());
     if (!sessionId) return;
+    const { data: userLevelData, error } =
+      await window.electron.ipcRenderer.user.getUserLevelAndXp(USER_ID);
+    if (error) {
+      console.log(error);
+    }
     updateStudySession(
       {
         deck_id: Number(id),
@@ -62,17 +71,15 @@ export default function Study() {
         console.log('study session updated');
         console.log(data);
 
-        const prevLevel = getLevelByXp(totalXp.total_xp);
-
         // if > 1 card studied, go to /decks/:id/flashcards?study=true
         if (data.flashcards_studied >= 1) {
           console.log('more than 1 card studied');
           navigate(`/analytics`, {
             state: {
               study: true,
-              prevXp: totalXp,
-              prevLevel: prevLevel?.level,
-            },
+              prevXp: userLevelData?.total_xp || 0,
+              prevLevel: userLevelData?.level || 0,
+            } as StudyUrlState,
           });
         } else {
           console.log('less than 1 card studied');
@@ -88,7 +95,12 @@ export default function Study() {
     setCardsStudied([...cardsStudied, id]);
   };
 
-  if (!flashcards.length) return <div>Loading...</div>;
+  if (!flashcards.length)
+    return (
+      <div>
+        Loading... <GoBackButton />
+      </div>
+    );
 
   return (
     <>
@@ -104,17 +116,19 @@ export default function Study() {
         absolute
         z-[-1] animate-fade-in'
       ></div>
-      <div className='overflow-hidden max-w-7xl mx-auto' id='study-session'>
+      <div
+        className='animate-fade-in overflow-hidden max-w-7xl mx-auto'
+        id='study-session'
+      >
         <StudyHeader onDone={handleDone} />
 
         <div className='study-container' ref={flashcardContainerRef}>
           {flashcards.map((flashcard) => (
             <div key={flashcard.id} className='study-item'>
-              <div className='study-item-inner'>
+              <div className='study-item-inner h-min w-[98%]'>
                 <StudyFlashcard
                   flashcard={flashcard}
                   handleStudiedCard={handleStudiedCard}
-                  setFlashcards={setFlashcards}
                 />
                 <div className='w-full flex items-center justify-between'>
                   <Button

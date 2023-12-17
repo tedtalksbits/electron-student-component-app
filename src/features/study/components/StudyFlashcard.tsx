@@ -1,26 +1,26 @@
 import Markdown from '../../../components/markdown/Markdown';
 import MasteryScale from './MasteryScale';
 import { FlashcardType } from '../../flashcards/types';
-import { updateFlashcard } from '../../flashcards/api/flashcards';
 import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
+import { flashcardApi } from '../../flashcards/api/index';
 
 type StudyFlashcardProps = {
   flashcard: FlashcardType;
   handleStudiedCard: (id: number) => void;
-  setFlashcards: React.Dispatch<React.SetStateAction<FlashcardType[]>>;
 };
 export const StudyFlashcard = ({
   flashcard,
   handleStudiedCard,
-  setFlashcards,
 }: StudyFlashcardProps) => {
-  const handleSetMastery = (mastery: number) => {
-    updateFlashcard(
-      flashcard.id,
-      { mastery_level: flashcard.mastery_level + mastery },
-      setFlashcards,
-      'SELECT * FROM flashcards WHERE deck_id = ' + flashcard.deck_id
-    );
+  const handleSetMastery = async (mastery: number) => {
+    let newMastery = flashcard.mastery_level + mastery;
+    // dont allow mastery to go below 0 or above 100
+    if (newMastery < 0) newMastery = 0;
+    if (newMastery > 100) newMastery = 100;
+
+    await flashcardApi.updateFlashcard(flashcard.id, {
+      mastery_level: newMastery,
+    });
   };
   return (
     <div
@@ -35,10 +35,12 @@ export const StudyFlashcard = ({
         <Markdown>{flashcard.question}</Markdown>
       </CollapseTrigger>
       <CollapseContent
-        className='w-full bg-card p-4 rounded-md text-card-foreground list-disc'
+        className='w-full list-disc'
         id={flashcard.id.toString()}
       >
-        <Markdown className=''>{flashcard.answer}</Markdown>
+        <div className='answer border bg-card p-4 rounded-md text-card-foreground'>
+          <Markdown className=''>{flashcard.answer}</Markdown>
+        </div>
         <MasteryScale onSetMastery={handleSetMastery} />
       </CollapseContent>
     </div>

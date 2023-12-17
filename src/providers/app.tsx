@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
-import { ConfigProvider, theme } from 'antd';
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { useToggleTheme } from '@/hooks/theme';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
 import { Toaster } from '@/components/ui/toaster';
+import { PreferenceProvider } from './preferenceProvider';
 type ErrorFallbackProps = {
   error: Error;
   resetErrorBoundary: (...args: Array<unknown>) => void;
@@ -31,34 +31,13 @@ type AppProviderProps = {
   children: React.ReactNode;
 };
 export const AppProvider = ({ children }: AppProviderProps) => {
-  const { theme: currTheme } = useToggleTheme();
-  const antdTheme =
-    currTheme === 'light' ? theme.defaultAlgorithm : theme.darkAlgorithm;
-  useEffect(() => {
-    console.log('appProvider' + currTheme);
-  }, [currTheme]);
   return (
     <React.Suspense fallback={<LoadingScreen />}>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <ConfigProvider
-          theme={{
-            algorithm: antdTheme,
-            token: {
-              colorPrimary: '#1890ff',
-              borderRadius: 2,
-              colorBgContainer: 'bg-primary',
-            },
-            components: {
-              Calendar: {
-                colorBgBase: '#fff',
-                colorPrimary: '#1890ff',
-              },
-            },
-          }}
-        >
+        <PreferenceProvider>
           <Provider store={store}>{children}</Provider>
           <Toaster />
-        </ConfigProvider>
+        </PreferenceProvider>
       </ErrorBoundary>
     </React.Suspense>
   );

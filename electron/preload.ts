@@ -1,4 +1,14 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import {
+  DECK_CHANNELS,
+  FLASHCARD_CHANNELS,
+  USER_CHANNELS,
+  PREFERENCE_CHANNELS,
+} from './config/channels';
+import { flashcardRepository } from './flashcard/flashcardServices';
+import { deckRepository } from './deck/deckServices';
+import { userRepository } from './user/UserRepository';
+import { preferenceRepository } from './preference/PreferenceRepository';
 
 export type Channels = string;
 
@@ -21,6 +31,137 @@ const electronHandler = {
     },
     invoke(channel: Channels, ...args: unknown[]) {
       return ipcRenderer.invoke(channel, ...args);
+    },
+    preference: {
+      async getPreference(
+        ...args: Parameters<typeof preferenceRepository.getUserPreference>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof preferenceRepository.getUserPreference>
+        >(PREFERENCE_CHANNELS.GET_PREFERENCE, ...args);
+      },
+      async setPreference(
+        ...args: Parameters<typeof preferenceRepository.updateUserPreference>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof preferenceRepository.updateUserPreference>
+        >(PREFERENCE_CHANNELS.SET_PREFERENCE, ...args);
+      },
+    },
+    user: {
+      async getUserById(...args: Parameters<typeof userRepository.getOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof userRepository.getOne>>(
+          USER_CHANNELS.GET_BY_ID,
+          ...args
+        );
+      },
+      async createUser(...args: Parameters<typeof userRepository.createOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof userRepository.createOne>>(
+          USER_CHANNELS.CREATE,
+          ...args
+        );
+      },
+      async deleteUser(...args: Parameters<typeof userRepository.deleteOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof userRepository.deleteOne>>(
+          USER_CHANNELS.DELETE,
+          ...args
+        );
+      },
+      async updateUser(...args: Parameters<typeof userRepository.updateOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof userRepository.updateOne>>(
+          USER_CHANNELS.UPDATE,
+          ...args
+        );
+      },
+      async getUserLevelAndXp(
+        ...args: Parameters<typeof userRepository.getUserLevelAndXp>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof userRepository.getUserLevelAndXp>
+        >(USER_CHANNELS.GET_LEVEL, ...args);
+      },
+    },
+    deck: {
+      async getDecks() {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.getAll>>(
+          DECK_CHANNELS.GET
+        );
+      },
+
+      async createDeck(...args: Parameters<typeof deckRepository.createOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.createOne>>(
+          DECK_CHANNELS.CREATE,
+          ...args
+        );
+      },
+
+      async deleteDeck(...args: Parameters<typeof deckRepository.deleteOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.deleteOne>>(
+          DECK_CHANNELS.DELETE,
+          ...args
+        );
+      },
+
+      async updateDeck(...args: Parameters<typeof deckRepository.updateOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.updateOne>>(
+          DECK_CHANNELS.UPDATE,
+          ...args
+        );
+      },
+
+      async getDeckById(...args: Parameters<typeof deckRepository.getOne>) {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.getOne>>(
+          DECK_CHANNELS.GET_BY_ID,
+          ...args
+        );
+      },
+
+      async getLowestMasteredDecks(
+        ...args: Parameters<typeof deckRepository.getByLowestMastered>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof deckRepository.getByLowestMastered>
+        >(DECK_CHANNELS.GET_BY_AVG_MASTERY, ...args);
+      },
+    },
+    flashcard: {
+      async getFlashcardsByDeckId(
+        ...args: Parameters<typeof flashcardRepository.getFlashcardsByDeckId>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof flashcardRepository.getFlashcardsByDeckId>
+        >(FLASHCARD_CHANNELS.GET_BY_DECK_ID, ...args);
+      },
+      async createFlashcard(
+        ...args: Parameters<typeof flashcardRepository.createOne>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof flashcardRepository.createOne>
+        >(FLASHCARD_CHANNELS.CREATE, ...args);
+      },
+      async deleteFlashcard(
+        ...args: Parameters<typeof flashcardRepository.deleteOne>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof flashcardRepository.deleteOne>
+        >(FLASHCARD_CHANNELS.DELETE, ...args);
+      },
+      async updateFlashcard(
+        ...args: Parameters<typeof flashcardRepository.updateOne>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof flashcardRepository.updateOne>
+        >(FLASHCARD_CHANNELS.UPDATE, ...args);
+      },
+      async getRandomFlashcards(
+        ...args: Parameters<
+          typeof flashcardRepository.getRandomFlashcardsByDeckId
+        >
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof flashcardRepository.getRandomFlashcardsByDeckId>
+        >(FLASHCARD_CHANNELS.GET_RANDOM, ...args);
+      },
     },
   },
 };

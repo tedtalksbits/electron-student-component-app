@@ -33,9 +33,6 @@ const initialState: StudyAnalyticsState = {
     start_time: '',
     end_time: '',
   },
-  totalXp: {
-    total_xp: 0,
-  },
 };
 
 const studyAnalyticsSlice = createSlice({
@@ -57,9 +54,6 @@ const studyAnalyticsSlice = createSlice({
     setLastStudySession(state, action: PayloadAction<LastStudySession>) {
       state.lastStudySession = action.payload;
     },
-    setTotalXp(state, action: PayloadAction<{ total_xp: number }>) {
-      state.totalXp = action.payload;
-    },
   },
 });
 
@@ -68,7 +62,6 @@ export const {
   setMostStudiedDecks,
   setTotalStudyAnalytics,
   setLastStudySession,
-  setTotalXp,
 } = studyAnalyticsSlice.actions;
 
 export default studyAnalyticsSlice.reducer;

@@ -16,12 +16,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { FlashcardType } from '../types';
+import { FlashcardDTO, FlashcardType } from '../types';
 import { useState } from 'react';
-import { deleteFlashcard, updateFlashcard } from '../api/flashcards';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { LucideCheckCircle, LucideXOctagon, Trash2Icon } from 'lucide-react';
+import { NativeDialog } from '@/components/ui/native-dialog';
+import { flashcardApi } from '../api';
 import { useToast } from '@/components/ui/use-toast';
-import { LucideCheckCircle } from 'lucide-react';
 
 type FlashcardActionsProps = {
   flashcard: FlashcardType;
@@ -47,54 +48,72 @@ export const FlashcardActions = ({
   const { toast } = useToast();
   const refetchFlashcardsByDeckIdQuery = `SELECT * FROM flashcards WHERE deck_id = ${flashcard.deck_id}`;
 
-  function handleDelete() {
-    const confirmDelete = confirm(
-      `Are you sure you want to delete ${flashcard.question}?`
-    );
-
-    if (!confirmDelete) return;
-    deleteFlashcard(
+  async function handleDelete() {
+    const { data, error } = await flashcardApi.deleteFlashcard(
       flashcard.id,
-      actions.delete.onMutate,
       refetchFlashcardsByDeckIdQuery
     );
+    setShowDeleteDialog(false);
+    if (error) {
+      return toast({
+        title: 'Error!',
+        description: `Something went wrong: ${error}`,
+        icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
+      });
+    }
 
-    toast({
-      title: 'Done!',
-      description: `You have successfully deleted flashcard: ${flashcard.question}`,
-      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-    });
+    if (data) {
+      actions.delete.onMutate(data);
+      toast({
+        title: 'Success!',
+        description: `Flashcard deleted successfully`,
+        icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+      });
+    }
   }
 
-  function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  function handleShowDeleteDialog(): void {
+    setShowDeleteDialog(true);
+  }
+
+  async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const question = formData.get('question') as string;
     const answer = formData.get('answer') as string;
     const hint = formData.get('hint') as string;
     const tags = formData.get('tags') as string;
-    const data = {
+    const update = {
       question,
       answer,
       hint,
       tags,
-    } as FlashcardType;
+    } as Partial<FlashcardDTO>;
 
-    console.log('handleUpdate', data);
-
-    updateFlashcard<FlashcardType>(
+    const { data, error } = await flashcardApi.updateFlashcard(
       flashcard.id,
-      data,
-      actions.edit.onMutate,
+      update,
       refetchFlashcardsByDeckIdQuery
     );
-    setOpen(false);
 
-    toast({
-      title: 'Done!',
-      description: `You have successfully updated flashcard: ${question}`,
-      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-    });
+    if (error) {
+      return toast({
+        title: 'Error!',
+        description: `Something went wrong: ${error}`,
+        icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
+      });
+    }
+
+    if (data) {
+      actions.edit.onMutate(data);
+      toast({
+        title: 'Success!',
+        description: `Flashcard updated successfully`,
+        icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+      });
+    }
+    setOpen(false);
   }
 
   return (
@@ -113,7 +132,7 @@ export const FlashcardActions = ({
             </DropdownMenuItem>
           </DialogTrigger>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleDelete}>
+          <DropdownMenuItem onClick={handleShowDeleteDialog}>
             <span className='h-5 w-5 mr-1'>{actions.delete.icon}</span>{' '}
             {actions.delete.label}
           </DropdownMenuItem>
@@ -167,7 +186,11 @@ export const FlashcardActions = ({
             />
           </div>
           <div className='form-footer'>
-            <Button variant='outline' onClick={() => setOpen(false)}>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
 
@@ -175,6 +198,44 @@ export const FlashcardActions = ({
           </div>
         </form>
       </DialogContent>
+      <NativeDialog
+        open={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        dialogTitle={
+          <div className='flex items-center text-2xl'>
+            <Trash2Icon className='h-8 w-8 text-destructive' /> Are you sure?
+          </div>
+        }
+        variant='medium'
+      >
+        <div>
+          <div>
+            <p>
+              Delete{' '}
+              <span className='bg-secondary/50 border-secondary border font-bold rounded-md px-1'>
+                {flashcard.question}
+              </span>
+              ?
+            </p>
+            <div className='flex justify-end gap-2 mt-8'>
+              <Button
+                variant='outline'
+                onClick={() => setShowDeleteDialog(false)}
+                type='button'
+              >
+                Cancel
+              </Button>
+              <Button
+                type='button'
+                variant='destructive'
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      </NativeDialog>
     </Dialog>
   );
 };

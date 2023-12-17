@@ -1,7 +1,6 @@
 import { NavLink, useParams } from 'react-router-dom';
 import { FlashcardType } from '../types';
 import { useEffect, useState } from 'react';
-import { fetchFlashcardsByDeckId } from '../api/flashcards';
 import { useNavigate } from 'react-router-dom';
 import { addStudySession } from '../../study/api/studysessions';
 import { getSessionId, setSessionId } from '../../../utils/setSessionId';
@@ -11,8 +10,9 @@ import { AddDeckFlashcardDialogForm, Flashcard } from '../components';
 import { USER_ID } from '@/constants';
 import { Progress } from '@/components/ui/progress';
 import { DeckType } from '@/features/decks/types';
-import { fetchDeckById } from '@/features/decks/api';
 import { motion } from 'framer-motion';
+import { flashcardApi } from '../api';
+import { deckApi } from '@/features/decks/api';
 
 function Flashcards() {
   const navigate = useNavigate();
@@ -20,12 +20,31 @@ function Flashcards() {
   const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
 
   const [deck, setDeck] = useState<DeckType | null>(null);
+
   useEffect(() => {
-    fetchFlashcardsByDeckId<FlashcardType>(Number(id), setFlashcards);
-    fetchDeckById<DeckType>(Number(id), setDeck);
+    flashcardApi.getFlashcardsByDeckId(Number(id)).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setFlashcards(data);
+      }
+    });
+    deckApi.getDeckById(Number(id)).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setDeck(data);
+      }
+    });
   }, [id]);
 
   const handleStartStudy = () => {
+    if (flashcards.length === 0)
+      return alert('You need to add flashcards to this deck first!');
     addStudySession(
       {
         deck_id: Number(id),
@@ -61,7 +80,7 @@ function Flashcards() {
         z-[-1] animate-fade-in'
       ></div>
       <div className='relative'>
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-between animate-fade-in'>
           <NavLink to='/decks'>
             <Button variant='outline'>← Back</Button>
           </NavLink>
@@ -85,7 +104,11 @@ function Flashcards() {
               onMutation={setFlashcards}
               deckId={Number(id)}
             />
-            <Button variant='success' onClick={handleStartStudy}>
+            <Button
+              variant='success'
+              onClick={handleStartStudy}
+              disabled={flashcards.length === 0}
+            >
               <PlayIcon className='h-5 w-5 mr-1' />
               Start Studying
             </Button>

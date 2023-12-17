@@ -1,14 +1,22 @@
 import { DailyStudyAnalytics } from '../types';
 import dayjs, { Dayjs } from 'dayjs';
-import { Calendar } from 'antd';
+import { Calendar, ConfigProvider, theme } from 'antd';
 import { LucideFlame, LucideX } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { useEffect } from 'react';
 
 export const StudyCalendar = ({
   analyticsData,
 }: {
   analyticsData: DailyStudyAnalytics[];
 }) => {
+  const { theme: currTheme } = useUserPreferences();
+  const antdTheme =
+    currTheme === 'light' ? theme.defaultAlgorithm : theme.darkAlgorithm;
+  useEffect(() => {
+    console.log('appProvider' + currTheme);
+  }, [currTheme]);
   const renderValue = (value: Dayjs) => {
     const listData = analyticsData
       .filter((sd) => {
@@ -27,9 +35,11 @@ export const StudyCalendar = ({
           studyData ? (
             <span
               key={studyData.study_date.toString() + i}
-              title={`1 session\n${studyData.total_flashcards_studied.toString()} flashcards studied`}
+              title={`${
+                studyData?.total_flashcards_studied?.toString() ?? 0
+              } flashcards studied`}
             >
-              <TrendMeter value={studyData.total_flashcards_studied} />
+              <TrendMeter value={studyData?.total_flashcards_studied} />
             </span>
           ) : (
             <span key={i} title={`No sessions\n0 flashcards studied`}>
@@ -49,12 +59,29 @@ export const StudyCalendar = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Calendar
-          className='bg-transparent rounded-sm'
-          style={{ border: 'none', backgroundColor: 'transparent' }}
-          onChange={(value) => console.log(value)}
-          cellRender={renderValue}
-        />
+        <ConfigProvider
+          theme={{
+            algorithm: antdTheme,
+            token: {
+              colorPrimary: '#1890ff',
+              borderRadius: 2,
+              colorBgContainer: 'bg-primary',
+            },
+            components: {
+              Calendar: {
+                colorBgBase: '#fff',
+                colorPrimary: '#1890ff',
+              },
+            },
+          }}
+        >
+          <Calendar
+            className='bg-transparent rounded-sm'
+            style={{ border: 'none', backgroundColor: 'transparent' }}
+            onChange={(value) => console.log(value)}
+            cellRender={renderValue}
+          />
+        </ConfigProvider>
       </CardContent>
     </Card>
   );

@@ -13,6 +13,11 @@ export type DeckType = {
   updated_at: string;
 };
 
+export type DeckTypeWithAvgMastery = DeckType & {
+  avg_mastery_level: number;
+  last_studied: Date;
+};
+
 export type DeckTypeDTO = {
   id: number | null;
   user_id?: number | null;

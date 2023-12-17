@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { DeckType } from '../types';
-import { fetchDecks } from '../api';
+import { DeckType, DeckTypeWithAvgMastery } from '../types';
+import { deckApi } from '../api';
 import { DeckCard, AddDeckDialogForm, DeckRow } from '../components';
 import { Input } from '@/components/ui/input';
 import { useShortcuts } from '@/hooks/useShortcuts';
@@ -14,21 +14,42 @@ import {
 } from '@/components/ui/table';
 import { Grid, List } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
+import { USER_ID } from '../../../constants/index';
+import { dayjsUtils } from '@/lib/utils';
+import { ProgressCircle } from '@tremor/react';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 
 function Decks() {
   const [decks, setDecks] = useState<DeckType[]>([]);
+  const [decksByMastery, setDecksByMastery] = useState<
+    DeckTypeWithAvgMastery[]
+  >([]);
   const [search, setSearch] = useState('');
-  const [viewType, setViewType] = useState<'grid' | 'list'>(
-    (localStorage.getItem('viewType') as 'grid' | 'list') || 'grid'
-  );
-  const handleViewTypeChange = (viewType: 'grid' | 'list') => {
-    setViewType(viewType);
-    localStorage.setItem('viewType', viewType);
+  const { deckViewType, setDeckViewType } = useUserPreferences();
+  const handleViewTypeChange = (type: 'grid' | 'list') => {
+    setDeckViewType(type);
   };
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    fetchDecks<DeckType>(setDecks);
+    deckApi.getDecks().then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setDecks(data);
+      }
+    });
+    deckApi.getLowestMasteredDecks(USER_ID).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setDecksByMastery(data);
+      }
+    });
   }, []);
 
   const filteredDecks = decks.filter((deck) => {
@@ -65,7 +86,7 @@ function Decks() {
     );
 
   return (
-    <div className=''>
+    <div className='animate-fade-in'>
       <div
         className='
         bg-gradient-to-b
@@ -92,21 +113,68 @@ function Decks() {
             className='w-34'
           />
         </div>
-        <Button
-          variant='outline'
-          onClick={() =>
-            handleViewTypeChange(viewType === 'grid' ? 'list' : 'grid')
-          }
-        >
-          {viewType === 'grid' ? <List /> : <Grid />}
-        </Button>
+        {deckViewType === 'grid' ? (
+          <Button
+            variant='outline'
+            onClick={() => handleViewTypeChange('list')}
+          >
+            <List />
+          </Button>
+        ) : (
+          <Button
+            variant='outline'
+            onClick={() => handleViewTypeChange('grid')}
+          >
+            <Grid />
+          </Button>
+        )}
       </div>
       <div className='flex items-center justify-between my-8'>
         <h3 className='text-2xl font-bold'>Your Decks</h3>
-
         <AddDeckDialogForm onMutation={setDecks} />
       </div>
-      {viewType === 'grid' ? (
+
+      <div className='avg-mastery-decks my-8 flex flex-col gap-4'>
+        <h3 className='text-md font-bold text-foreground/80'>
+          These Decks Need Some Attention
+        </h3>
+        <div className='grid grid-cols-12 gap-2'>
+          {decksByMastery &&
+            decksByMastery.map((deck) => (
+              <div
+                key={deck.id}
+                className='col-span-3 p-4 flex-col gap-4 flex rounded-md border-primary/20 border bg-primary/10 relative hover:bg-primary/20 transition-colors'
+              >
+                <Link
+                  className='group font-semibold text-sm text-foreground/70 hover:text-foreground transition-colors'
+                  to={`/decks/${deck.id}/flashcards`}
+                >
+                  {deck.name}
+                  <span className='inline-block opacity-0 group-hover:opacity-100 transition-all translate-x-[-30px] group-hover:translate-x-0'>
+                    &rarr;
+                  </span>
+                </Link>
+
+                <ProgressCircle
+                  showAnimation
+                  value={Number(Number(deck.avg_mastery_level).toFixed())}
+                  tooltip='Average Mastery Level'
+                >
+                  <p className='text-foreground/50 text-[.65rem]'>
+                    {Number(Number(deck.avg_mastery_level).toFixed())}%
+                  </p>
+                </ProgressCircle>
+                <p
+                  className='text-[.65rem] text-foreground/50'
+                  title={deck.last_studied.toLocaleDateString()}
+                >
+                  Studied: {dayjsUtils.timeFromNow(deck.last_studied)}
+                </p>
+              </div>
+            ))}
+        </div>
+      </div>
+      {deckViewType === 'grid' ? (
         <div className='grid md:grid-cols-12 gap-2'>
           {filteredDecks.map((deck) => (
             <DeckCard

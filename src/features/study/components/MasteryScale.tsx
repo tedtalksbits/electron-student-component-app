@@ -43,7 +43,7 @@ export default function MasteryScale({ onSetMastery }: MasteryScaleProps) {
               <Button
                 title='Not well'
                 variant={'outline'}
-                onClick={() => handleSetMastery(0)}
+                onClick={() => handleSetMastery(-40)}
                 className='bg-destructive/20 hover:bg-destructive/30 border-destructive/20 hover:border-destructive/30'
               >
                 <span className='text-lg'>😓</span>

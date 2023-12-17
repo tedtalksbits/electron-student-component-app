@@ -9,10 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DeckType } from '../types';
 import { useState } from 'react';
-import { createDeck } from '../api';
+import { deckApi } from '../api';
 import { USER_ID } from '@/constants';
 import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSelectorWithCategories';
-import { FilePlus2Icon, LucideCheckCircle } from 'lucide-react';
+import { FilePlus2Icon, LucideCheckCircle, LucideXOctagon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 type AddDeckProps = {
@@ -22,7 +22,7 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState<string | null>('');
   const { toast } = useToast();
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const name = formData.get('name') as string;
@@ -32,22 +32,32 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
     if (!name) {
       return;
     }
-    const data = {
+    const newDeck = {
       name,
       description,
       user_id: USER_ID,
       tags: tags || null,
       image,
     } as DeckType;
-    const refetchQuery = `SELECT * FROM decks`;
-    createDeck<DeckType>(data, onMutation, refetchQuery);
-    setOpen(false);
+    const refetchQuery = `SELECT * FROM decks ORDER BY updated_at DESC`;
+    const { data, error } = await deckApi.createDeck(newDeck, refetchQuery);
 
-    toast({
-      title: 'Done!',
-      description: `You have successfully created deck: ${name}`,
-      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-    });
+    if (error) {
+      return toast({
+        title: 'Done!',
+        description: `Something went wrong: ${error}`,
+        icon: <LucideXOctagon className='h-5 w-5 text-error' />,
+      });
+    }
+    if (data) {
+      onMutation(data);
+      toast({
+        title: 'Done!',
+        description: `You have successfully created deck: ${name}`,
+        icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+      });
+    }
+    setOpen(false);
   };
 
   return (

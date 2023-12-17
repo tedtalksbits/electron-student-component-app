@@ -3,9 +3,10 @@ import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'node:path';
 import crudRepository from './crudRepository';
 import connection from './sql';
-import { FlashcardDTO } from '../src/features/flashcards/types/index';
 import { RowDataPacket } from 'mysql2';
-import { buildLevelsJSON } from './config/buildLevelsJSON';
+
+import { createLevels, createLevelsTable } from './config/appConfig';
+import { setUpListeners } from './ipcListeners';
 type Error = {
   code: string;
   errno: number;
@@ -32,152 +33,14 @@ let win: BrowserWindow | null;
 const isMac = process.platform === 'darwin';
 const isProd = process.env.NODE_ENV === 'production' || app.isPackaged;
 
+setUpListeners();
+
 ipcMain.on('renderer-process-message', (event, arg) => {
   console.log('this came from the renderer', arg);
   event.reply('main-process-reply', 'pong');
 });
 
-ipcMain.on('get-decks', async (event) => {
-  try {
-    const rows = await crudRepository.selectAll('decks');
-
-    event.reply('get-decks-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('get-decks-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('get-deck-by-id', async (event, id) => {
-  console.log('get-deck-by-id', id);
-  try {
-    const [rows] = await crudRepository.select('decks', ['*'], { id });
-    console.log(rows);
-    event.reply('get-deck-by-id-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('get-deck-by-id-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('create-deck', async (event, data, refetchQuery: string) => {
-  console.log('create-deck', data);
-  console.log('refetchQuery', refetchQuery);
-  try {
-    await crudRepository.createOne('decks', data);
-    const [rows] = await connection.execute(refetchQuery);
-    event.reply('create-deck-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('create-deck-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('delete-deck', async (event, id, refetchQuery: string) => {
-  console.log('delete-deck', id);
-  console.log('refetchQuery', refetchQuery);
-  try {
-    await crudRepository.deleteOne('decks', id);
-    await crudRepository.deleteMany('flashcards', { deck_id: id });
-    const [rows] = await connection.execute(refetchQuery);
-    event.reply('delete-deck-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('delete-deck-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('update-deck', async (event, id, data, refetchQuery: string) => {
-  console.log('update-deck', data);
-  try {
-    await crudRepository.updateOne('decks', id, data);
-    const [rows] = await connection.execute(refetchQuery);
-    event.reply('update-deck-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('delete-deck-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on('get-flashcards-by-deckId', async (event, tableName, deckId) => {
-  console.log('get-flashcards-by-deckId', tableName, deckId);
-  try {
-    const rows = await crudRepository.select('flashcards', ['*'], {
-      deck_id: deckId,
-    });
-
-    event.reply('get-flashcards-by-deckId-response', { data: rows });
-  } catch (error) {
-    const err = error as Error;
-    event.reply('delete-deck-response', {
-      error: err.sqlMessage,
-    });
-  }
-});
-
-ipcMain.on(
-  'create-flashcard',
-  async (event, flashcard: FlashcardDTO, refetchQuery: string) => {
-    console.log('create-flashcard', flashcard);
-    try {
-      await crudRepository.createOne('flashcards', flashcard);
-      const [rows] = await connection.execute(refetchQuery);
-      event.reply('create-flashcard-response', { data: rows });
-    } catch (error) {
-      const err = error as Error;
-      event.reply('delete-deck-response', {
-        error: err.sqlMessage,
-      });
-    }
-  }
-);
-
-ipcMain.on(
-  'delete-flashcard',
-  async (event, flashcardId, refetchQuery: string) => {
-    console.log('delete-flashcard', flashcardId);
-    try {
-      await crudRepository.deleteOne('flashcards', flashcardId);
-      const [rows] = await connection.execute(refetchQuery);
-      event.reply('delete-flashcard-response', { data: rows });
-    } catch (error) {
-      const err = error as Error;
-      event.reply('delete-deck-response', {
-        error: err.sqlMessage,
-      });
-    }
-  }
-);
-
-ipcMain.on(
-  'update-flashcard',
-  async (event, id, data, refetchQuery: string) => {
-    console.log('update-flashcard', data);
-    try {
-      await crudRepository.updateOne('flashcards', id, data);
-      const [rows] = await connection.execute(refetchQuery);
-      event.reply('update-flashcard-response', { data: rows });
-    } catch (error) {
-      const err = error as Error;
-      event.reply('update-flashcard-response', {
-        error: err.sqlMessage,
-      });
-    }
-  }
-);
-
 ipcMain.on('add-study-session', async (event, data, refetchQuery?: string) => {
-  console.log('add-study-session', data);
   try {
     const [rows] = await crudRepository.createOne('study_sessions', data);
 
@@ -207,6 +70,7 @@ ipcMain.on(
       }
       event.reply('update-study-session-response', { data: row });
     } catch (error) {
+      console.log(error);
       const err = error as Error;
       event.reply('update-study-session-response', {
         error: err.sqlMessage,
@@ -373,7 +237,6 @@ function createWindow() {
   win?.webContents.on('did-finish-load', async () => {
     console.log('did-finish-load');
     win?.webContents.send('app-loaded');
-    await buildLevelsJSON();
   });
 }
 // const NOTIFICATION_TITLE = 'Basic Notification';
@@ -389,4 +252,10 @@ app.on('window-all-closed', () => {
   win = null;
 });
 
-app.whenReady().then(createWindow);
+app
+  .whenReady()
+  .then(createWindow)
+  .then(async () => {
+    await createLevelsTable();
+    await createLevels();
+  });

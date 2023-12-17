@@ -11,10 +11,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { PlusCircleIcon } from '@heroicons/react/solid';
 import React, { useState } from 'react';
 import { FlashcardDTO, FlashcardType } from '../types';
-import { createFlashcard } from '../api/flashcards';
 import { USER_ID } from '@/constants';
 import { useToast } from '@/components/ui/use-toast';
-import { LucideCheckCircle } from 'lucide-react';
+import { LucideCheckCircle, LucideXOctagon } from 'lucide-react';
+import { flashcardApi } from '../api';
 
 type AddFlashCardProps = {
   onMutation: React.Dispatch<React.SetStateAction<FlashcardType[]>>;
@@ -26,7 +26,7 @@ export const AddDeckFlashcardDialogForm = ({
 }: AddFlashCardProps) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const question = formData.get('question') as string;
@@ -34,33 +34,42 @@ export const AddDeckFlashcardDialogForm = ({
     const hint = formData.get('hint') as string;
     const tags = formData.get('tags') as string;
     const type = formData.get('type') as string;
-    console.log(type);
 
     if (!question || !answer) return console.log('question or answer is null');
-    const data = {
+    const newFlashcard = {
       question,
       answer,
       deck_id: Number(deckId),
       user_id: USER_ID,
       audio: null,
       image: null,
-      tags,
-      hint,
+      tags: tags ? tags : null,
+      hint: hint ? hint : null,
       type,
-      mastery_level: null,
       video: null,
-    } as FlashcardDTO;
-    console.log(data);
+    } as Partial<FlashcardDTO>;
+
     const refetchQuery = `SELECT * FROM flashcards WHERE deck_id = ${deckId}`;
-    createFlashcard<FlashcardType>(data, onMutation, refetchQuery);
-
+    const { data, error } = await flashcardApi.createFlashcard(
+      newFlashcard,
+      refetchQuery
+    );
+    if (error) {
+      return toast({
+        title: 'Done!',
+        description: `Something went wrong: ${error}`,
+        icon: <LucideXOctagon className='h-5 w-5 text-destructive' />,
+      });
+    }
+    if (data) {
+      onMutation(data);
+      toast({
+        title: 'Done!',
+        description: `You have successfully added a flashcard`,
+        icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
+      });
+    }
     setOpen(false);
-
-    toast({
-      title: 'Done!',
-      description: `You have successfully added a flashcard`,
-      icon: <LucideCheckCircle className='h-5 w-5 text-success' />,
-    });
   };
   return (
     <Dialog open={open} onOpenChange={() => setOpen(!open)}>
