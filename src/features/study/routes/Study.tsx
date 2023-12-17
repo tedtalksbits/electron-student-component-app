@@ -116,7 +116,10 @@ export default function Study() {
         absolute
         z-[-1] animate-fade-in'
       ></div>
-      <div className='overflow-hidden max-w-7xl mx-auto' id='study-session'>
+      <div
+        className='animate-fade-in overflow-hidden max-w-7xl mx-auto'
+        id='study-session'
+      >
         <StudyHeader onDone={handleDone} />
 
         <div className='study-container' ref={flashcardContainerRef}>

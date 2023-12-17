@@ -80,7 +80,7 @@ function Flashcards() {
         z-[-1] animate-fade-in'
       ></div>
       <div className='relative'>
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-between animate-fade-in'>
           <NavLink to='/decks'>
             <Button variant='outline'>← Back</Button>
           </NavLink>

@@ -71,7 +71,7 @@ export const AllStudyData = () => {
       <div className='flex items-center justify-between my-8'>
         <h3 className='text-2xl font-bold'>Progression</h3>
       </div>
-      <div className='flex justify-between'>
+      <div className='flex justify-between animate-fade-in'>
         <div className='xp w-[400px]'>
           <XpBar userLevelAndXp={userLevlAndXp} />
         </div>
@@ -87,7 +87,7 @@ export const AllStudyData = () => {
       <div className='flex items-center justify-between my-8 '>
         <h3 className='text-2xl font-bold'>Study Analytics</h3>
       </div>
-      <div className='grid grid-cols-3 gap-4 my-4'>
+      <div className='grid grid-cols-3 gap-4 my-4 animate-fade-in'>
         <div className='flex flex-col gap-4'>
           <StudyDuration
             analyticsData={totalAnalyticsState.totalStudyAnalytics}

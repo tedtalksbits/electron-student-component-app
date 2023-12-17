@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { StudyAnalyticsState } from '@/features/study-analytics/types';
-import { LockIcon } from 'lucide-react';
 
 const defaultOptions = {
   reverse: true, // reverse the tilt direction

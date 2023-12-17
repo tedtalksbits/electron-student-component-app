@@ -21,11 +21,11 @@ export const Home = () => {
         }
       });
   }, []);
+
   return (
-    <div className='flex'>
+    <div className='flex animate-fade-in'>
       <div className='mt-20 p-4 border rounded-xl shadow-md max-w-xl mx-auto h-fit'>
         <h3 className='font-medium text-3xl mb-8'>Hello, {user?.name}</h3>
-
         <AppsGrid size='lg' />
       </div>
       <div className='border-l h-[calc(100vh-5rem)] p-4'>

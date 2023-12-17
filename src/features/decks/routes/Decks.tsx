@@ -86,7 +86,7 @@ function Decks() {
     );
 
   return (
-    <div className=''>
+    <div className='animate-fade-in'>
       <div
         className='
         bg-gradient-to-b

@@ -30,7 +30,7 @@ export const StudyHeader = ({
   };
 
   return (
-    <header className='flex items-center justify-between p-4 w-full transition-all duration-500 ease-in-out bg-background/50 backdrop-blur-md border rounded-md hover:bg-accent'>
+    <header className=' w-[98%] mx-auto flex items-center justify-between p-4 transition-all duration-500 ease-in-out bg-background/50 backdrop-blur-md border rounded-md hover:bg-accent'>
       <div className='flex flex-col gap-1'>
         <h1 className='font-bold text-3xl scale-down-left [animation-delay:.3s]'>
           Study
