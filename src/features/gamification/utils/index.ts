@@ -244,15 +244,13 @@ export function getLevelAndXpBadges(userLevel: UserLevel) {
 }
 
 export function getStudyAnalyticsBadges(studySessions: StudyAnalyticsState) {
-  const { currentStreak, longestStreak } = calculateStreaks(
-    studySessions.dailyStudyAnalytics
-  );
-  console.log(currentStreak, longestStreak);
+  const { longestStreak } = calculateStreaks(studySessions.dailyStudyAnalytics);
+  console.log(longestStreak);
 
   const streakBadge = streakBadges.map((badge) => {
     return {
       ...badge,
-      condition: badge.condition(currentStreak),
+      condition: badge.condition(longestStreak),
     };
   });
 
