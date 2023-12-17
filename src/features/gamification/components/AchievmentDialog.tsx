@@ -1,11 +1,12 @@
 import { XIcon } from 'lucide-react';
 import React from 'react';
 import { motion } from 'framer-motion';
+import heartGIF from '../../../assets/lottiefiles/flame-heart.json';
+import Lottie from 'react-lottie';
 
 export const AchievmentDialog = ({
   title,
   achievement,
-  imgSrc,
 }: {
   title?: string;
   achievement?: string;
@@ -13,7 +14,14 @@ export const AchievmentDialog = ({
 }) => {
   const [show, setShow] = React.useState(true);
   const ref = React.useRef<HTMLDivElement>(null);
-
+  const defaultOptions = {
+    loop: false,
+    autoplay: true,
+    animationData: heartGIF,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice',
+    },
+  };
   React.useEffect(() => {
     if (show) {
       ref.current?.animate(
@@ -85,12 +93,7 @@ export const AchievmentDialog = ({
       <button className='absolute top-4 right-5' onClick={handleClose}>
         <XIcon />
       </button>
-      <div className='firework'></div>
-      <div className='firework'></div>
-      <div className='firework'></div>
-      <div className='firework'></div>
-      <div className='firework'></div>
-      <div className='firework'></div>
+
       <motion.div className='flex flex-col gap-4 text-center'>
         <motion.h2
           initial={{ opacity: 0, y: -40 }}
@@ -98,7 +101,7 @@ export const AchievmentDialog = ({
           transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.5 }}
           className='font-bold text-4xl'
         >
-          {title || 'Achievement Unlocked'}
+          {title || 'Nicely Done!'}
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: -20 }}
@@ -106,20 +109,23 @@ export const AchievmentDialog = ({
           transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.75 }}
           className='text-xl'
         >
-          You have unlocked the <span className='font-bold'>Achievment</span>:{' '}
+          You completed: <span className='font-bold'>Daily Tasks</span>
           {achievement}
         </motion.p>
-        <motion.img
-          src={
-            imgSrc ||
-            'https://media.giphy.com/media/3o7aDcz2zVqJQJgKTm/giphy.gif'
-          }
-          alt='Achievement Image'
+        <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: 'easeInOut', delay: 1 }}
-        />
+        >
+          <Lottie options={defaultOptions} height={200} width={200} />
+        </motion.div>
       </motion.div>
+      <div className='firework'></div>
+      <div className='firework'></div>
+      <div className='firework'></div>
+      <div className='firework'></div>
+      <div className='firework'></div>
+      <div className='firework'></div>
     </div>
   );
 };
