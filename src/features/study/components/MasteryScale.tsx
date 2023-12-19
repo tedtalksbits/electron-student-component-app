@@ -1,14 +1,28 @@
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { FlashcardType } from '@/features/flashcards/types';
+import { flashcardApi } from '@/features/flashcards/api';
 
 type MasteryScaleProps = {
-  onSetMastery: (mastery: number) => void;
+  flashcard: FlashcardType;
+  handleShouldRepeat: (flashcard: FlashcardType) => void;
 };
-export default function MasteryScale({ onSetMastery }: MasteryScaleProps) {
+export default function MasteryScale({
+  flashcard,
+  handleShouldRepeat,
+}: MasteryScaleProps) {
   const [isDone, setIsDone] = useState(false);
-  const handleSetMastery = (mastery: number) => {
-    onSetMastery(mastery);
+  const handleSetMastery = async (mastery: number) => {
+    let newMastery = flashcard.mastery_level + mastery;
+    // dont allow mastery to go below 0 or above 100
+    if (newMastery < 0) newMastery = 0;
+    if (newMastery > 100) newMastery = 100;
+    if (mastery < 0) handleShouldRepeat(flashcard);
+    await flashcardApi.updateFlashcard(flashcard.id, {
+      mastery_level: newMastery,
+    });
+
     setIsDone(true);
   };
   // if (isDone)

@@ -26,7 +26,7 @@ const CollapseTrigger = React.forwardRef<
   React.ComponentPropsWithoutRef<'button'> &
     VariantProps<typeof CollapseTriggerVariants>
 >(({ className, ...props }, ref) => {
-  // user is expect to set aria-labelledby which is the id of the target element
+  // user is expected to set aria-labelledby which is the id of the target element
   const targetId = props['aria-labelledby'];
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {

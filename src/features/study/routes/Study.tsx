@@ -3,13 +3,16 @@ import { FlashcardType } from '../../flashcards/types';
 import { useEffect, useState, useRef } from 'react';
 import { updateStudySession } from '../api/studysessions';
 import { getSessionId } from '../../../utils/setSessionId';
-import { StudyFlashcard, StudyHeader } from '../components';
+import { StudyHeader } from '../components';
 import { StudyFlashcardNavItems } from '../components/StudyFlashcardNavItems';
 import { Button } from '@/components/ui/button';
 import { USER_ID } from '@/constants';
 import { CodeSandboxLogoIcon } from '@radix-ui/react-icons';
 import GoBackButton from '@/components/navigation/GoBackButton';
 import { flashcardApi } from '../../flashcards/api/index';
+import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
+import Markdown from '@/components/markdown/Markdown';
+import MasteryScale from '../components/MasteryScale';
 export interface StudyUrlState {
   study: boolean;
   prevXp: number;
@@ -95,6 +98,10 @@ export default function Study() {
     setCardsStudied([...cardsStudied, id]);
   };
 
+  const handleShouldRepeat = (flashcard: FlashcardType) => {
+    setFlashcards((prev) => [...prev, flashcard]);
+  };
+
   if (!flashcards.length)
     return (
       <div>
@@ -123,13 +130,37 @@ export default function Study() {
         <StudyHeader onDone={handleDone} />
 
         <div className='study-container' ref={flashcardContainerRef}>
-          {flashcards.map((flashcard) => (
-            <div key={flashcard.id} className='study-item'>
+          {flashcards.map((flashcard, i) => (
+            <div key={flashcard.id + 'i-' + i} className='study-item'>
               <div className='study-item-inner h-min w-[98%]'>
-                <StudyFlashcard
+                {/* <StudyFlashcard
                   flashcard={flashcard}
                   handleStudiedCard={handleStudiedCard}
-                />
+                /> */}
+                <div
+                  onClick={() => handleStudiedCard(flashcard.id)}
+                  className='my-4 w-full'
+                >
+                  <CollapseTrigger
+                    className='font-medium text-lg bg-transparent'
+                    aria-labelledby={flashcard.id.toString() + 'i-' + i}
+                    variant='ghost'
+                  >
+                    <Markdown>{flashcard.question}</Markdown>
+                  </CollapseTrigger>
+                  <CollapseContent
+                    className='w-full list-disc'
+                    id={flashcard.id.toString() + 'i-' + i}
+                  >
+                    <div className='answer border bg-card p-4 rounded-md text-card-foreground'>
+                      <Markdown className=''>{flashcard.answer}</Markdown>
+                    </div>
+                    <MasteryScale
+                      flashcard={flashcard}
+                      handleShouldRepeat={handleShouldRepeat}
+                    />
+                  </CollapseContent>
+                </div>
                 <div className='w-full flex items-center justify-between'>
                   <Button
                     variant='outline'
