@@ -1,3 +1,4 @@
+import { ResultSetHeader } from 'mysql2';
 import connection from './sql';
 
 const crudRepository = {
@@ -42,16 +43,22 @@ const crudRepository = {
   },
 
   async insertMany(table: string, data: any[]) {
-    const keys = Object.keys(data[0]);
+    // Prepare the SQL query for inserting multiple rows
+    const query = `INSERT INTO ${table} (${Object.keys(data[0]).join(
+      ', '
+    )}) VALUES ?`;
+
+    console.log('insertMany', query, data);
+
+    // Extract values from the data array
     const values = data.map((item) => Object.values(item));
-    await connection.execute(
-      `INSERT INTO ${table} (${keys.join(', ')}) VALUES ${values
-        .map(() => `(${keys.map(() => '?').join(', ')})`)
-        .join(', ')}`,
-      values.flat()
-    );
-    const rows = await crudRepository.selectAll(table);
-    return rows;
+
+    console.log('insertMany', values);
+
+    // Execute the query with the provided connection
+    const [result] = await connection.query(query, [values]);
+
+    return result as ResultSetHeader;
   },
 
   async updateOne(table: string, id: number, data: any) {
