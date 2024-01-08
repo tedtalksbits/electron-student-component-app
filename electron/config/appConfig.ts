@@ -30,11 +30,10 @@ export const createLevelsTable = async () => {
 
 export const createLevels = async () => {
   console.log('createLevels');
-  const BASE_XP = 1000;
-  const EXP = 0.5;
+
   const MAX_LEVEL = 100;
 
-  const levels = buildLevels(MAX_LEVEL, BASE_XP, EXP);
+  const levels = buildLevels(MAX_LEVEL, 1000, 475);
 
   // check if levels table is empty
   const checkLevelsTableSQL = `

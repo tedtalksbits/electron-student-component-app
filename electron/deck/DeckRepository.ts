@@ -18,6 +18,15 @@ export class DeckRespository implements CRUDRepository<DeckType, number> {
       return { error: err.message, data: null };
     }
   }
+  async createMany(data: Partial<DeckType>[]) {
+    try {
+      await crudRepository.insertMany(DECK_TABLE, data);
+      return { data: null, error: null };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message, data: null };
+    }
+  }
   async deleteOne(id: number, refetchQuery?: string) {
     try {
       await crudRepository.deleteOne(DECK_TABLE, id);

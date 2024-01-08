@@ -1,4 +1,4 @@
-import { NavLink, useParams } from 'react-router-dom';
+import { Link, NavLink, useParams } from 'react-router-dom';
 import { FlashcardType } from '../types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,8 @@ import { DeckType } from '@/features/decks/types';
 import { motion } from 'framer-motion';
 import { flashcardApi } from '../api';
 import { deckApi } from '@/features/decks/api';
+import { download } from '../utils/downloadJSON';
+import { DownloadIcon, Upload } from 'lucide-react';
 
 function Flashcards() {
   const navigate = useNavigate();
@@ -60,6 +62,10 @@ function Flashcards() {
       }
     );
   };
+
+  const handleDownloadAll = () => {
+    download(flashcards, deck?.name || 'flashcards');
+  };
   const overallMastery = flashcards.reduce((acc, curr) => {
     return acc + curr.mastery_level;
   }, 0);
@@ -68,7 +74,7 @@ function Flashcards() {
   return (
     <>
       <div
-        className='
+        className='   
         bg-gradient-to-b
         from-success/5
         to-transparent
@@ -94,23 +100,55 @@ function Flashcards() {
             </div>
           </div>
         </div>
-        <div className='flex items-center justify-between my-8'>
+        <div
+          ref={(ref) => {
+            if (!ref) return;
+            const cls = ['bg-background/80', 'py-4', 'shadow-md', 'px-4'];
+            window.onscroll = () => {
+              if (window.scrollY > 150) {
+                ref.classList.add(...cls);
+              } else {
+                ref.classList.remove(...cls);
+              }
+            };
+          }}
+          className='flex items-center justify-between my-8 sticky top-0 z-10 backdrop-blur-md transition-all duration-500 ease-in-out'
+        >
           <div>
-            <h2 className='text-lg font-bold'>{deck?.name}</h2>
+            <h2 className='text-lg font-bold'>
+              {deck?.name}{' '}
+              <Button onClick={handleDownloadAll} variant='ghost' size='icon'>
+                <DownloadIcon className='w-4 h-4' />
+              </Button>
+            </h2>
             <small className='text-foreground/50'>{deck?.description}</small>
           </div>
           <div className='flex items-center gap-2'>
-            <AddDeckFlashcardDialogForm
-              onMutation={setFlashcards}
-              deckId={Number(id)}
-            />
+            {deck && (
+              <AddDeckFlashcardDialogForm
+                onMutation={setFlashcards}
+                deck={deck}
+              />
+            )}
+            <Link
+              to={`/decks/${deck?.id}/flashcards/upload`}
+              state={{
+                deck,
+              }}
+            >
+              <Button variant='secondary'>
+                <Upload className='w-4 h-4 mr-1' />
+                <span>Import</span>
+              </Button>
+            </Link>
+            <div className='pl-4 border-l border-border'></div>
             <Button
               variant='success'
               onClick={handleStartStudy}
               disabled={flashcards.length === 0}
             >
-              <PlayIcon className='h-5 w-5 mr-1' />
-              Start Studying
+              <PlayIcon className='h-4 w-4 mr-1' />
+              Study
             </Button>
           </div>
         </div>

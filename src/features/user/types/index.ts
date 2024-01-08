@@ -23,6 +23,13 @@ export interface UserLevel extends Level {
   total_xp: number;
 }
 
+export interface UserXpHistory {
+  id: number | string;
+  user_id: number | string;
+  xp_earned: number | string;
+  timestamp: Date | string;
+}
+
 export interface Level {
   level: number;
   current_level_xp: number;

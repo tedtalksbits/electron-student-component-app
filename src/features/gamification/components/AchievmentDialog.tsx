@@ -1,8 +1,6 @@
 import { XIcon } from 'lucide-react';
 import React from 'react';
 import { motion } from 'framer-motion';
-import heartGIF from '../../../assets/lottiefiles/flame-heart.json';
-import Lottie from 'react-lottie';
 
 export const AchievmentDialog = ({
   title,
@@ -14,14 +12,7 @@ export const AchievmentDialog = ({
 }) => {
   const [show, setShow] = React.useState(true);
   const ref = React.useRef<HTMLDivElement>(null);
-  const defaultOptions = {
-    loop: false,
-    autoplay: true,
-    animationData: heartGIF,
-    rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice',
-    },
-  };
+
   React.useEffect(() => {
     if (show) {
       ref.current?.animate(
@@ -117,7 +108,7 @@ export const AchievmentDialog = ({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: 'easeInOut', delay: 1 }}
         >
-          <Lottie options={defaultOptions} height={200} width={200} />
+          Congrats!
         </motion.div>
       </motion.div>
       <div className='firework'></div>

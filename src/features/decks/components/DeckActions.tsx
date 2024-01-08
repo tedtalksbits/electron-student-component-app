@@ -23,6 +23,11 @@ import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSe
 import { useToast } from '@/components/ui/use-toast';
 import { LucideCheckCircle, LucideXOctagon, Trash2Icon } from 'lucide-react';
 import { NativeDialog } from '@/components/ui/native-dialog';
+import { addStudySession } from '@/features/study/api/studysessions';
+import { getSessionId, setSessionId } from '@/utils/setSessionId';
+import { useNavigate } from 'react-router-dom';
+import { USER_ID } from '@/constants';
+import { downloadOne } from '../utils/downloadJSON';
 
 type DeckActionsProps = {
   deck: DeckType;
@@ -37,8 +42,18 @@ type DeckActionsProps = {
       icon: string | React.ReactNode;
       onMutate: React.Dispatch<React.SetStateAction<DeckType[]>>;
     };
+    study: {
+      label: string;
+      icon: string | React.ReactNode;
+      onMutate?: React.Dispatch<React.SetStateAction<DeckType[]>>;
+    };
+    download: {
+      label: string;
+      icon: string | React.ReactNode;
+    };
   };
 };
+
 export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState<string | null>(deck.image);
@@ -107,6 +122,25 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
     setOpen(false);
     setImage('');
   };
+  const navigate = useNavigate();
+
+  const handleStudy = (id: number) => {
+    if (!id) return alert('You need to add a deck with flashcards first!');
+    addStudySession(
+      {
+        deck_id: Number(id),
+        user_id: USER_ID,
+        start_time: new Date(),
+      },
+      (sessionId) => {
+        setSessionId(sessionId.toString());
+        console.log(sessionId);
+        console.log('session id set');
+        console.log(getSessionId());
+        navigate(`/decks/${id}/study`);
+      }
+    );
+  };
 
   function handleShowDeleteDialog(): void {
     setShowDeleteDialog(true);
@@ -122,15 +156,25 @@ export const DeckActions = ({ deck, actions }: DeckActionsProps) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => handleStudy(deck.id)}>
+              <span className='h-5 w-5 mr-1'>{actions.study.icon}</span>
+              {actions.study.label}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DialogTrigger asChild>
               <DropdownMenuItem>
-                <span className='h-5 w-5 mr-1'>{actions.edit.icon}</span>{' '}
+                <span className='h-5 w-5 mr-1'>{actions.edit.icon}</span>
                 {actions.edit.label}
               </DropdownMenuItem>
             </DialogTrigger>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => downloadOne(deck, deck.name)}>
+              <span className='h-5 w-5 mr-1'>{actions.download.icon}</span>
+              {actions.download.label}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleShowDeleteDialog}>
-              <span className='h-5 w-5 mr-1'>{actions.delete.icon}</span>{' '}
+              <span className='h-5 w-5 mr-1'>{actions.delete.icon}</span>
               {actions.delete.label}
             </DropdownMenuItem>
           </DropdownMenuContent>

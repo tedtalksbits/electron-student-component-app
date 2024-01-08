@@ -39,6 +39,7 @@ const ContentEditor = React.forwardRef<HTMLDivElement, ContentEditorProps>(
       throw new Error('onChange is not allowed, use onInput instead');
     if (props.onInput && !editable)
       throw new Error('editable must be true to use onInput');
+
     return (
       <div
         className={cn(contentEditorVariants({ className, ...props }))}

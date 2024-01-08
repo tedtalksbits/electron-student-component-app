@@ -7,11 +7,13 @@ import {
   getDecks,
   getLowestMasteredDecks,
   updateDeck,
+  createDecks,
 } from './deckServices';
 
 export const deckListeners = () => {
   ipcMain.handle(DECK_CHANNELS.GET, getDecks);
   ipcMain.handle(DECK_CHANNELS.CREATE, createDeck);
+  ipcMain.handle(DECK_CHANNELS.CREATE_MANY, createDecks);
   ipcMain.handle(DECK_CHANNELS.DELETE, deleteDeck);
   ipcMain.handle(DECK_CHANNELS.UPDATE, updateDeck);
   ipcMain.handle(DECK_CHANNELS.GET_BY_ID, getDeckById);

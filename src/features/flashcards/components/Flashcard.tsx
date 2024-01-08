@@ -2,7 +2,11 @@ import React from 'react';
 import { FlashcardType } from '../types';
 import Markdown from '../../../components/markdown/Markdown';
 import { FlashcardActions } from '.';
-import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
+import {
+  DocumentDownloadIcon,
+  PencilIcon,
+  TrashIcon,
+} from '@heroicons/react/solid';
 import { Progress } from '@/components/ui/progress';
 import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
 import { motion } from 'framer-motion';
@@ -23,7 +27,7 @@ export const Flashcard = ({ flashcard, setFlashcards }: FlashcardProps) => {
         hidden: { opacity: 0, y: 20, transition: { duration: 0.2 } },
       }}
       key={flashcard.id}
-      className='border rounded-md p-4 flex flex-col relative shadow-md'
+      className='border rounded-md p-4 flex flex-col relative shadow-md bg-card'
     >
       <Progress
         className='absolute top-0 left-0'
@@ -45,10 +49,13 @@ export const Flashcard = ({ flashcard, setFlashcards }: FlashcardProps) => {
               icon: <PencilIcon />,
               onMutate: setFlashcards,
             },
+            download: {
+              label: 'Download',
+              icon: <DocumentDownloadIcon />,
+            },
           }}
         />
       </header>
-
       <article className='my-4'>
         <CollapseTrigger
           variant='ghost'

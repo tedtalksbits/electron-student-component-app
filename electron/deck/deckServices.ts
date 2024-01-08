@@ -12,6 +12,11 @@ export const createDeck = async (
   ...args: Parameters<typeof deckRepository.createOne>
 ) => deckRepository.createOne(...args);
 
+export const createDecks = async (
+  _event: Electron.IpcMainInvokeEvent,
+  ...args: Parameters<typeof deckRepository.createMany>
+) => deckRepository.createMany(...args);
+
 export const deleteDeck = async (
   _event: Electron.IpcMainInvokeEvent,
   ...args: Parameters<typeof deckRepository.deleteOne>

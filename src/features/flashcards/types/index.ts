@@ -6,8 +6,8 @@ export type FlashcardType = {
   answer: string;
   tags: string | null;
   hint: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
   image: string | null;
   audio: string | null;
   video: string | null;

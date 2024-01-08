@@ -3,8 +3,13 @@ import { DeckType } from '../types';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { DeckActions } from '.';
-import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
+import {
+  DocumentDownloadIcon,
+  PencilIcon,
+  TrashIcon,
+} from '@heroicons/react/solid';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { PlayIcon } from 'lucide-react';
 
 type DeckProps = {
   deck: DeckType;
@@ -31,7 +36,7 @@ export const DeckCard = ({ deck, setDecks, setSearch }: DeckProps) => {
             deck={deck}
             actions={{
               delete: {
-                icon: <TrashIcon />,
+                icon: <TrashIcon className='text-destructive' />,
                 label: 'Delete',
                 onMutate: setDecks,
               },
@@ -39,6 +44,14 @@ export const DeckCard = ({ deck, setDecks, setSearch }: DeckProps) => {
                 icon: <PencilIcon />,
                 label: 'Edit',
                 onMutate: setDecks,
+              },
+              study: {
+                icon: <PlayIcon className='w-4 h-4' />,
+                label: 'Study',
+              },
+              download: {
+                icon: <DocumentDownloadIcon />,
+                label: 'Download',
               },
             }}
           />

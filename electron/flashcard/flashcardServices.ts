@@ -12,6 +12,11 @@ export const createFlashcard = async (
   ...args: Parameters<typeof flashcardRepository.createOne>
 ) => flashcardRepository.createOne(...args);
 
+export const createFlashcards = async (
+  _event: Electron.IpcMainInvokeEvent,
+  ...args: Parameters<typeof flashcardRepository.createMany>
+) => flashcardRepository.createMany(...args);
+
 export const deleteFlashcard = async (
   _event: Electron.IpcMainInvokeEvent,
   ...args: Parameters<typeof flashcardRepository.deleteOne>

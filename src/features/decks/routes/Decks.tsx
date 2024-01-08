@@ -12,13 +12,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Grid, List } from 'lucide-react';
+import { DownloadIcon, Grid, List, LucideShuffle, Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { USER_ID } from '../../../constants/index';
 import { dayjsUtils } from '@/lib/utils';
-import { ProgressCircle } from '@tremor/react';
+import { ProgressBar } from '@tremor/react';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { addStudySession } from '@/features/study/api/studysessions';
+import { getSessionId, setSessionId } from '@/utils/setSessionId';
+import { download } from '../utils/downloadJSON';
 
 function Decks() {
   const [decks, setDecks] = useState<DeckType[]>([]);
@@ -26,6 +29,7 @@ function Decks() {
     DeckTypeWithAvgMastery[]
   >([]);
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
   const { deckViewType, setDeckViewType } = useUserPreferences();
   const handleViewTypeChange = (type: 'grid' | 'list') => {
     setDeckViewType(type);
@@ -51,6 +55,33 @@ function Decks() {
       }
     });
   }, []);
+
+  const handleRandomStudy = () => {
+    if (decks.length === 0)
+      return alert('You need to add a deck with flashcards first!');
+    const randomDeck = decks[Math.floor(Math.random() * decks.length)];
+    const id = randomDeck.id;
+
+    handleStudy(id);
+  };
+
+  const handleStudy = (id: number) => {
+    if (!id) return alert('You need to add a deck with flashcards first!');
+    addStudySession(
+      {
+        deck_id: Number(id),
+        user_id: USER_ID,
+        start_time: new Date(),
+      },
+      (sessionId) => {
+        setSessionId(sessionId.toString());
+        console.log(sessionId);
+        console.log('session id set');
+        console.log(getSessionId());
+        navigate(`/decks/${id}/study`);
+      }
+    );
+  };
 
   const filteredDecks = decks.filter((deck) => {
     const nameMatch = deck.name.toLowerCase().includes(search.toLowerCase());
@@ -104,49 +135,83 @@ function Decks() {
           <NavLink to='/'>
             <Button variant='outline'>← Back</Button>
           </NavLink>
-          <Input
-            type='search'
-            placeholder='Search'
-            onChange={(e) => setSearch(e.target.value)}
-            value={search || ''}
-            ref={inputRef}
-            className='w-34'
-          />
         </div>
-        {deckViewType === 'grid' ? (
+        <div className='space-x-2 flex items-center'>
+          {deckViewType === 'grid' ? (
+            <Button
+              variant='outline'
+              title='Switch to list view'
+              onClick={() => handleViewTypeChange('list')}
+            >
+              <List />
+            </Button>
+          ) : (
+            <Button
+              variant='outline'
+              onClick={() => handleViewTypeChange('grid')}
+              title='Switch to grid view'
+            >
+              <Grid />
+            </Button>
+          )}
           <Button
+            onClick={handleRandomStudy}
             variant='outline'
-            onClick={() => handleViewTypeChange('list')}
+            title='Study a random deck'
           >
-            <List />
+            <LucideShuffle className='w-4 h-4' />
           </Button>
-        ) : (
-          <Button
-            variant='outline'
-            onClick={() => handleViewTypeChange('grid')}
-          >
-            <Grid />
-          </Button>
-        )}
+        </div>
       </div>
-      <div className='flex items-center justify-between my-8'>
-        <h3 className='text-2xl font-bold'>Your Decks</h3>
-        <AddDeckDialogForm onMutation={setDecks} />
+      <div
+        ref={(ref) => {
+          if (!ref) return;
+          const cls = ['bg-background/80', 'py-4', 'shadow-md', 'px-4'];
+          window.onscroll = () => {
+            if (window.scrollY > 150) {
+              ref.classList.add(...cls);
+            } else {
+              ref.classList.remove(...cls);
+            }
+          };
+        }}
+        className='flex items-center justify-between my-8 sticky top-0 z-10 backdrop-blur-md transition-all duration-500 ease-in-out'
+      >
+        <h3 className='text-2xl font-bold'>
+          Your Decks{' '}
+          <Button
+            onClick={() => download(decks, 'decks')}
+            variant='ghost'
+            size='icon'
+            title='Download all decks as JSON'
+          >
+            <DownloadIcon className='w-4 h-4 mr-1' />
+          </Button>
+        </h3>
+        <div className='flex gap-2'>
+          <AddDeckDialogForm onMutation={setDecks} />
+          <Link to='/decks/upload'>
+            <Button variant='secondary'>
+              <Upload className='w-4 h-4 mr-1' />
+              <span>Import</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      <div className='avg-mastery-decks my-8 flex flex-col gap-4'>
-        <h3 className='text-md font-bold text-foreground/80'>
-          These Decks Need Some Attention
+      <div className='avg-mastery-decks my-8 flex flex-col'>
+        <h3 className='text-2xl leading-[4rem] font-bold text-foreground/80'>
+          Recommended Decks
         </h3>
         <div className='grid grid-cols-12 gap-2'>
           {decksByMastery &&
             decksByMastery.map((deck) => (
               <div
                 key={deck.id}
-                className='col-span-3 p-4 flex-col gap-4 flex rounded-md border-primary/20 border bg-primary/10 relative hover:bg-primary/20 transition-colors'
+                className='col-span-3 p-4 flex-col gap-4 flex rounded-md border-card border bg-card relative hover:bg-card/90 transition-colors'
               >
                 <Link
-                  className='group font-semibold text-sm text-foreground/70 hover:text-foreground transition-colors'
+                  className='group font-semibold text-base text-foreground/70 hover:text-foreground transition-colors'
                   to={`/decks/${deck.id}/flashcards`}
                 >
                   {deck.name}
@@ -155,15 +220,15 @@ function Decks() {
                   </span>
                 </Link>
 
-                <ProgressCircle
+                <ProgressBar
                   showAnimation
+                  color='gray'
                   value={Number(Number(deck.avg_mastery_level).toFixed())}
                   tooltip='Average Mastery Level'
-                >
-                  <p className='text-foreground/50 text-[.65rem]'>
-                    {Number(Number(deck.avg_mastery_level).toFixed())}%
-                  </p>
-                </ProgressCircle>
+                />
+                <p className='text-foreground/80 '>
+                  {Number(Number(deck.avg_mastery_level).toFixed())}% complete
+                </p>
                 <p
                   className='text-[.65rem] text-foreground/50'
                   title={deck.last_studied.toLocaleDateString()}
@@ -173,6 +238,19 @@ function Decks() {
               </div>
             ))}
         </div>
+      </div>
+      <div className='flex justify-between items-center'>
+        <h3 className='text-2xl leading-[4rem] font-bold text-foreground/80'>
+          All Decks
+        </h3>
+        <Input
+          type='search'
+          placeholder='Search'
+          onChange={(e) => setSearch(e.target.value)}
+          value={search || ''}
+          ref={inputRef}
+          className='w-34'
+        />
       </div>
       {deckViewType === 'grid' ? (
         <div className='grid md:grid-cols-12 gap-2'>

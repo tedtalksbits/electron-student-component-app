@@ -4,11 +4,13 @@ import {
   FLASHCARD_CHANNELS,
   USER_CHANNELS,
   PREFERENCE_CHANNELS,
+  SYSTEM_CHANNELS,
 } from './config/channels';
 import { flashcardRepository } from './flashcard/flashcardServices';
 import { deckRepository } from './deck/deckServices';
 import { userRepository } from './user/UserRepository';
 import { preferenceRepository } from './preference/PreferenceRepository';
+import { downloadAsCsv, downloadAsJson } from './system/systemRepository';
 
 export type Channels = string;
 
@@ -31,6 +33,14 @@ const electronHandler = {
     },
     invoke(channel: Channels, ...args: unknown[]) {
       return ipcRenderer.invoke(channel, ...args);
+    },
+    system: {
+      async downloadAsJson<T>(...args: Parameters<typeof downloadAsJson>) {
+        return ipcRenderer.invoke<T>(SYSTEM_CHANNELS.DOWNLOAD_JSON, ...args);
+      },
+      async downloadAsCsv<T>(...args: Parameters<typeof downloadAsCsv>) {
+        return ipcRenderer.invoke<T>(SYSTEM_CHANNELS.DOWNLOAD_CSV, ...args);
+      },
     },
     preference: {
       async getPreference(
@@ -80,6 +90,22 @@ const electronHandler = {
           ReturnType<typeof userRepository.getUserLevelAndXp>
         >(USER_CHANNELS.GET_LEVEL, ...args);
       },
+
+      async getUserXpHistory(
+        ...args: Parameters<typeof userRepository.getUserXpHistory>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof userRepository.getUserXpHistory>
+        >(USER_CHANNELS.GET_XP_HISTORY, ...args);
+      },
+
+      async updateUserXp(
+        ...args: Parameters<typeof userRepository.updateUserXp>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof userRepository.updateUserXp>
+        >(USER_CHANNELS.UPDATE_XP, ...args);
+      },
     },
     deck: {
       async getDecks() {
@@ -91,6 +117,13 @@ const electronHandler = {
       async createDeck(...args: Parameters<typeof deckRepository.createOne>) {
         return ipcRenderer.invoke<ReturnType<typeof deckRepository.createOne>>(
           DECK_CHANNELS.CREATE,
+          ...args
+        );
+      },
+
+      async createDecks(...args: Parameters<typeof deckRepository.createMany>) {
+        return ipcRenderer.invoke<ReturnType<typeof deckRepository.createMany>>(
+          DECK_CHANNELS.CREATE_MANY,
           ...args
         );
       },
@@ -138,6 +171,13 @@ const electronHandler = {
         return ipcRenderer.invoke<
           ReturnType<typeof flashcardRepository.createOne>
         >(FLASHCARD_CHANNELS.CREATE, ...args);
+      },
+      async createFlashcards(
+        ...args: Parameters<typeof flashcardRepository.createMany>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof flashcardRepository.createMany>
+        >(FLASHCARD_CHANNELS.CREATE_MANY, ...args);
       },
       async deleteFlashcard(
         ...args: Parameters<typeof flashcardRepository.deleteOne>

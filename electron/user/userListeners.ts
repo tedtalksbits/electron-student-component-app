@@ -41,4 +41,21 @@ export const userListeners = () => {
       return await userRepository.getUserLevelAndXp(...args);
     }
   );
+
+  ipcMain.handle(
+    USER_CHANNELS.GET_XP_HISTORY,
+    async (
+      _event,
+      ...args: Parameters<typeof userRepository.getUserXpHistory>
+    ) => {
+      return await userRepository.getUserXpHistory(...args);
+    }
+  );
+
+  ipcMain.handle(
+    USER_CHANNELS.UPDATE_XP,
+    async (_event, ...args: Parameters<typeof userRepository.updateUserXp>) => {
+      return await userRepository.updateUserXp(...args);
+    }
+  );
 };

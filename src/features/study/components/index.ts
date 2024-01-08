@@ -1,2 +1,2 @@
 export * from './StudyHeader';
-export * from './StudyFlashcardNavItems';
+export * from './StudyCardsPagination';

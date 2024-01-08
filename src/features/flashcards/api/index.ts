@@ -8,6 +8,10 @@ const createFlashcard = async (
   ...args: Parameters<typeof flashcardRepository.createOne>
 ) => await window.electron.ipcRenderer.flashcard.createFlashcard(...args);
 
+const createFlashcards = async (
+  ...args: Parameters<typeof flashcardRepository.createMany>
+) => await window.electron.ipcRenderer.flashcard.createFlashcards(...args);
+
 const updateFlashcard = async (
   ...args: Parameters<typeof flashcardRepository.updateOne>
 ) => await window.electron.ipcRenderer.flashcard.updateFlashcard(...args);
@@ -25,4 +29,5 @@ export const flashcardApi = {
   updateFlashcard,
   deleteFlashcard,
   getRandomFlashcards,
+  createFlashcards,
 };

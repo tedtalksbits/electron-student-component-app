@@ -6,11 +6,11 @@ import { flashcardApi } from '@/features/flashcards/api';
 
 type MasteryScaleProps = {
   flashcard: FlashcardType;
-  handleShouldRepeat: (flashcard: FlashcardType) => void;
+  onForgotten: (flashcard: FlashcardType) => void;
 };
 export default function MasteryScale({
   flashcard,
-  handleShouldRepeat,
+  onForgotten,
 }: MasteryScaleProps) {
   const [isDone, setIsDone] = useState(false);
   const handleSetMastery = async (mastery: number) => {
@@ -18,7 +18,6 @@ export default function MasteryScale({
     // dont allow mastery to go below 0 or above 100
     if (newMastery < 0) newMastery = 0;
     if (newMastery > 100) newMastery = 100;
-    if (mastery < 0) handleShouldRepeat(flashcard);
     await flashcardApi.updateFlashcard(flashcard.id, {
       mastery_level: newMastery,
     });
@@ -57,7 +56,10 @@ export default function MasteryScale({
               <Button
                 title='Not well'
                 variant={'outline'}
-                onClick={() => handleSetMastery(-40)}
+                onClick={() => {
+                  handleSetMastery(-40);
+                  onForgotten(flashcard);
+                }}
                 className='bg-destructive/20 hover:bg-destructive/30 border-destructive/20 hover:border-destructive/30'
               >
                 <span className='text-lg'>😓</span>

@@ -1,10 +1,11 @@
-import { User, UserLevel } from '@/features/user/types';
+import { User, UserLevel, UserXpHistory } from '@/features/user/types';
 import { CRUDRepository } from '../repository/Repository';
 import crudRepository from '../crudRepository';
 import connection from '../sql';
 import { RowDataPacket } from 'mysql2';
 
 const USERTABLE = 'users';
+const USER_XP_TABLE = 'xp_history';
 
 export class UserRepository implements CRUDRepository<User, number | string> {
   async createOne(user: Partial<User>, refetchQuery?: string) {
@@ -106,6 +107,45 @@ export class UserRepository implements CRUDRepository<User, number | string> {
     } catch (error) {
       console.error(
         'an error occured while getting a user level and xp, UserRepository.getUserLevelAndXp',
+        error
+      );
+      const err = error as Error;
+      return { error: err.message, data: null };
+    }
+  }
+
+  async getUserXpHistory(
+    id: number | string
+  ): Promise<{ data: UserXpHistory[] | null; error: string | null }> {
+    try {
+      const [userXpHistory] = await connection.execute<RowDataPacket[]>(
+        `SELECT * FROM ${USER_XP_TABLE}
+        WHERE user_id = ${id}
+        ORDER BY timestamp DESC`
+      );
+      return { data: userXpHistory as UserXpHistory[], error: null };
+    } catch (error) {
+      console.error(
+        'an error occured while getting a user xp history, UserRepository.getUserXpHistory',
+        error
+      );
+      const err = error as Error;
+      return { error: err.message, data: null };
+    }
+  }
+
+  async updateUserXp(
+    user_id: number | string,
+    xp: number
+  ): Promise<{ data: null; error: string | null }> {
+    try {
+      await connection.execute(
+        `INSERT INTO ${USER_XP_TABLE} (user_id, xp_earned) VALUES (${user_id}, ${xp});`
+      );
+      return { data: null, error: null };
+    } catch (error) {
+      console.error(
+        'an error occured while updating a user xp, UserRepository.updateUserXp',
         error
       );
       const err = error as Error;

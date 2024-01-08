@@ -10,6 +10,10 @@ const createDeck = async (
   ...args: Parameters<typeof window.electron.ipcRenderer.deck.createDeck>
 ) => await window.electron.ipcRenderer.deck.createDeck(...args);
 
+const createDecks = async (
+  ...args: Parameters<typeof window.electron.ipcRenderer.deck.createDecks>
+) => await window.electron.ipcRenderer.deck.createDecks(...args);
+
 const updateDeck = async (
   ...args: Parameters<typeof window.electron.ipcRenderer.deck.updateDeck>
 ) => await window.electron.ipcRenderer.deck.updateDeck(...args);
@@ -31,4 +35,5 @@ export const deckApi = {
   updateDeck,
   deleteDeck,
   getLowestMasteredDecks,
+  createDecks,
 };

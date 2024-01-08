@@ -4,15 +4,17 @@ import { useEffect, useState, useRef } from 'react';
 import { updateStudySession } from '../api/studysessions';
 import { getSessionId } from '../../../utils/setSessionId';
 import { StudyHeader } from '../components';
-import { StudyFlashcardNavItems } from '../components/StudyFlashcardNavItems';
+import { StudyCardsPagination } from '../components/StudyCardsPagination';
 import { Button } from '@/components/ui/button';
 import { USER_ID } from '@/constants';
 import { CodeSandboxLogoIcon } from '@radix-ui/react-icons';
 import GoBackButton from '@/components/navigation/GoBackButton';
-import { flashcardApi } from '../../flashcards/api/index';
-import { CollapseContent, CollapseTrigger } from '@/components/ui/collapse';
-import Markdown from '@/components/markdown/Markdown';
-import MasteryScale from '../components/MasteryScale';
+import { flashcardApi } from '../../flashcards/api';
+import { deckApi } from '@/features/decks/api';
+import { DeckType } from '@/features/decks/types';
+import { StudyCard } from '../components/StudyCard';
+import { UserLevel } from '@/features/user/types';
+import { XpBar } from '@/features/gamification/components/XpBar';
 export interface StudyUrlState {
   study: boolean;
   prevXp: number;
@@ -22,11 +24,32 @@ export default function Study() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [flashcards, setFlashcards] = useState<FlashcardType[]>([]);
+  const [deck, setDeck] = useState<DeckType>({} as DeckType);
   const [, setIsDone] = useState(false);
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
   const [cardsStudied, setCardsStudied] = useState<number[]>([]);
   const flashcardContainerRef = useRef<HTMLDivElement>(null);
 
+  const [userLevelData, setUserLevelData] = useState<UserLevel | null>(null);
+  useEffect(() => {
+    (async () => {
+      await getUserLevelData();
+    })();
+    console.log('user level data');
+  }, []);
+
+  const getUserLevelData = async () => {
+    window.electron.ipcRenderer.user
+      .getUserLevelAndXp(USER_ID)
+      .then(({ data, error }) => {
+        if (data) {
+          setUserLevelData(data);
+        }
+        if (error) {
+          console.log(error);
+        }
+      });
+  };
   useEffect(() => {
     flashcardApi.getRandomFlashcards(Number(id)).then(({ data, error }) => {
       if (error) {
@@ -37,11 +60,17 @@ export default function Study() {
         setFlashcards(data);
       }
     });
-  }, [id]);
 
-  const navClickHandler = (index: number) => {
-    setCurrentFlashcardIndex(index);
-  };
+    deckApi.getDeckById(Number(id)).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (data) {
+        setDeck(data);
+      }
+    });
+  }, [id]);
 
   useEffect(() => {
     if (!flashcardContainerRef.current) return;
@@ -56,11 +85,12 @@ export default function Study() {
     console.log('done', timeElapsed);
     const sessionId = Number(getSessionId());
     if (!sessionId) return;
-    const { data: userLevelData, error } =
-      await window.electron.ipcRenderer.user.getUserLevelAndXp(USER_ID);
-    if (error) {
-      console.log(error);
-    }
+    // const { data: userLevelData, error } =
+    //   await window.electron.ipcRenderer.user.getUserLevelAndXp(USER_ID);
+    // if (error) {
+    //   console.log(error);
+    // }
+    if (cardsStudied.length === 0) return navigate(`/decks/${id}/flashcards`);
     updateStudySession(
       {
         deck_id: Number(id),
@@ -74,7 +104,7 @@ export default function Study() {
         console.log('study session updated');
         console.log(data);
 
-        // if > 1 card studied, go to /decks/:id/flashcards?study=true
+        // if > 1 card studied, go to analytics
         if (data.flashcards_studied >= 1) {
           console.log('more than 1 card studied');
           navigate(`/analytics`, {
@@ -98,14 +128,14 @@ export default function Study() {
     setCardsStudied([...cardsStudied, id]);
   };
 
-  const handleShouldRepeat = (flashcard: FlashcardType) => {
+  const handleRepeatCard = (flashcard: FlashcardType) => {
     setFlashcards((prev) => [...prev, flashcard]);
   };
 
   if (!flashcards.length)
     return (
       <div>
-        Loading... <GoBackButton />
+        There are no flashcards in deck: {id} <GoBackButton />
       </div>
     );
 
@@ -127,67 +157,29 @@ export default function Study() {
         className='animate-fade-in overflow-hidden max-w-7xl mx-auto'
         id='study-session'
       >
-        <StudyHeader onDone={handleDone} />
+        <div className='pl-[2%] py-2'>
+          <XpBar userLevelAndXp={userLevelData} />
+        </div>
+        <StudyHeader onDone={handleDone} deck={deck} />
 
         <div className='study-container' ref={flashcardContainerRef}>
           {flashcards.map((flashcard, i) => (
             <div key={flashcard.id + 'i-' + i} className='study-item'>
-              <div className='study-item-inner h-min w-[98%]'>
-                {/* <StudyFlashcard
-                  flashcard={flashcard}
-                  handleStudiedCard={handleStudiedCard}
-                /> */}
-                <div
-                  onClick={() => handleStudiedCard(flashcard.id)}
-                  className='my-4 w-full'
-                >
-                  <CollapseTrigger
-                    className='font-medium text-lg bg-transparent'
-                    aria-labelledby={flashcard.id.toString() + 'i-' + i}
-                    variant='ghost'
-                  >
-                    <Markdown>{flashcard.question}</Markdown>
-                  </CollapseTrigger>
-                  <CollapseContent
-                    className='w-full list-disc'
-                    id={flashcard.id.toString() + 'i-' + i}
-                  >
-                    <div className='answer border bg-card p-4 rounded-md text-card-foreground'>
-                      <Markdown className=''>{flashcard.answer}</Markdown>
-                    </div>
-                    <MasteryScale
-                      flashcard={flashcard}
-                      handleShouldRepeat={handleShouldRepeat}
-                    />
-                  </CollapseContent>
-                </div>
-                <div className='w-full flex items-center justify-between'>
-                  <Button
-                    variant='outline'
-                    className='disabled:opacity-50 disabled:cursor-not-allowed'
-                    onClick={() =>
-                      setCurrentFlashcardIndex(currentFlashcardIndex - 1)
-                    }
-                    disabled={currentFlashcardIndex === 0}
-                  >
-                    &larr; Previous
-                  </Button>
-                  <StudyFlashcardNavItems
-                    flashcards={flashcards}
-                    navItemClickHandler={navClickHandler}
-                    currentFlashcardIndex={currentFlashcardIndex}
-                  />
-                  <Button
-                    onClick={() =>
-                      setCurrentFlashcardIndex(currentFlashcardIndex + 1)
-                    }
-                    disabled={currentFlashcardIndex === flashcards.length - 1}
-                    className='disabled:opacity-50 disabled:cursor-not-allowed'
-                    variant='outline'
-                  >
-                    Next &rarr;
-                  </Button>
-                </div>
+              <StudyCard
+                onShowHint={getUserLevelData}
+                userLevelData={userLevelData}
+                flashcard={flashcard}
+                index={i}
+                handleRepeatCard={handleRepeatCard}
+                handleStudiedCard={handleStudiedCard}
+                key={flashcard.id + 'i-' + i}
+              />
+              <div className='w-full flex items-center justify-between'>
+                <StudyCardsPagination
+                  flashcards={flashcards}
+                  currentIndex={currentFlashcardIndex}
+                  setCurrentIndex={setCurrentFlashcardIndex}
+                />
               </div>
             </div>
           ))}

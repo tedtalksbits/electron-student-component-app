@@ -1,5 +1,6 @@
-import { Decks } from '@/features/decks/routes';
+import { Decks, UploadDeck } from '@/features/decks/routes';
 import { Flashcards } from '@/features/flashcards/routes';
+import { UploadFlashcards } from '@/features/flashcards/routes/UploadFlashcards';
 import { Home } from '@/features/home/routes';
 import { Analytics } from '@/features/study-analytics/routes/Analytics';
 import { Study } from '@/features/study/routes';
@@ -37,11 +38,27 @@ export const routes: Routes = {
         index: true,
       },
       {
+        title: 'Anki Deck Upload',
+        href: '/decks/upload',
+        target: null,
+        description: 'Anki App',
+        element: <UploadDeck />,
+        icon: Book,
+      },
+      {
         title: 'Anki App',
         href: '/decks/:id/flashcards',
         target: null,
         description: 'Anki App',
         element: <Flashcards />,
+        icon: Book,
+      },
+      {
+        title: 'Anki App',
+        href: '/decks/:id/flashcards/upload',
+        target: null,
+        description: 'Anki App',
+        element: <UploadFlashcards />,
         icon: Book,
       },
       {

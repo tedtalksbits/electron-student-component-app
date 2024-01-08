@@ -1,5 +1,8 @@
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 export default function Markdown({
@@ -15,7 +18,8 @@ export default function Markdown({
         className +
         ' my-4 whitespace-break-spaces markdown [&>*a]:text-primary [&>*]:text-xl hover:text-primary-600 dark:hover:text-primary-400'
       }
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
       children={children}
       components={{
         code({ node, inline, className, children, ...props }) {

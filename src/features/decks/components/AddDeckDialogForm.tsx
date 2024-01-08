@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { deckApi } from '../api';
 import { USER_ID } from '@/constants';
 import { EmojiSelectorWithCategories } from '@/components/emoji-selector/EmojiSelectorWithCategories';
-import { FilePlus2Icon, LucideCheckCircle, LucideXOctagon } from 'lucide-react';
+import { LucideCheckCircle, LucideXOctagon, PlusIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 type AddDeckProps = {
@@ -65,8 +65,7 @@ export const AddDeckDialogForm = ({ onMutation }: AddDeckProps) => {
       <Dialog open={open} onOpenChange={() => setOpen(!open)}>
         <DialogTrigger asChild>
           <Button variant='default'>
-            {' '}
-            <FilePlus2Icon className='w-4 h-4 mr-1' /> Add Deck
+            <PlusIcon className='w-4 h-4 mr-1' /> New
           </Button>
         </DialogTrigger>
         <DialogContent className='flex flex-col'>

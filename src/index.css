@@ -76,8 +76,8 @@
     --accent: 213 16% 20%;
     --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
 
     --ring: 213 12% 23%;
   }
@@ -149,7 +149,6 @@
   /* .form:has(*:invalid:not(:focus)) button[type='submit'] {
     @apply cursor-not-allowed opacity-50;
   } */
-
   .form-footer {
     @apply flex justify-end gap-2 mt-8;
   }
@@ -161,6 +160,65 @@
   input::placeholder {
     @apply capitalize;
   }
+
+  /*
+    ========================================
+    file input
+    ========================================
+  */
+  input.tw-file-input {
+    @apply border-none outline-none px-0 py-0 mx-0 my-0 m-0 transition-all duration-300 ease-in-out;
+  }
+  input.tw-file-input::-webkit-file-upload-button {
+    visibility: hidden;
+  }
+  input.tw-file-input::before {
+    @apply inline-block px-4 py-2 bg-secondary rounded-md cursor-pointer;
+    content: 'Upload';
+  }
+  input.tw-file-input:hover::before {
+    @apply bg-secondary/80;
+  }
+  input.tw-file-input:active::before {
+    @apply bg-secondary/60;
+  }
+
+  input.tw-file-input[data-drop-zone='true'] {
+    @apply border-2 border-dashed border-secondary/50 h-[20rem];
+  }
+  input.tw-file-input[data-drop-zone='true']::before {
+    @apply flex items-center justify-center px-4 py-2 bg-secondary/10 rounded-md cursor-pointer text-center h-full;
+    content: 'Click or Drag an drop files here 📁';
+  }
+
+  input.tw-file-input[data-drop-zone='true']:hover {
+    @apply border-secondary/80 bg-secondary/20;
+  }
+
+  input.tw-file-input[data-drop-zone='true'].tw-file-input--drag {
+    @apply border-success bg-success/20;
+  }
+  input.tw-file-input[data-drop-zone='true'].tw-file-input--drag::before {
+    content: 'Click or Drag an drop files here 📂';
+  }
+  /* input.tw-file-input[data-drop-zone='true'].tw-file-input--dropped::before {
+    content: 'File dropped ' attr(data-file-name);
+  } */
+
+  /* if input has data-file-name, style it */
+  input.tw-file-input[data-file-name] {
+    @apply border-primary bg-primary/20;
+  }
+
+  input.tw-file-input[data-file-name]:hover {
+    @apply bg-primary/30 border-primary/80;
+  }
+
+  input.tw-file-input[data-file-name]::before {
+    content: 'File selected ' attr(data-file-name) ' 💽';
+    animation: slide-in-blurred-right 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+
   /* hide nav when study-session is loaded */
   body:has(#study-session) header nav {
     @apply hidden;
@@ -290,7 +348,20 @@
     animations
     ========================================
   */
-
+  .animate-float {
+    animation: float 5s ease-in-out infinite;
+  }
+  @keyframes float {
+    0% {
+      transform: translate(0px, 0px);
+    }
+    50% {
+      transform: translate(0px, 15px);
+    }
+    100% {
+      transform: translate(0px, 0px);
+    }
+  }
   .scale-up-center {
     -webkit-animation: scale-up-center 0.4s cubic-bezier(0.39, 0.575, 0.565, 1)
       both;

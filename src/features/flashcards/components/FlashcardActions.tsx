@@ -23,6 +23,7 @@ import { LucideCheckCircle, LucideXOctagon, Trash2Icon } from 'lucide-react';
 import { NativeDialog } from '@/components/ui/native-dialog';
 import { flashcardApi } from '../api';
 import { useToast } from '@/components/ui/use-toast';
+import { downloadOne } from '../utils/downloadJSON';
 
 type FlashcardActionsProps = {
   flashcard: FlashcardType;
@@ -36,6 +37,10 @@ type FlashcardActionsProps = {
       label: string;
       icon: string | React.ReactNode;
       onMutate: React.Dispatch<React.SetStateAction<FlashcardType[]>>;
+    };
+    download: {
+      label: string;
+      icon: string | React.ReactNode;
     };
   };
 };
@@ -132,6 +137,10 @@ export const FlashcardActions = ({
             </DropdownMenuItem>
           </DialogTrigger>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => downloadOne(flashcard, 'flashcard')}>
+            <span className='h-5 w-5 mr-1'>{actions.download.icon}</span>{' '}
+            {actions.download.label}
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleShowDeleteDialog}>
             <span className='h-5 w-5 mr-1'>{actions.delete.icon}</span>{' '}
             {actions.delete.label}

@@ -4,7 +4,12 @@ import React from 'react';
 import { DeckType } from '../types';
 import { Link } from 'react-router-dom';
 import { DeckActions } from '.';
-import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
+import {
+  PencilIcon,
+  TrashIcon,
+  PlayIcon,
+  DocumentDownloadIcon,
+} from '@heroicons/react/solid';
 import { cn } from '@/lib/utils';
 
 interface DeckRowProps {
@@ -69,10 +74,18 @@ export const DeckRow = ({
               label: 'Delete',
               onMutate: setDecks,
             },
+            study: {
+              icon: <PlayIcon />,
+              label: 'Study',
+            },
             edit: {
               icon: <PencilIcon />,
               label: 'Edit',
               onMutate: setDecks,
+            },
+            download: {
+              icon: <DocumentDownloadIcon />,
+              label: 'Download',
             },
           }}
         />
