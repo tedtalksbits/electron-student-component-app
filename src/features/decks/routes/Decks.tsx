@@ -35,6 +35,7 @@ function Decks() {
     setDeckViewType(type);
   };
   const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     deckApi.getDecks().then(({ data, error }) => {
       if (error) {

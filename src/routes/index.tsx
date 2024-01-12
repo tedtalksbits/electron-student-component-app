@@ -29,7 +29,7 @@ export const routes: Routes = {
   anki: {
     routes: [
       {
-        title: 'Anki',
+        title: 'Decks',
         href: '/decks',
         target: null,
         description: 'Anki App',
@@ -38,7 +38,7 @@ export const routes: Routes = {
         index: true,
       },
       {
-        title: 'Anki Deck Upload',
+        title: 'Deck Upload',
         href: '/decks/upload',
         target: null,
         description: 'Anki App',
@@ -46,7 +46,7 @@ export const routes: Routes = {
         icon: Book,
       },
       {
-        title: 'Anki App',
+        title: 'Flashcards',
         href: '/decks/:id/flashcards',
         target: null,
         description: 'Anki App',
@@ -54,7 +54,7 @@ export const routes: Routes = {
         icon: Book,
       },
       {
-        title: 'Anki App',
+        title: 'Flashcard Upload',
         href: '/decks/:id/flashcards/upload',
         target: null,
         description: 'Anki App',
@@ -62,7 +62,7 @@ export const routes: Routes = {
         icon: Book,
       },
       {
-        title: 'Anki App',
+        title: 'Study',
         href: '/decks/:id/study',
         target: null,
         description: 'Anki App',
@@ -75,13 +75,12 @@ export const routes: Routes = {
   playground: {
     routes: [
       {
-        title: 'Playground',
+        title: 'Playground ↗',
         href: 'https://leetcode.com/playground/new/empty',
         target: '_blank',
         description: 'Playground',
         element: <div>Playground</div>,
         icon: PlayIcon,
-        index: true,
       },
     ],
   },

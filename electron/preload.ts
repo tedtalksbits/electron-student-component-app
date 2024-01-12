@@ -156,6 +156,14 @@ const electronHandler = {
           ReturnType<typeof deckRepository.getByLowestMastered>
         >(DECK_CHANNELS.GET_BY_AVG_MASTERY, ...args);
       },
+
+      async getLastStudiedDeck(
+        ...args: Parameters<typeof deckRepository.getLastStudiedDeck>
+      ) {
+        return ipcRenderer.invoke<
+          ReturnType<typeof deckRepository.getLastStudiedDeck>
+        >(DECK_CHANNELS.GET_LAST_STUDIED, ...args);
+      },
     },
     flashcard: {
       async getFlashcardsByDeckId(

@@ -3,6 +3,7 @@ import { CRUDRepository } from '../repository/Repository';
 import crudRepository from '../crudRepository';
 import connection from '../sql';
 import { RowDataPacket } from 'mysql2';
+import studyRepository from '../study/studyRepository';
 const DECK_TABLE = 'decks';
 export class DeckRespository implements CRUDRepository<DeckType, number> {
   async createOne(data: Partial<DeckType>, refetchQuery?: string) {
@@ -94,5 +95,17 @@ export class DeckRespository implements CRUDRepository<DeckType, number> {
       const err = error as Error;
       return { error: err.message, data: null };
     }
+  }
+
+  async getLastStudiedDeck(userId: string | number) {
+    const studySessions = await studyRepository.getMany({
+      user_id: Number(userId),
+    });
+    if (studySessions.data) {
+      const lastSession = studySessions.data[studySessions.data.length - 1];
+      const deck = await this.getOne(lastSession.deck_id);
+      return deck;
+    }
+    return { data: null, error: null };
   }
 }

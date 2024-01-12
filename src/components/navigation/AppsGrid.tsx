@@ -33,18 +33,20 @@ export const AppsGrid = ({
   ];
   return (
     <div className={`grid ${gridSizes[size]}`}>
-      {indexRoutes.map((app, i) => (
-        <Link
-          key={app.href}
-          to={app.href}
-          target={app.target ?? ''}
-          onClick={onItemClick}
-          className={`border flex items-center justify-center rounded-md flex-col ${itemSizes[size]} no-underline outline-none  transition-colors bg-foreground/5 hover:shadow-md active:border-primary`}
-        >
-          <app.icon className={`${iconSizes[size]} ${colors[i]}`} />
-          <span className='text-center'>{app.title}</span>
-        </Link>
-      ))}
+      {indexRoutes.map((app, i) =>
+        app.title === 'Home' ? null : (
+          <Link
+            key={app.href}
+            to={app.href}
+            target={app.target ?? ''}
+            onClick={onItemClick}
+            className={`border flex items-center justify-center rounded-md flex-col ${itemSizes[size]} no-underline outline-none  transition-colors bg-foreground/5 hover:shadow-md active:border-primary`}
+          >
+            <app.icon className={`${iconSizes[size]} ${colors[i]}`} />
+            <span className='text-center'>{app.title}</span>
+          </Link>
+        )
+      )}
     </div>
   );
 };

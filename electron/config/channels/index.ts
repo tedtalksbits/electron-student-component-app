@@ -6,6 +6,7 @@ export const DECK_CHANNELS = {
   DELETE: 'DELETE_DECK',
   UPDATE: 'UPDATE_DECK',
   GET_BY_ID: 'GET_DECK_BY_ID',
+  GET_LAST_STUDIED: 'GET_LAST_STUDIED_DECK',
 };
 export const APP_CONFIG_CHANNELS = {
   GET_CONFIG: 'get-app-config',

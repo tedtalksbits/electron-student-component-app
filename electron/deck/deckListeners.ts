@@ -8,6 +8,7 @@ import {
   getLowestMasteredDecks,
   updateDeck,
   createDecks,
+  getLastStudiedDeck,
 } from './deckServices';
 
 export const deckListeners = () => {
@@ -18,4 +19,5 @@ export const deckListeners = () => {
   ipcMain.handle(DECK_CHANNELS.UPDATE, updateDeck);
   ipcMain.handle(DECK_CHANNELS.GET_BY_ID, getDeckById);
   ipcMain.handle(DECK_CHANNELS.GET_BY_AVG_MASTERY, getLowestMasteredDecks);
+  ipcMain.handle(DECK_CHANNELS.GET_LAST_STUDIED, getLastStudiedDeck);
 };

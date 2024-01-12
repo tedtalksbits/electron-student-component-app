@@ -36,3 +36,8 @@ export const getLowestMasteredDecks = async (
   _event: Electron.IpcMainInvokeEvent,
   ...args: Parameters<typeof deckRepository.getByLowestMastered>
 ) => deckRepository.getByLowestMastered(...args);
+
+export const getLastStudiedDeck = async (
+  _event: Electron.IpcMainInvokeEvent,
+  ...args: Parameters<typeof deckRepository.getLastStudiedDeck>
+) => deckRepository.getLastStudiedDeck(...args);

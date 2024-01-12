@@ -10,17 +10,39 @@ const crudRepository = {
   async select<T extends Record<string, unknown>>(
     table: string,
     fields: string[],
-    where: T
+    where: T,
+    orderBy?: string,
+    limit?: number,
+    offset?: number
   ) {
     const keys = Object.keys(where);
     const values = Object.values(where);
+    // const [rows] = await connection.execute(
+    //   `SELECT ${fields.join(', ')} FROM ${table} WHERE ${keys.join(
+    //     ' = ? AND '
+    //   )} = ?`,
+    //   values
+    // );
+    // return rows as any[];
 
-    const [rows] = await connection.execute(
-      `SELECT ${fields.join(', ')} FROM ${table} WHERE ${keys.join(
-        ' = ? AND '
-      )} = ?`,
-      values
-    );
+    let query = `SELECT ${fields.join(', ')} FROM ${table} WHERE ${keys
+      .map((key) => `${key} = ?`)
+      .join(' AND ')}`;
+
+    if (orderBy) {
+      query += ` ORDER BY ${orderBy}`;
+    }
+
+    if (limit) {
+      query += ` LIMIT ${limit}`;
+    }
+
+    if (offset) {
+      query += ` OFFSET ${offset}`;
+    }
+
+    const [rows] = await connection.execute(query, values);
+
     return rows as any[];
   },
 
