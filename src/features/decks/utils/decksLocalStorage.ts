@@ -1,5 +1,3 @@
-import { DeckType } from '../types';
-
 // we will store recent uploaded files in local storage using the file name as the key and the file content (which is of type DeckType) as the value
 const KEY = 'DeckRecentFiles';
 export const getRecentFiles = <T>() => {
